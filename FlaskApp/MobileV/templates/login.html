@@ -1,0 +1,127 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  {% include 'shared/header.html' %}
+
+  <title>MobileV - Login</title>
+
+  <!-- Page-level custom styles -->
+  <link href="{{ url_for('static', filename='css/pages/login.css') }}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="hold-transition login-page">
+
+  <div class="login-box">
+
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+
+      <div class="card-header d-flex align-items-center justify-content-center">
+        <p class="h1"><b>Mobile</b>V</p>
+        <img src="{{ url_for('static', filename='img/MobileV_logo.png') }}">
+      </div>
+
+      <div class="card-body">
+        <p class="login-box-msg">Sign in to access the portal</p>
+
+        <form action="" id="login-form">
+
+          <div class="row align-items-center mb-3">
+
+            <div class="col-4 offset-2 text-center">
+              <div class="icheck-primary">
+                <input type="radio" name="user-radio" id="admin-radio" checked>
+                <label for="admin-radio">
+                  Admin
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+
+            <div class="col-4 text-center">
+              <div class="icheck-primary">
+                <input type="radio" name="user-radio" id="SRO-radio">
+                <label for="SRO-radio">
+                  SRO
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+
+          </div>
+
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="username" placeholder="Username" autocomplete="off" required>
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group mb-4">
+
+            <input type="password" class="form-control" id="password" placeholder="Password" autocomplete="off" required>
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+
+            <div class="text-danger mt-3 d-none" id="error-message">
+              <i class="fas fa-ban mr-2"></i> 
+              Invalid credentials. Please try again.
+            </div>
+
+          </div>
+
+          <div class="row mb-2">
+
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="remember">
+                <label for="remember">
+                  Remember Me
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </div>
+            <!-- /.col -->
+
+          </div>
+
+          <div class="text-center mt-3 d-none" id="reset-password">
+            <a class="small nav-item" href="{{ url_for('auth_bp.forgot_password') }}">
+              Forgot your password?
+            </a>
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.card-body -->
+
+    </div>
+    <!-- /.card -->
+
+  </div>
+  <!-- /.login-box -->
+
+  {% include 'shared/footer.html' %}
+
+  <!-- Page-level custom scripts -->
+  <script src="{{ url_for('static', filename='js/pages/login.js') }}"></script>
+
+</body>
+
+</html>

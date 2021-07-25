@@ -1,0 +1,47 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+
+  <!-- Left navbar links -->
+  <ul class="navbar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+        <i class="fas fa-bars"></i>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+        <i class="fas fa-expand-arrows-alt"></i>
+      </a>
+    </li>
+
+    <li class="nav-item d-none d-sm-inline-block">
+      <a class="nav-link text-dark"><span class="font-weight-bold">Mobile</span>V &nbsp;<span class="font-weight-light">|&nbsp; {{ name }}</span></a>
+    </li>
+
+  </ul>
+
+  <!-- Right navbar links -->
+  <ul class="navbar-nav ml-auto">
+
+    <li class="nav-item d-none d-sm-inline-block">
+      <a href="{{ url_for('portal_SRO_bp.SRO_dashboard') }}" class="nav-link">Dashboard</a>
+    </li>
+
+    <li class="nav-item d-none d-sm-inline-block mr-4">
+      <a href="{{ url_for('portal_SRO_bp.SRO_change_password') }}" class="nav-link">Change Password</a>
+    </li>
+
+    <li class="nav-item m-auto">
+      <a href="{{ url_for('auth_bp.logout') }}">
+        <button type="button" class="btn btn-sm btn-block btn-secondary">
+          Log out
+        </button>
+      </a>
+    </li>
+
+  </ul>
+
+</nav>

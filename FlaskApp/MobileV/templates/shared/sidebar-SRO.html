@@ -1,0 +1,55 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  
+  <!-- Brand Logo -->
+  <div class="text-center">
+    <img src="{{ url_for('static', filename='img/MobileV_logo.png') }}"><br>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <hr>
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+        <li class="nav-item">
+          <a href="{{ url_for('portal_SRO_bp.SRO_dashboard') }}" class="nav-link">
+            <i class="nav-icon far fa-window-maximize"></i>
+            <p>
+              Dashboard
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{ url_for('portal_SRO_bp.SRO_change_password') }}" class="nav-link">
+            <i class="nav-icon fas fa-key"></i>
+            <p>
+              Change Password
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{ url_for('auth_bp.logout') }}" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>
+              Log out
+            </p>
+          </a>
+        </li>
+
+      </ul>
+
+    </nav>
+    <!-- /.sidebar-menu -->
+
+  </div>
+  <!-- /.sidebar -->
+
+</aside>

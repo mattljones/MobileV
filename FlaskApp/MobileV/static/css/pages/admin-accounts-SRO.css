@@ -1,0 +1,42 @@
+/*
+ADMIN SRO ACCOUNTS PAGE STYLING
+*/
+
+/* Sidebar logo */
+img {
+    height: auto;
+    width: 60%;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+/* Sidebar horizontal rule */
+hr {
+    height: 0.5px;
+    background-color: #ccc;
+    border: none;
+}
+
+/* Text formatting in the DataTable */
+.table td {
+    padding: 0.7rem;
+    vertical-align: middle;
+    font-size: 0.9em;
+}
+
+/* Success message toasts */
+.toast {
+    position: fixed;
+    left: 49vw; 
+    bottom: 2%; 
+    background-color: #f3fcf3;
+    border-color: #5cb85c
+}
+
+/* Tooltips */
+.tooltip .tooltip-inner {
+    background-color: #d9534f !important;
+}
+.btn.disabled {
+    pointer-events: auto;
+}

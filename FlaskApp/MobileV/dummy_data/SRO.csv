@@ -1,0 +1,4 @@
+sroID,username,email,password,firstName,lastName
+4,MobileVSRO1,ucabmlj@ucl.ac.uk,pbkdf2:sha256:260000$k7o9DdqsDNDL7zUl$a4b68390877559e020e42718240ba487c91da2e7065c14258c021b10df3c632d,Ada,Lovelace
+5,MobileVSRO2,alan.turing@enigma.com,pbkdf2:sha256:260000$YCm7f7jtGAW5bCEj$d1a8c9c4c1217339c9c4658756938e321dcfef1cbef1a662e6b8eb9566c8d2f9,Bill,Gates
+6,MobileVSRO3,stephen.hawking@cam.ac.uk,pbkdf2:sha256:260000$lRRUkhdJWJIkXKmw$c91c4a664ec69e04d0087edf43e10c020d9f280e190bff6063252d3d83043081,Stephen,Hawking

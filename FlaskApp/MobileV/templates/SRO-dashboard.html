@@ -1,0 +1,225 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  {% include 'shared/header.html' %}
+
+  <title>MobileV - Dashboard</title>
+
+  <!-- Page-level custom styles -->
+  <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+  <link href="{{ url_for('static', filename='css/pages/SRO-dashboard.css') }}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+
+    <!-- Include SRO name in navbar -->
+    {% with name = name %}
+      {% include 'shared/navbar-SRO.html'%}
+    {% endwith %}
+
+    {% include 'shared/sidebar-SRO.html' %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>
+                <span class="font-weight-bold">&raquo; Dashboard</span>
+              </h1>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <table id="table-SRO-dashboard" class="table table-bordered table-striped" width="100%" cellspacing="0"></table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+      
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- Success toast -->
+  <div class="toast">
+    <div class="toast-body text-success">
+      <i class="fas fa-check-square mr-2"></i>
+      <span id="toast-text"></span>
+    </div>
+  </div>
+
+  <!-- Edit app user scores modal -->
+  <div class="modal fade" id="edit-scores-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit app user scores</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="" id="edit-scores-form">
+
+          <div class="modal-body">
+
+            <p><span class="font-weight-bold">Note: </span>to replace a score, rather than simply edit its name, you should first delete it.</p>
+
+            <div class="row">
+            
+              <div class="col-3">
+                <div class="form-group text-center">
+                  <label for="add-last-name" class="d-block">
+                    <span class="text-danger">Delete</span> / <span class="text-success">Keep</span>
+                  </label>
+                  <div class="mt-3 custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                    <input type="checkbox" class="custom-control-input" id="score1-radio">
+                    <label class="custom-control-label" for="score1-radio"></label>
+                  </div>
+                </div>
+              </div>  
+
+              <div class="col-9">
+                <div class="form-group">
+                  <label for="score1" class="d-block">
+                    Score name <span class="font-weight-light">(max. 15 characters)</span>
+                  </label>
+                  <input type="text" class="form-control" id="score1" autocomplete="off" maxlength="15">
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+            <div class="row">
+            
+              <div class="col-3">
+                <div class="form-group text-center">
+                  <div class="mt-2 custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                    <input type="checkbox" class="custom-control-input" id="score2-radio">
+                    <label class="custom-control-label" for="score2-radio"></label>
+                  </div>
+                </div>
+              </div>  
+
+              <div class="col-9">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="score2" autocomplete="off" maxlength="15">
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+            <div class="row">
+            
+              <div class="col-3">
+                <div class="form-group text-center">
+                  <div class="mt-2 custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                    <input type="checkbox" class="custom-control-input" id="score3-radio">
+                    <label class="custom-control-label" for="score3-radio"></label>
+                  </div>
+                </div>
+              </div>  
+
+              <div class="col-9">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="score3" autocomplete="off" maxlength="15">
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="edit-scores-submit">Submit</button>
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <!-- View app user shares modal -->
+  <div class="modal fade" id="view-shares-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">View app user shares</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+          <div class="modal-body">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <table id="table-SRO-shares" class="table table-bordered table-striped" width="100%" cellspacing="0"></table>
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                  <!-- /.card -->
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+          </div>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  {% include 'shared/footer.html' %}
+
+  <!-- Page-level plugins -->
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/plug-ins/1.10.25/sorting/date-eu.js"></script>
+
+  <!-- Page-level custom scripts -->
+  <script src="{{ url_for('static', filename='js/pages/SRO-dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tables/table-SRO-dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tables/table-SRO-shares.js') }}"></script>
+
+</body>
+
+</html>

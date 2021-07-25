@@ -1,0 +1,320 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  {% include 'shared/header.html' %}
+
+  <title>MobileV - Manage SRO Accounts</title>
+
+  <!-- Page-level custom styles -->
+  <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+  <link href="{{ url_for('static', filename='css/pages/admin-accounts-SRO.css') }}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+
+    {% include 'shared/navbar-admin.html' %}
+    {% include 'shared/sidebar-admin.html' %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>
+                <span class="font-weight-bold">&raquo; Accounts</span> (SRO)
+              </h1>
+            </div>
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-md btn-success float-right" id="add-SRO-account">
+                <i class="fas fa-plus mr-2"></i>
+                Add SRO account
+              </button>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <table id="table-admin-SRO" class="table table-bordered table-striped" width="100%" cellspacing="0"></table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+      
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- Success toast -->
+  <div class="toast">
+    <div class="toast-body text-success">
+      <i class="fas fa-check-square mr-2"></i>
+      <span id="toast-text"></span>
+    </div>
+  </div>
+
+  <!-- Add SRO account modal -->
+  <div class="modal fade" id="add-SRO-account-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add SRO account</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="" id="add-SRO-account-form">
+
+          <div class="modal-body">
+
+            <div class="row">
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="add-first-name" class="d-block">
+                    First Name
+                  </label>
+                  <input type="text" class="form-control" id="add-first-name" autocomplete="off" maxlength="35" required>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="add-last-name" class="d-block">
+                    Last Name
+                  </label>
+                  <input type="text" class="form-control" id="add-last-name" autocomplete="off" maxlength="35" required>
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+            <div class="row">
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="add-email" class="d-block">
+                    Email Address
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="email" class="form-control" id="add-email" autocomplete="off" required>
+                    <div class="input-group-append">
+                      <label class="input-group-text">
+                        <span id="add-email-unique-status" class="text-secondary">
+                          <i class="fas fa-check-circle inline mr-1" id="add-email-unique-check"></i>
+                          <i class="fas fa-times-circle inline mr-1 d-none" id="add-email-unique-times"></i>
+                          Unique
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="add-username" class="d-block">
+                    Username
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="add-username" autocomplete="off" maxlength="30" required>
+                    <div class="input-group-append">
+                      <label class="input-group-text">
+                        <span id="add-username-unique-status" class="text-secondary">
+                          <i class="fas fa-check-circle inline mr-1" id="add-username-unique-check"></i>
+                          <i class="fas fa-times-circle inline mr-1 d-none" id="add-username-unique-times"></i>
+                          Unique
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" id="add-submit">Submit</button>
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <!-- Edit SRO account modal -->
+  <div class="modal fade" id="edit-SRO-account-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit SRO account</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="" id="edit-SRO-account-form">
+
+          <div class="modal-body">
+
+            <div class="row">
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="edit-first-name" class="d-block">
+                    First Name
+                  </label>
+                  <input type="text" class="form-control" id="edit-first-name" autocomplete="off" maxlength="35" required>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="edit-last-name" class="d-block">
+                    Last Name
+                  </label>
+                  <input type="text" class="form-control" id="edit-last-name" autocomplete="off" maxlength="35" required>
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+            <div class="row">
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="edit-email" class="d-block">
+                    Email Address
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="email" class="form-control" id="edit-email" autocomplete="off" required>
+                    <div class="input-group-append">
+                      <label class="input-group-text">
+                        <span id="edit-email-unique-status" class="text-secondary">
+                          <i class="fas fa-check-circle inline mr-1" id="edit-email-unique-check"></i>
+                          <i class="fas fa-times-circle inline mr-1 d-none" id="edit-email-unique-times"></i>
+                          Unique
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="edit-username" class="d-block">
+                    Username
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="edit-username" autocomplete="off" maxlength="30" required>
+                    <div class="input-group-append">
+                      <label class="input-group-text">
+                        <span id="edit-username-unique-status" class="text-secondary">
+                          <i class="fas fa-check-circle inline mr-1" id="edit-username-unique-check"></i>
+                          <i class="fas fa-times-circle inline mr-1 d-none" id="edit-username-unique-times"></i>
+                          Unique
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div> <!-- .row -->
+
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" id="edit-submit">Submit</button>
+          </div>
+
+        </form>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <!-- Delete SRO account modal -->
+  <div class="modal fade" id="delete-SRO-account-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Delete SRO account</h4>
+          <button type="button" class="close" data-bs-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+          <div class="modal-body">
+            Are you sure you want to delete this account? 
+            <br><br>
+            <span class="font-weight-bold">Name: </span><span id="delete-name"></span><br>
+            <span class="font-weight-bold">Username: </span><span id="delete-username"></span>
+            <br>
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-danger" id="delete-submit">Delete</button>
+          </div>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  {% include 'shared/footer.html' %}
+
+  <!-- Page-level plugins -->
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+
+  <!-- Page-level custom scripts -->
+  <script src="{{ url_for('static', filename='js/pages/admin-accounts-SRO.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/tables/table-admin-SRO.js') }}"></script>
+
+</body>
+
+</html>

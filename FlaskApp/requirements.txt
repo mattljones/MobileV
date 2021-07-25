@@ -1,0 +1,23 @@
+# Project venv dependencies
+
+# Ensures packages will install even if missing wheel archives
+wheel
+
+# WSGI HTTP server
+gunicorn
+
+# Core application dependencies
+flask
+flask-SQLAlchemy
+flask-login
+Flask-Mail
+python-dotenv
+mysqlclient
+sqlalchemy-utils
+cryptography
+pyjwt
+
+# STT dependencies
+ibm-watson
+ffmpeg
+pydub

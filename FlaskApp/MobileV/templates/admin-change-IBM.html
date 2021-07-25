@@ -1,0 +1,148 @@
+<!-- This file is adapted from the AdminLTE Bootstrap template: https://github.com/ColorlibHQ/AdminLTE -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  {% include 'shared/header.html' %}
+
+  <title>MobileV - Change IBM Credentials</title>
+
+  <!-- Page-level custom styles -->
+  <link href="{{ url_for('static', filename='css/pages/admin-change-IBM.css') }}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+
+    {% include 'shared/navbar-admin.html' %}
+    {% include 'shared/sidebar-admin.html' %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>
+                <span class="font-weight-bold">&raquo; Change IBM Credentials</span>
+              </h1>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-10">
+              <div class="card">
+                <div class="card-body">
+
+                  <form action="" id="change-IBM-form">
+
+                    {% if apiKey is not none %}
+
+                    <div id="current-creds-div">
+                      <div class="form-group">
+                        <label>Current API key:</label>
+                        <p id="current-api-key">{{ apiKey }}</p>
+                      </div>
+                      <div class="form-group">
+                        <label>Current service URL:</label>
+                        <p id="current-service-url">{{ serviceURL }}</p>
+                      </div>
+                    </div>
+
+                    {% else %}
+
+                    <div class="d-none" id="current-creds-div">
+                      <div class="form-group">
+                        <label>Current API key:</label>
+                        <p id="current-api-key"></p>
+                      </div>
+                      <div class="form-group">
+                        <label>Current service URL:</label>
+                        <p id="current-service-url"></p>
+                      </div>
+                    </div>
+
+                    <div class="form-group text-danger" id="no-creds-div">
+                      <p>IBM Watson Speech-to-Text credentials not yet set.</p>
+                    </div>
+
+                    {% endif %}
+
+                    <div class="form-group">
+                      <label for="new-api-key">New API key:</label>
+                      <input type="text" class="form-control" id="new-api-key" autocomplete="off" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="new-service-url">New service URL:</label>
+                      <input type="text" class="form-control" id="new-service-url" autocomplete="off" required>
+                    </div>
+
+                    </div>
+                    <!-- /.card-body -->
+      
+                  <div class="card-footer">
+
+                    <input type="submit" value="Submit" class="btn btn-primary my-2">
+
+                    <!-- Success toast -->
+                    <div class="d-inline-block">
+                      <div class="toast ml-4 d-none" id="success-toast">
+                        <div class="toast-body text-success py-auto">
+                          <i class="fas fa-check-square mr-2"></i>
+                          IBM credentials changed
+                        </div>
+                      </div>
+                    </div>
+    
+                    <!-- Error toast -->
+                    <div class="d-inline-block">
+                      <div class="toast ml-4 d-none" id="error-toast">
+                        <div class="toast-body text-danger py-auto">
+                          <i class="fas fa-exclamation-circle mr-2"></i>
+                          An error occurred. Please try again.
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </form>
+
+              </div>
+              <!-- /.card -->
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+      
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- ./wrapper -->
+
+  {% include 'shared/footer.html' %}
+
+  <!-- Page-level custom scripts -->
+  <script src="{{ url_for('static', filename='js/pages/admin-change-IBM.js') }}"></script>
+
+</body>
+
+</html>

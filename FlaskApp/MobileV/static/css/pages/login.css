@@ -1,0 +1,19 @@
+/*
+LOGIN PAGE STYLING
+*/
+
+/* Background image */
+body { 
+    background: url(/static/img/IXN_logo.png) no-repeat;
+    background-position: 98% 4%;
+    -webkit-background-size: 13%;
+    -moz-background-size: 13%; 
+    -o-background-size: 13%;
+    background-size: 13%;
+}
+
+/* Card logo */
+img { 
+    height: 5em; 
+    padding-left: 1.5em
+}
