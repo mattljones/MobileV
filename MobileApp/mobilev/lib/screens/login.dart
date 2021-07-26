@@ -54,7 +54,8 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 20.0),
                 FormButton(
                   text: 'Sign in',
-                  colour: kPrimaryColour,
+                  buttonColour: kPrimaryColour,
+                  textColour: Colors.white,
                   goToRoute: '/home',
                 ),
                 SizedBox(height: 40.0),

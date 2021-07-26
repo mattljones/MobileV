@@ -11,4 +11,4 @@ const kLightPrimaryColour = Color(0xFFEBEDF8);
 const kTextIcons = Colors.white;
 const kPrimaryTextColour = Color(0xFF212121);
 const kSecondaryTextColour = Color(0xFF757575);
-const kDividerColour = Color(0xFFBDBDBD);
+const kCardColour = Color(0xFFDEDEDE);

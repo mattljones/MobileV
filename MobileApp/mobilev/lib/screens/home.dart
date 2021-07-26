@@ -23,6 +23,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_screenData[_current][0]),
+        actions: _current != 1
+            ? null
+            : [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.emoji_events,
+                      color: Colors.amber,
+                    ),
+                    SizedBox(width: 10.0),
+                    Text('2 week streak!'),
+                    SizedBox(width: 15.0),
+                  ],
+                ),
+              ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: kLightPrimaryColour,
