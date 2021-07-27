@@ -10,7 +10,52 @@ class RecordingsBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            RecordingCard(),
+            RecordingCard(
+              dateRecorded: '24/07/2021',
+              type: 'Test',
+              duration: 60,
+              isShared: true,
+              analysisStatus: AnalysisStatus.pending,
+              scores: {
+                'ScoreName 1': 30,
+                'ScoreName 2': 60,
+                'ScoreName 3': 45,
+              },
+            ),
+            RecordingCard(
+              dateRecorded: '17/07/2021',
+              type: 'Test',
+              duration: 60,
+              isShared: true,
+              analysisStatus: AnalysisStatus.received,
+              scores: {
+                'WPM': 67,
+                'ScoreName 1': 30,
+                'ScoreName 2': 60,
+                'ScoreName 3': 45,
+              },
+            ),
+            RecordingCard(
+              dateRecorded: '10/07/2021',
+              type: 'Test',
+              duration: 60,
+              isShared: true,
+              analysisStatus: AnalysisStatus.received,
+              scores: {
+                'WPM': 67,
+                'ScoreName 1': 30,
+                'ScoreName 2': 60,
+                'ScoreName 3': 45,
+              },
+            ),
+            RecordingCard(
+              dateRecorded: '03/07/2021',
+              type: 'Test',
+              duration: 60,
+              isShared: true,
+              analysisStatus: AnalysisStatus.received,
+              scores: {},
+            ),
           ],
         ),
       ),

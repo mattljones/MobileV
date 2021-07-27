@@ -9,6 +9,7 @@ final ThemeData theme = ThemeData(
     secondaryVariant: kDarkAccentColour,
   ),
   fontFamily: 'Roboto',
+  dividerColor: Colors.transparent,
   appBarTheme: AppBarTheme(
     color: kPrimaryColour,
     textTheme: TextTheme(
