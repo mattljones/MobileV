@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ? null
           : FloatingActionButton(
               child: Icon(
-                Icons.mic,
+                Icons.add,
                 size: 35.0,
               ),
               onPressed: () {

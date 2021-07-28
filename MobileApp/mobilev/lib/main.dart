@@ -13,7 +13,7 @@ class MobileVApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MobileV',
       theme: theme,
-      initialRoute: '/login',
+      initialRoute: '/home',
       routes: routes,
     );
   }

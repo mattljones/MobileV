@@ -21,6 +21,13 @@ class _RecordingsBodyState extends State<RecordingsBody>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    _scrollController?.dispose();
+    super.dispose();
+  }
+
   Container loadMostRecentContent() => Container(
         child: ListView(
           children: [
