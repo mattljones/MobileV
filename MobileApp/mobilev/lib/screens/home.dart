@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobilev/config/styles.dart';
+import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/screens/my_analysis_body.dart';
 import 'package:mobilev/screens/my_recordings_body.dart';
 import 'package:mobilev/screens/my_profile_body.dart';
@@ -23,21 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_screenData[_current][0]),
-        actions: _current != 1
-            ? null
-            : [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.emoji_events,
-                      color: Colors.amber,
-                    ),
-                    SizedBox(width: 10.0),
-                    Text('2 week streak!'),
-                    SizedBox(width: 15.0),
-                  ],
-                ),
-              ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: kLightPrimaryColour,
@@ -80,7 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icons.mic,
                 size: 35.0,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-recording');
+              },
             ),
       body: _screenData[_current][1],
     );

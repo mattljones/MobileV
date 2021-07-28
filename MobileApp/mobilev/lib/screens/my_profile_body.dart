@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobilev/config/styles.dart';
+import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class ProfileBody extends StatelessWidget {

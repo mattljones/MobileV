@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobilev/config/styles.dart';
+import 'package:mobilev/config/constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mobilev/widgets/recording_card_status.dart';
 import 'package:mobilev/widgets/recording_card_score.dart';
-
-enum AnalysisStatus { unavailable, pending, received, failed }
 
 class RecordingCard extends StatefulWidget {
   final String dateRecorded;
@@ -59,9 +57,10 @@ class _RecordingCardState extends State<RecordingCard> {
     return Card(
       color: kCardColour,
       elevation: 6.0,
-      margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 15.0),
+      margin: EdgeInsets.fromLTRB(4.0, 20.0, 4.0, 0.0),
       child: Container(
-        padding: EdgeInsets.all(15.0),
+        padding: EdgeInsets.fromLTRB(
+            15.0, 15.0, 15.0, scores.isNotEmpty ? 0.0 : 15.0),
         child: Column(
           children: [
             Row(
@@ -162,7 +161,7 @@ class _RecordingCardState extends State<RecordingCard> {
               ExpansionTile(
                 textColor: Colors.black,
                 iconColor: Colors.black,
-                tilePadding: EdgeInsets.fromLTRB(10.0, 0.0, 190.0, 0.0),
+                tilePadding: EdgeInsets.fromLTRB(10.0, 0.0, 160.0, 0.0),
                 childrenPadding: EdgeInsets.only(left: 20.0),
                 title: Text(expansionTitle),
                 onExpansionChanged: (isExpanded) {

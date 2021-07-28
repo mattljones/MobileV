@@ -12,3 +12,6 @@ const kTextIcons = Colors.white;
 const kPrimaryTextColour = Color(0xFF212121);
 const kSecondaryTextColour = Color(0xFF757575);
 const kCardColour = Color(0xFFDEDEDE);
+
+// Enumerated types
+enum AnalysisStatus { unavailable, pending, received, failed }
