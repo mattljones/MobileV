@@ -46,7 +46,8 @@ function createSROSharesDataTable(userID) {
         };
       };
 
-      rows.push([dateRecorded, 
+      rows.push([dateRecorded,
+                 share.testType + ' (' + share.duration + 's)', 
                  '<b>' + share.WPM + '</b>', 
                  handleNulls(share.score1_name, 'name') + handleNulls(share.score1_value, 'value'),
                  handleNulls(share.score2_name, 'name') + handleNulls(share.score2_value, 'value'),
@@ -61,6 +62,7 @@ function createSROSharesDataTable(userID) {
       data: rows,
       columns: [
         {title: "Date Recorded"},
+        {title: "Share Type"},
         {title: "WPM"},
         {title: "Score 1"},
         {title: "Score 2"},

@@ -162,6 +162,8 @@ def get_app_user_shares(userID):
                     .filter(AppUser.userID == userID)\
                     .with_entities(Share.shareID,
                                    Share.dateRecorded,
+                                   Share.testType,
+                                   Share.duration,
                                    Share.WPM,
                                    Share.score1_name,
                                    Share.score1_value,
@@ -200,7 +202,11 @@ def download_app_user_share(shareID):
         file_bytes = io.BytesIO(decrypt(share.filePath))
 
         # Construct download name, accounting for nulls
-        name_pt1 = "{}_{}_WPM_{}".format(share.dateRecorded.date(), share.fileType, share.WPM)
+        name_pt1 = "{}_{}_{}s_{}_WPM_{}".format(share.dateRecorded.date(),
+                                                share.testType,
+                                                share.duration,
+                                                share.fileType, 
+                                                share.WPM)
         
         def conv_none(_input):
             return '' if _input is None else '_' + str(_input)
