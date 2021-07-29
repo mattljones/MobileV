@@ -181,12 +181,10 @@ class _AudioRecorderState extends State<AudioRecorder> {
           : Icon(Icons.touch_app, size: 55.0),
       fillColor: isRecording ? Colors.red : kAccentColour,
       onPressed: () {
-        if (!isRecording) {
-          startRecording();
-          setState(() {
-            isRecording = true;
-          });
-        }
+        isRecording ? stopRecording() : startRecording();
+        setState(() {
+          isRecording = !isRecording;
+        });
       },
     );
   }
