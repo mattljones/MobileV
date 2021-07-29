@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart' as ap;
+import 'package:record/record.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
+import 'package:mobilev/widgets/audio_player.dart';
 
 class AddRecordingScreen extends StatefulWidget {
   @override
@@ -12,41 +14,18 @@ class AddRecordingScreen extends StatefulWidget {
 class _AddRecordingScreenState extends State<AddRecordingScreen> {
   List<bool> typeIsSelected = [true, false];
   List<bool> durationIsSelected = [true, false, false, false];
-  bool isRecording = false;
-  int duration = 30;
+  bool showPlayer = false;
+  ap.AudioSource? audioSource;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add a recording'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+  void initState() {
+    showPlayer = false;
+    super.initState();
+  }
+
+  Column getRecordTab() => Column(
         children: [
-          SizedBox(height: 120.0),
-          RawMaterialButton(
-            elevation: 10.0,
-            constraints: BoxConstraints.tightFor(
-              width: 110.0,
-              height: 110.0,
-            ),
-            shape: CircleBorder(),
-            child: isRecording
-                ? Icon(Icons.mic, size: 55.0)
-                : Icon(Icons.touch_app, size: 55.0),
-            fillColor: isRecording ? Colors.red : kAccentColour,
-            onPressed: () {
-              final player = AudioCache();
-              isRecording
-                  ? player.play('audio/record_off.mp3')
-                  : player.play('audio/record_on.mp3');
-              setState(() {
-                isRecording = !isRecording;
-              });
-            },
-          ),
-          SizedBox(height: 50.0),
+          SizedBox(height: 30.0),
           MyToggleButtons(
             fields: ['Numeric', 'Text'],
             isSelected: typeIsSelected,
@@ -82,8 +61,133 @@ class _AddRecordingScreenState extends State<AddRecordingScreen> {
               });
             },
           ),
+          SizedBox(height: 60.0),
+          showPlayer
+              ? AudioPlayer(
+                  source: audioSource!,
+                  onDelete: () {
+                    setState(() => showPlayer = false);
+                  },
+                )
+              : AudioRecorder(
+                  onStop: (path) {
+                    setState(() {
+                      audioSource = ap.AudioSource.uri(Uri.parse(path));
+                      showPlayer = true;
+                    });
+                  },
+                ),
         ],
+      );
+
+  Center getShareTab() => Center(
+        child: Text('Share content'),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add a recording'),
       ),
+      body: DefaultTabController(
+        length: 2,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                child: TabBar(
+                  indicatorColor: kPrimaryColour,
+                  tabs: [
+                    Tab(text: 'RECORD'),
+                    Tab(text: 'SAVE & SHARE'),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    getRecordTab(),
+                    getShareTab(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AudioRecorder extends StatefulWidget {
+  final void Function(String path) onStop;
+  AudioRecorder({required this.onStop});
+
+  @override
+  _AudioRecorderState createState() => _AudioRecorderState();
+}
+
+class _AudioRecorderState extends State<AudioRecorder> {
+  bool isRecording = false;
+  final audioRecorder = Record();
+
+  @override
+  void initState() {
+    isRecording = false;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    audioRecorder.dispose();
+    super.dispose();
+  }
+
+  Future<void> startRecording() async {
+    try {
+      if (await audioRecorder.hasPermission()) {
+        await audioRecorder.start();
+        bool isRecording = await audioRecorder.isRecording();
+        setState(() {
+          isRecording = isRecording;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> stopRecording() async {
+    final path = await audioRecorder.stop();
+    widget.onStop(path!);
+    setState(() => isRecording = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RawMaterialButton(
+      elevation: 10.0,
+      constraints: BoxConstraints.tightFor(
+        width: 110.0,
+        height: 110.0,
+      ),
+      shape: CircleBorder(),
+      child: isRecording
+          ? Icon(Icons.mic, size: 55.0)
+          : Icon(Icons.touch_app, size: 55.0),
+      fillColor: isRecording ? Colors.red : kAccentColour,
+      onPressed: () {
+        if (!isRecording) {
+          startRecording();
+          setState(() {
+            isRecording = true;
+          });
+        }
+      },
     );
   }
 }

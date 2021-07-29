@@ -16,7 +16,9 @@ class MyToggleButtons extends StatelessWidget {
     return Center(
       child: ToggleButtons(
         borderRadius: BorderRadius.circular(5.0),
-        selectedBorderColor: kPrimaryColour,
+        fillColor: kCardColour,
+        selectedColor: Colors.black,
+        selectedBorderColor: kSecondaryTextColour,
         constraints: BoxConstraints.tightFor(
             width: (MediaQuery.of(context).size.width - 70.0) / fields.length,
             height: 50.0),

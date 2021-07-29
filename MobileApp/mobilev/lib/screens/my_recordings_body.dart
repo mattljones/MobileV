@@ -34,7 +34,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
             RecordingCard(
               dateRecorded: '24/07/2021',
               type: 'Text',
-              duration: 75,
+              duration: 120,
               isShared: true,
               analysisStatus: AnalysisStatus.pending,
               scores: {
@@ -59,7 +59,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
             RecordingCard(
               dateRecorded: '10/07/2021',
               type: 'Text',
-              duration: 118,
+              duration: 120,
               isShared: true,
               analysisStatus: AnalysisStatus.received,
               scores: {
@@ -96,7 +96,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
             ),
             RecordingCard(
               dateRecorded: '24/07/2021',
-              type: 'Test',
+              type: 'Numeric',
               duration: 60,
               isShared: true,
               analysisStatus: AnalysisStatus.pending,

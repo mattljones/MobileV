@@ -56,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                   text: 'Sign in',
                   buttonColour: kPrimaryColour,
                   textColour: Colors.white,
-                  goToRoute: '/home',
+                  goToRoute: '/my-home',
                 ),
                 SizedBox(height: 40.0),
                 GestureDetector(

@@ -4,12 +4,12 @@ import 'package:mobilev/screens/my_analysis_body.dart';
 import 'package:mobilev/screens/my_recordings_body.dart';
 import 'package:mobilev/screens/my_profile_body.dart';
 
-class HomeScreen extends StatefulWidget {
+class MyHomeScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _MyHomeScreenState createState() => _MyHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MyHomeScreenState extends State<MyHomeScreen> {
   int _current = 1;
   bool _hideFloatingActionButton = false;
   Map _screenData = {
