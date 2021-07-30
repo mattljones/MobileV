@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as ap;
+import 'package:mobilev/config/constants.dart';
 
 class AudioPlayer extends StatefulWidget {
   final ap.AudioSource source;
@@ -59,20 +60,23 @@ class AudioPlayerState extends State<AudioPlayer> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _buildControl(),
-            _buildSlider(constraints.maxWidth),
-            IconButton(
-              icon: Icon(Icons.delete,
-                  color: const Color(0xFF73748D), size: _deleteBtnSize),
-              onPressed: () {
-                _audioPlayer.stop().then((value) => widget.onDelete());
-              },
-            ),
-          ],
+        return Container(
+          padding: EdgeInsets.only(top: 25.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              _buildControl(),
+              _buildSlider(constraints.maxWidth),
+              IconButton(
+                icon:
+                    Icon(Icons.delete, color: Colors.red, size: _deleteBtnSize),
+                onPressed: () {
+                  _audioPlayer.stop().then((value) => widget.onDelete());
+                },
+              ),
+            ],
+          ),
         );
       },
     );
@@ -83,12 +87,11 @@ class AudioPlayerState extends State<AudioPlayer> {
     Color color;
 
     if (_audioPlayer.playerState.playing) {
-      icon = Icon(Icons.pause, color: Colors.red, size: 30);
-      color = Colors.red.withOpacity(0.1);
+      icon = Icon(Icons.pause, color: kSecondaryTextColour, size: 30);
+      color = kSecondaryTextColour.withOpacity(0.1);
     } else {
-      final theme = Theme.of(context);
-      icon = Icon(Icons.play_arrow, color: theme.primaryColor, size: 30);
-      color = theme.primaryColor.withOpacity(0.1);
+      icon = Icon(Icons.play_arrow, color: kPrimaryColour, size: 30);
+      color = kPrimaryColour.withOpacity(0.1);
     }
 
     return ClipOval(
@@ -124,8 +127,8 @@ class AudioPlayerState extends State<AudioPlayer> {
     return SizedBox(
       width: width,
       child: Slider(
-        activeColor: Theme.of(context).primaryColor,
-        inactiveColor: Theme.of(context).accentColor,
+        activeColor: kPrimaryColour,
+        inactiveColor: kCardColour,
         onChanged: (v) {
           if (duration != null) {
             final position = v * duration.inMilliseconds;

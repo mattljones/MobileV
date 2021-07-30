@@ -14,7 +14,7 @@ class ProfileBody extends StatelessWidget {
             text: 'Sign out',
             buttonColour: kAccentColour,
             textColour: Colors.black,
-            goToRoute: '/login',
+            onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
           ),
         ],
       ),

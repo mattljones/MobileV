@@ -14,6 +14,7 @@ dependencies:
   path_provider: ^2.0.1
   just_audio: ^0.9.4
   record: ^3.0.0
+  wakelock: ^0.5.2
 
 dev_dependencies:
   flutter_test:
@@ -37,9 +38,9 @@ flutter:
           weight: 700
         - asset: assets/fonts/Roboto-Black.ttf
           weight: 900
+    - family: PTMono
+      fonts:
+        - asset: assets/fonts/PTMono-Regular.ttf
 
 flutter_app_name:
   name: "MobileV"
-
-record:
-  path: ../

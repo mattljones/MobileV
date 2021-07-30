@@ -42,7 +42,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                   text: 'Request new password',
                   buttonColour: kPrimaryColour,
                   textColour: Colors.white,
-                  goToRoute: '/login',
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/login'),
                 ),
                 SizedBox(height: 40.0),
                 GestureDetector(
