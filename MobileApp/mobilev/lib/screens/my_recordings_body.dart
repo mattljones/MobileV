@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/recording_card.dart';
-import 'package:mobilev/widgets/month_dropdown.dart';
+import 'package:mobilev/widgets/dropdown.dart';
 
 class RecordingsBody extends StatefulWidget {
   @override
@@ -85,14 +85,18 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Container loadByMonthContent() => Container(
         child: ListView(
           children: [
-            MonthDropdown(
-              months: ['July 2021', 'June 2021', 'May 2021'],
-              dropdownValue: dropdownValue,
-              onChanged: (newValue) {
-                setState(() {
-                  dropdownValue = newValue!;
-                });
-              },
+            Padding(
+              padding: EdgeInsets.only(top: 10.0),
+              child: MyDropdown(
+                items: ['July 2021', 'June 2021', 'May 2021'],
+                prompt: 'Select month',
+                dropdownValue: dropdownValue,
+                onChanged: (newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+              ),
             ),
             RecordingCard(
               dateRecorded: '24/07/2021',

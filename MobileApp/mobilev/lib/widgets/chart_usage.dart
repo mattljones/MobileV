@@ -2,22 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mobilev/config/constants.dart';
 
-/// Sample ordinal data type.
-class OrdinalSales {
-  final String year;
-  final int sales;
-
-  OrdinalSales(this.year, this.sales);
-}
-
-class BarChartWithSecondaryAxis extends StatelessWidget {
+class UsageChart extends StatelessWidget {
   static const secondaryMeasureAxisId = 'secondaryMeasureAxisId';
   final List<charts.Series> seriesList;
 
-  BarChartWithSecondaryAxis(this.seriesList);
+  UsageChart(this.seriesList);
 
-  factory BarChartWithSecondaryAxis.withSampleData() {
-    return BarChartWithSecondaryAxis(
+  factory UsageChart.withSampleData() {
+    return UsageChart(
       _createSampleData(),
     );
   }
@@ -33,9 +25,6 @@ class BarChartWithSecondaryAxis extends StatelessWidget {
         primaryMeasureAxis: charts.NumericAxisSpec(
             tickProviderSpec:
                 charts.BasicNumericTickProviderSpec(desiredTickCount: 4)),
-        secondaryMeasureAxis: charts.NumericAxisSpec(
-            tickProviderSpec:
-                charts.BasicNumericTickProviderSpec(desiredTickCount: 4)),
         barRendererDecorator: charts.BarLabelDecorator<String>(
           labelPosition: charts.BarLabelPosition.inside,
           insideLabelStyleSpec: charts.TextStyleSpec(
@@ -44,6 +33,11 @@ class BarChartWithSecondaryAxis extends StatelessWidget {
           ),
         ),
         behaviors: [
+          charts.SeriesLegend(
+            position: charts.BehaviorPosition.bottom,
+            cellPadding: EdgeInsets.fromLTRB(0.0, 20.0, 20.0, 30.0),
+            outsideJustification: charts.OutsideJustification.startDrawArea,
+          ),
           charts.ChartTitle(
             'Summary: Last 3 months',
             titleStyleSpec: charts.TextStyleSpec(
@@ -55,26 +49,6 @@ class BarChartWithSecondaryAxis extends StatelessWidget {
             titleOutsideJustification: charts.OutsideJustification.start,
             innerPadding: 40,
           ),
-          charts.ChartTitle('No. Recordings',
-              behaviorPosition: charts.BehaviorPosition.start,
-              titleStyleSpec: charts.TextStyleSpec(
-                fontFamily: 'PTSans',
-                color: charts.ColorUtil.fromDartColor(kPrimaryColour),
-              ),
-              innerPadding: 0,
-              outerPadding: 15,
-              titleOutsideJustification:
-                  charts.OutsideJustification.middleDrawArea),
-          charts.ChartTitle('No. Minutes',
-              behaviorPosition: charts.BehaviorPosition.end,
-              titleStyleSpec: charts.TextStyleSpec(
-                fontFamily: 'PTSans',
-                color: charts.ColorUtil.fromDartColor(kDarkAccentColour),
-              ),
-              innerPadding: 0,
-              outerPadding: 15,
-              titleOutsideJustification:
-                  charts.OutsideJustification.middleDrawArea),
         ],
       ),
     );
@@ -98,23 +72,32 @@ class BarChartWithSecondaryAxis extends StatelessWidget {
 
     return [
       charts.Series<OrdinalSales, String>(
-        id: 'Recordings',
-        colorFn: (OrdinalSales sales, _) =>
-            charts.ColorUtil.fromDartColor(kLightPrimaryColour),
+        id: 'No. Recordings',
+        colorFn: (OrdinalSales sales, _) => sales.year != 'Aug'
+            ? charts.ColorUtil.fromDartColor(kLightPrimaryColour)
+            : charts.ColorUtil.fromDartColor(kSecondaryTextColour),
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
         data: globalSalesData,
         labelAccessorFn: (OrdinalSales sales, _) => '${sales.sales.toString()}',
       ),
       charts.Series<OrdinalSales, String>(
-        id: 'Minutes',
-        colorFn: (OrdinalSales sales, _) =>
-            charts.ColorUtil.fromDartColor(kLightAccentColour),
+        id: 'No. Minutes',
+        colorFn: (OrdinalSales sales, _) => sales.year != 'Aug'
+            ? charts.ColorUtil.fromDartColor(kLightAccentColour)
+            : charts.ColorUtil.fromDartColor(Colors.grey.shade400),
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
         data: losAngelesSalesData,
         labelAccessorFn: (OrdinalSales sales, _) => '${sales.sales.toString()}',
-      )..setAttribute(charts.measureAxisIdKey, secondaryMeasureAxisId)
+      )
     ];
   }
+}
+
+class OrdinalSales {
+  final String year;
+  final int sales;
+
+  OrdinalSales(this.year, this.sales);
 }
