@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobilev/widgets/recording_card_status.dart';
+import 'package:mobilev/widgets/status_card.dart';
 import 'package:mobilev/widgets/recording_card_score.dart';
 
 class RecordingCard extends StatefulWidget {
@@ -100,34 +100,37 @@ class _RecordingCardState extends State<RecordingCard> {
             Row(
               children: [
                 isShared
-                    ? RecordingCardStatus(
+                    ? StatusCard(
                         colour: Colors.green,
                         label: 'Shared',
                         icon: Icon(
                           Icons.check_box_outlined,
                           color: Colors.white,
                         ),
+                        iconFirst: false,
                       )
-                    : RecordingCardStatus(
+                    : StatusCard(
                         colour: kSecondaryTextColour,
                         label: 'Not shared',
                         icon: Icon(
                           Icons.disabled_by_default_outlined,
                           color: Colors.white,
                         ),
+                        iconFirst: false,
                       ),
                 SizedBox(width: 10.0),
                 if (analysisStatus == AnalysisStatus.unavailable)
-                  RecordingCardStatus(
+                  StatusCard(
                     colour: kSecondaryTextColour,
                     label: 'Analysis unavailable',
                     icon: Icon(
                       Icons.disabled_by_default_outlined,
                       color: Colors.white,
                     ),
+                    iconFirst: false,
                   ),
                 if (analysisStatus == AnalysisStatus.pending)
-                  RecordingCardStatus(
+                  StatusCard(
                     colour: Colors.orange,
                     label: 'Analysis pending',
                     icon: SpinKitRing(
@@ -135,24 +138,27 @@ class _RecordingCardState extends State<RecordingCard> {
                       size: 25.0,
                       lineWidth: 3.0,
                     ),
+                    iconFirst: false,
                   ),
                 if (analysisStatus == AnalysisStatus.received)
-                  RecordingCardStatus(
+                  StatusCard(
                     colour: Colors.green,
                     label: 'Analysis received',
                     icon: Icon(
                       Icons.check_box_outlined,
                       color: Colors.white,
                     ),
+                    iconFirst: false,
                   ),
                 if (analysisStatus == AnalysisStatus.failed)
-                  RecordingCardStatus(
+                  StatusCard(
                     colour: Colors.red,
                     label: 'Analysis failed',
                     icon: Icon(
                       Icons.error_outline,
                       color: Colors.white,
                     ),
+                    iconFirst: false,
                   ),
               ],
             ),

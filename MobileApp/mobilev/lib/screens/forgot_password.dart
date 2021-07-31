@@ -8,7 +8,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kLightPrimaryColour,
+      backgroundColor: kBackgroundPrimaryColour,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

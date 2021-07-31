@@ -25,7 +25,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         title: Text(_screenData[_current][0]),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: kLightPrimaryColour,
+        backgroundColor: kBackgroundPrimaryColour,
         currentIndex: _current,
         items: [
           BottomNavigationBarItem(
