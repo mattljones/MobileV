@@ -28,7 +28,7 @@ class UsageChart extends StatelessWidget {
         barRendererDecorator: charts.BarLabelDecorator<String>(
           labelPosition: charts.BarLabelPosition.inside,
           insideLabelStyleSpec: charts.TextStyleSpec(
-            fontSize: 10,
+            fontSize: 13,
             color: charts.ColorUtil.fromDartColor(Colors.white),
           ),
         ),
@@ -65,7 +65,7 @@ class UsageChart extends StatelessWidget {
 
     final losAngelesSalesData = [
       OrdinalSales('May', 6),
-      OrdinalSales('Jun', 10),
+      OrdinalSales('Jun', 11),
       OrdinalSales('Jul', 9),
       OrdinalSales('Aug', 14),
     ];

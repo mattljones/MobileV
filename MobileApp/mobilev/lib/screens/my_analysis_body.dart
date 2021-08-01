@@ -125,7 +125,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
               flex: 6,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: ScoreChart.withSampleData('Score 4', 3),
+                child: ScoreChart.withSampleData('WPM', 3),
               ),
             ),
           ],

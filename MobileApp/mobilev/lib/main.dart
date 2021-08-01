@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobilev/config/routes.dart';
 import 'package:mobilev/config/theme.dart';
 
 void main() {
-  runApp(MobileVApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(MobileVApp());
+  });
 }
 
 class MobileVApp extends StatelessWidget {
