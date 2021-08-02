@@ -5,10 +5,12 @@ import 'package:mobilev/config/constants.dart';
 
 class AudioPlayer extends StatefulWidget {
   final ap.AudioSource source;
+  final bool hasDelete;
   final VoidCallback onDelete;
 
   const AudioPlayer({
     required this.source,
+    required this.hasDelete,
     required this.onDelete,
   });
 
@@ -61,20 +63,21 @@ class AudioPlayerState extends State<AudioPlayer> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
-          padding: EdgeInsets.only(top: 25.0),
+          padding: EdgeInsets.only(top: 10.0),
           child: Row(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               _buildControl(),
               _buildSlider(constraints.maxWidth),
-              IconButton(
-                icon:
-                    Icon(Icons.delete, color: Colors.red, size: _deleteBtnSize),
-                onPressed: () {
-                  _audioPlayer.stop().then((value) => widget.onDelete());
-                },
-              ),
+              if (widget.hasDelete)
+                IconButton(
+                  icon: Icon(Icons.delete,
+                      color: Colors.red, size: _deleteBtnSize),
+                  onPressed: () {
+                    _audioPlayer.stop().then((value) => widget.onDelete());
+                  },
+                ),
             ],
           ),
         );
@@ -121,7 +124,9 @@ class AudioPlayerState extends State<AudioPlayer> {
       canSetValue &= position.inMilliseconds < duration.inMilliseconds;
     }
 
-    double width = widgetWidth - _controlSize - _deleteBtnSize;
+    double width = widget.hasDelete
+        ? widgetWidth - _controlSize - _deleteBtnSize
+        : widgetWidth - _controlSize;
     width -= _deleteBtnSize;
 
     return SizedBox(

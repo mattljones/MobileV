@@ -16,6 +16,7 @@ dependencies:
   record: ^3.0.0
   wakelock: ^0.5.2
   charts_flutter: ^0.11.0
+  share_plus: ^2.1.4
 
 dev_dependencies:
   flutter_test:

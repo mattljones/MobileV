@@ -84,14 +84,18 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
           ),
           SizedBox(height: 60.0),
           showPlayer
-              ? AudioPlayer(
-                  source: audioSource!,
-                  onDelete: () {
-                    setState(() {
-                      hasRecording = false;
-                      showPlayer = false;
-                    });
-                  },
+              ? Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: AudioPlayer(
+                    source: audioSource!,
+                    hasDelete: true,
+                    onDelete: () {
+                      setState(() {
+                        hasRecording = false;
+                        showPlayer = false;
+                      });
+                    },
+                  ),
                 )
               : Column(
                   children: [
@@ -171,55 +175,55 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
         return true;
       },
       child: Scaffold(
-          appBar: AppBar(
-            title: Text('Add a recording'),
-          ),
-          body: DefaultTabController(
-            length: 2,
-            child: Builder(builder: (BuildContext context) {
-              return Container(
-                padding: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      child: TabBar(
-                        indicatorColor: kPrimaryColour,
-                        unselectedLabelColor: hasRecording
-                            ? kPrimaryTextColour
-                            : kSecondaryTextColour,
-                        onTap: (index) {
-                          SystemChannels.textInput
-                              .invokeMethod('TextInput.hide');
-                          if (!hasRecording) {
-                            DefaultTabController.of(context)?.animateTo(0);
-                          } else if (index == 0) {
-                            sleep(Duration(milliseconds: 100));
-                            DefaultTabController.of(context)?.animateTo(index);
-                          } else {
-                            DefaultTabController.of(context)?.animateTo(index);
-                          }
-                        },
-                        tabs: [
-                          Tab(text: 'RECORD'),
-                          Tab(text: 'SAVE & SHARE'),
-                        ],
-                      ),
+        appBar: AppBar(
+          title: Text('Add a recording'),
+        ),
+        body: DefaultTabController(
+          length: 2,
+          child: Builder(builder: (BuildContext context) {
+            return Container(
+              padding: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    child: TabBar(
+                      indicatorColor: kPrimaryColour,
+                      unselectedLabelColor: hasRecording
+                          ? kPrimaryTextColour
+                          : kSecondaryTextColour,
+                      onTap: (index) {
+                        SystemChannels.textInput.invokeMethod('TextInput.hide');
+                        if (!hasRecording) {
+                          DefaultTabController.of(context)?.animateTo(0);
+                        } else if (index == 0) {
+                          sleep(Duration(milliseconds: 100));
+                          DefaultTabController.of(context)?.animateTo(index);
+                        } else {
+                          DefaultTabController.of(context)?.animateTo(index);
+                        }
+                      },
+                      tabs: [
+                        Tab(text: 'RECORD'),
+                        Tab(text: 'SAVE & SHARE'),
+                      ],
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          buildRecordTab(context),
-                          buildShareTab(),
-                        ],
-                      ),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        buildRecordTab(context),
+                        buildShareTab(),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }),
-          )),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

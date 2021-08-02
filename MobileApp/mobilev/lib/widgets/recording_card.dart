@@ -1,6 +1,13 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
-import 'package:mobilev/config/constants.dart';
+
+// Package imports
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:path_provider/path_provider.dart';
+
+// Module imports
+import 'package:mobilev/config/constants.dart';
+import 'package:mobilev/screens/view_recording.dart';
 import 'package:mobilev/widgets/status_card.dart';
 import 'package:mobilev/widgets/recording_card_score.dart';
 
@@ -63,104 +70,155 @@ class _RecordingCardState extends State<RecordingCard> {
             15.0, 15.0, 15.0, scores.isNotEmpty ? 0.0 : 15.0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  dateRecorded,
-                  style: TextStyle(
-                    color: kPrimaryColour,
-                    fontSize: 22.0,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                RichText(
-                  text: TextSpan(
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                var directory = await getApplicationDocumentsDirectory();
+                String audioPath = '${directory.path}/test.m4a';
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return ViewRecordingScreen(
+                      scores: scores,
+                      analysisStatus: analysisStatus,
+                      audioPath: audioPath,
+                    );
+                  }),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    dateRecorded,
                     style: TextStyle(
-                      fontSize: 20.0,
+                      color: kPrimaryColour,
+                      fontSize: 22.0,
                       fontFamily: 'Roboto',
-                      color: Colors.black,
+                      fontWeight: FontWeight.w900,
                     ),
-                    children: [
-                      TextSpan(
-                        text: type,
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      TextSpan(
-                        text: '  |  ${duration}s',
-                        style: TextStyle(fontWeight: FontWeight.w300),
-                      )
-                    ],
                   ),
-                ),
-              ],
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontFamily: 'Roboto',
+                        color: Colors.black,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: type,
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        TextSpan(
+                          text: '  |  ${duration}s',
+                          style: TextStyle(fontWeight: FontWeight.w300),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 15.0),
-            Row(
-              children: [
-                isShared
-                    ? StatusCard(
-                        colour: Colors.green,
-                        label: 'Shared',
-                        icon: Icon(
-                          Icons.check_box_outlined,
-                          color: Colors.white,
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                var directory = await getApplicationDocumentsDirectory();
+                String audioPath = '${directory.path}/test.m4a';
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return ViewRecordingScreen(
+                      scores: scores,
+                      analysisStatus: analysisStatus,
+                      audioPath: audioPath,
+                    );
+                  }),
+                );
+              },
+              child: SizedBox(height: 15.0),
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                var directory = await getApplicationDocumentsDirectory();
+                String audioPath = '${directory.path}/test.m4a';
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return ViewRecordingScreen(
+                      scores: scores,
+                      analysisStatus: analysisStatus,
+                      audioPath: audioPath,
+                    );
+                  }),
+                );
+              },
+              child: Row(
+                children: [
+                  isShared
+                      ? StatusCard(
+                          colour: Colors.green,
+                          label: 'Shared',
+                          icon: Icon(
+                            Icons.check_box_outlined,
+                            color: Colors.white,
+                          ),
+                          iconFirst: false,
+                        )
+                      : StatusCard(
+                          colour: kSecondaryTextColour,
+                          label: 'Not shared',
+                          icon: Icon(
+                            Icons.disabled_by_default_outlined,
+                            color: Colors.white,
+                          ),
+                          iconFirst: false,
                         ),
-                        iconFirst: false,
-                      )
-                    : StatusCard(
-                        colour: kSecondaryTextColour,
-                        label: 'Not shared',
-                        icon: Icon(
-                          Icons.disabled_by_default_outlined,
-                          color: Colors.white,
-                        ),
-                        iconFirst: false,
+                  SizedBox(width: 10.0),
+                  if (analysisStatus == AnalysisStatus.unavailable)
+                    StatusCard(
+                      colour: kSecondaryTextColour,
+                      label: 'Analysis unavailable',
+                      icon: Icon(
+                        Icons.disabled_by_default_outlined,
+                        color: Colors.white,
                       ),
-                SizedBox(width: 10.0),
-                if (analysisStatus == AnalysisStatus.unavailable)
-                  StatusCard(
-                    colour: kSecondaryTextColour,
-                    label: 'Analysis unavailable',
-                    icon: Icon(
-                      Icons.disabled_by_default_outlined,
-                      color: Colors.white,
+                      iconFirst: false,
                     ),
-                    iconFirst: false,
-                  ),
-                if (analysisStatus == AnalysisStatus.pending)
-                  StatusCard(
-                    colour: Colors.orange,
-                    label: 'Analysis pending',
-                    icon: SpinKitRing(
-                      color: Colors.white,
-                      size: 25.0,
-                      lineWidth: 3.0,
+                  if (analysisStatus == AnalysisStatus.pending)
+                    StatusCard(
+                      colour: Colors.orange,
+                      label: 'Analysis pending',
+                      icon: SpinKitRing(
+                        color: Colors.white,
+                        size: 25.0,
+                        lineWidth: 3.0,
+                      ),
+                      iconFirst: false,
                     ),
-                    iconFirst: false,
-                  ),
-                if (analysisStatus == AnalysisStatus.received)
-                  StatusCard(
-                    colour: Colors.green,
-                    label: 'Analysis received',
-                    icon: Icon(
-                      Icons.check_box_outlined,
-                      color: Colors.white,
+                  if (analysisStatus == AnalysisStatus.received)
+                    StatusCard(
+                      colour: Colors.green,
+                      label: 'Analysis received',
+                      icon: Icon(
+                        Icons.check_box_outlined,
+                        color: Colors.white,
+                      ),
+                      iconFirst: false,
                     ),
-                    iconFirst: false,
-                  ),
-                if (analysisStatus == AnalysisStatus.failed)
-                  StatusCard(
-                    colour: Colors.red,
-                    label: 'Analysis failed',
-                    icon: Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
+                  if (analysisStatus == AnalysisStatus.failed)
+                    StatusCard(
+                      colour: Colors.red,
+                      label: 'Analysis failed',
+                      icon: Icon(
+                        Icons.error_outline,
+                        color: Colors.white,
+                      ),
+                      iconFirst: false,
                     ),
-                    iconFirst: false,
-                  ),
-              ],
+                ],
+              ),
             ),
             SizedBox(width: 10.0),
             if (scores.isNotEmpty)

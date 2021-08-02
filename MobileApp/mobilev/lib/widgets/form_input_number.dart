@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 
 class FormInputNumber extends StatelessWidget {
   final String label;
-  FormInputNumber({required this.label});
+  final String? initialValue;
+  FormInputNumber({required this.label, this.initialValue});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      initialValue: initialValue,
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,

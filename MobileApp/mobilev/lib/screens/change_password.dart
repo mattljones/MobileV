@@ -5,10 +5,10 @@ class ChangePasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Change Password Screen'),
+        title: Text('Change Password'),
       ),
       body: Center(
-        child: Text('Change Password Screen'),
+        child: Text('Change Password'),
       ),
     );
   }

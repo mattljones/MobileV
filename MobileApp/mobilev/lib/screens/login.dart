@@ -1,4 +1,7 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_input_text.dart';
 import 'package:mobilev/widgets/form_button.dart';
@@ -62,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 40.0),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/forgot-password');
+                    Navigator.pushNamed(context, '/forgot-password');
                   },
                   child: Text(
                     'Forgot your password?',

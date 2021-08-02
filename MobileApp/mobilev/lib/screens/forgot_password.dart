@@ -1,5 +1,8 @@
-import 'package:flutter/cupertino.dart';
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_input_text.dart';
 import 'package:mobilev/widgets/form_button.dart';
@@ -48,7 +51,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 SizedBox(height: 40.0),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.pop(context);
                   },
                   child: Text(
                     'Remembered your password? Go back!',
