@@ -1,10 +1,16 @@
 // Dart & Flutter imports
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// Package imports
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 // Module imports
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/profile_card.dart';
+import 'package:mobilev/services/notification_service.dart';
 
 class ProfileBody extends StatelessWidget {
   @override
@@ -32,6 +38,24 @@ class ProfileBody extends StatelessWidget {
                   title: 'Change password',
                   status: '',
                   route: '/change-password'),
+              GestureDetector(
+                onTap: () async {
+                  await flutterLocalNotificationsPlugin.zonedSchedule(
+                    1,
+                    'Weekly reminder',
+                    'Please remember to make a recording.',
+                    nextInstanceOfDateTime(day: 0, hour: 18),
+                    platformChannelSpecifics,
+                    matchDateTimeComponents:
+                        DateTimeComponents.dayOfWeekAndTime,
+                    androidAllowWhileIdle: true,
+                    uiLocalNotificationDateInterpretation:
+                        UILocalNotificationDateInterpretation.absoluteTime,
+                  );
+                  print('done');
+                },
+                child: Text('press me'),
+              )
             ],
           ),
           FormButton(

@@ -1,16 +1,23 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/screens/my_analysis_body.dart';
 import 'package:mobilev/screens/my_recordings_body.dart';
 import 'package:mobilev/screens/my_profile_body.dart';
 
 class MyHomeScreen extends StatefulWidget {
+  // final int tab;
+  //
+  // MyHomeScreen([this.tab = 1]);
+
   @override
   _MyHomeScreenState createState() => _MyHomeScreenState();
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
-  int _current = 1;
+  int current = 1;
   bool _hideFloatingActionButton = false;
   Map _screenData = {
     0: ['My analysis', AnalysisBody()],
@@ -18,15 +25,17 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     2: ['My profile', ProfileBody()],
   };
 
+  // _MyHomeScreenState(this.current);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_screenData[_current][0]),
+        title: Text(_screenData[current][0]),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: kBackgroundPrimaryColour,
-        currentIndex: _current,
+        currentIndex: current,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
@@ -43,16 +52,16 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         ],
         onTap: (index) {
           setState(() {
-            if (index != _current && index == 0) {
-              _current = index;
+            if (index != current && index == 0) {
+              current = index;
               _hideFloatingActionButton = true;
             }
-            if (index != _current && index == 1) {
-              _current = index;
+            if (index != current && index == 1) {
+              current = index;
               _hideFloatingActionButton = false;
             }
-            if (index != _current && index == 2) {
-              _current = index;
+            if (index != current && index == 2) {
+              current = index;
               _hideFloatingActionButton = true;
             }
           });
@@ -69,7 +78,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Navigator.pushNamed(context, '/add-recording');
               },
             ),
-      body: _screenData[_current][1],
+      body: _screenData[current][1],
     );
   }
 }

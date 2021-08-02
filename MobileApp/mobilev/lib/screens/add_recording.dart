@@ -147,7 +147,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               buttonColour: kSecondaryTextColour,
               textColour: Colors.white,
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/my-home');
+                Navigator.pop(context, true);
               },
             ),
             SizedBox(height: 15.0),
@@ -156,7 +156,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               buttonColour: kPrimaryColour,
               textColour: Colors.white,
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/my-home');
+                Navigator.pop(context, true);
               },
             ),
           ],

@@ -80,7 +80,7 @@ class ViewRecordingScreen extends StatelessWidget {
                     buttonColour: kSecondaryTextColour,
                     textColour: Colors.white,
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/my-home');
+                      Navigator.pop(context, true);
                     },
                   ),
                 ),
@@ -92,7 +92,7 @@ class ViewRecordingScreen extends StatelessWidget {
                     buttonColour: kPrimaryColour,
                     textColour: Colors.white,
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/my-home');
+                      Navigator.pop(context, true);
                     },
                   ),
                 ),
@@ -232,7 +232,8 @@ class ViewRecordingScreen extends StatelessWidget {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/my-home');
+                        Navigator.pop(context);
+                        Navigator.pop(context, true);
                       },
                     ),
                   ],
