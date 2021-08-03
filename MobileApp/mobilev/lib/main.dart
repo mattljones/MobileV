@@ -9,11 +9,9 @@ import 'package:mobilev/config/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await NotificationService().init();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(MobileVApp());
-  });
+  runApp(MobileVApp());
 }
 
 class MobileVApp extends StatelessWidget {

@@ -1,3 +1,5 @@
+// This code is based on: https://www.freecodecamp.org/news/local-notifications-in-flutter/
+
 // Dart & Flutter imports
 import 'dart:io' show Platform;
 
@@ -21,7 +23,7 @@ class NotificationService {
 
   NotificationService._internal();
 
-  // Main plugin initialisation method
+  // Plugin initialisation method (called in main.dart on the instance created below)
   Future<void> init() async {
     final AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
@@ -51,7 +53,7 @@ class NotificationService {
  * CONSTANTS -------------------------------------------------------------------
  */
 
-// Plugin initialisation
+// Plugin instance creation
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -75,6 +77,8 @@ final NotificationDetails platformChannelSpecifics = Platform.isAndroid
 /*
  * HELPER FUNCTIONS ------------------------------------------------------------
  */
+
+// These two functions are used to return the correct TZDateTime object for the notification to be scheduled
 
 tz.TZDateTime nextInstanceOfTime(int hour, int minute) {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);

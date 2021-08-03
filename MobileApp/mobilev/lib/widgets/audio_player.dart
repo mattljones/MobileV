@@ -1,6 +1,13 @@
+// This code is based on: https://github.com/llfbandit/record/blob/master/record/example/lib/audio_player.dart
+
+// Dart & Flutter imports
 import 'dart:async';
+
+// Package imports
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as ap;
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 
 class AudioPlayer extends StatefulWidget {

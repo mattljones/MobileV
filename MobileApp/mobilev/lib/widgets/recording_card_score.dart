@@ -1,3 +1,4 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
 
 class RecordingCardScore extends StatelessWidget {

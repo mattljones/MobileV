@@ -1,4 +1,7 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 
 final ThemeData theme = ThemeData(

@@ -1,9 +1,13 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Package imports
 import 'package:charts_flutter/flutter.dart' as charts;
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 
 class UsageChart extends StatelessWidget {
-  static const secondaryMeasureAxisId = 'secondaryMeasureAxisId';
   final List<charts.Series> seriesList;
 
   UsageChart(this.seriesList);
@@ -54,50 +58,51 @@ class UsageChart extends StatelessWidget {
     );
   }
 
-  /// Create series list with multiple series
-  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final globalSalesData = [
-      OrdinalSales('May', 3),
-      OrdinalSales('Jun', 6),
-      OrdinalSales('Jul', 5),
-      OrdinalSales('Aug', 4),
+  static List<charts.Series<MonthlyUsage, String>> _createSampleData() {
+    final recordingsData = [
+      MonthlyUsage('May', 3),
+      MonthlyUsage('Jun', 6),
+      MonthlyUsage('Jul', 5),
+      MonthlyUsage('Aug', 4),
     ];
 
-    final losAngelesSalesData = [
-      OrdinalSales('May', 6),
-      OrdinalSales('Jun', 11),
-      OrdinalSales('Jul', 9),
-      OrdinalSales('Aug', 14),
+    final minutesData = [
+      MonthlyUsage('May', 6),
+      MonthlyUsage('Jun', 11),
+      MonthlyUsage('Jul', 9),
+      MonthlyUsage('Aug', 14),
     ];
 
     return [
-      charts.Series<OrdinalSales, String>(
+      charts.Series<MonthlyUsage, String>(
         id: 'No. Recordings',
-        colorFn: (OrdinalSales sales, _) => sales.year != 'Aug'
+        colorFn: (MonthlyUsage usage, _) => usage.month != 'Aug'
             ? charts.ColorUtil.fromDartColor(kLightPrimaryColour)
             : charts.ColorUtil.fromDartColor(kSecondaryTextColour),
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: globalSalesData,
-        labelAccessorFn: (OrdinalSales sales, _) => '${sales.sales.toString()}',
+        domainFn: (MonthlyUsage usage, _) => usage.month,
+        measureFn: (MonthlyUsage usage, _) => usage.amount,
+        data: recordingsData,
+        labelAccessorFn: (MonthlyUsage usage, _) =>
+            '${usage.amount.toString()}',
       ),
-      charts.Series<OrdinalSales, String>(
+      charts.Series<MonthlyUsage, String>(
         id: 'No. Minutes',
-        colorFn: (OrdinalSales sales, _) => sales.year != 'Aug'
+        colorFn: (MonthlyUsage usage, _) => usage.month != 'Aug'
             ? charts.ColorUtil.fromDartColor(kLightAccentColour)
             : charts.ColorUtil.fromDartColor(Colors.grey.shade400),
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: losAngelesSalesData,
-        labelAccessorFn: (OrdinalSales sales, _) => '${sales.sales.toString()}',
+        domainFn: (MonthlyUsage usage, _) => usage.month,
+        measureFn: (MonthlyUsage usage, _) => usage.amount,
+        data: minutesData,
+        labelAccessorFn: (MonthlyUsage usage, _) =>
+            '${usage.amount.toString()}',
       )
     ];
   }
 }
 
-class OrdinalSales {
-  final String year;
-  final int sales;
+class MonthlyUsage {
+  final String month;
+  final int amount;
 
-  OrdinalSales(this.year, this.sales);
+  MonthlyUsage(this.month, this.amount);
 }

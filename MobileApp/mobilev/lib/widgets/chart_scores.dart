@@ -1,5 +1,10 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Package imports
 import 'package:charts_flutter/flutter.dart' as charts;
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 
 class ScoreChart extends StatelessWidget {
@@ -23,23 +28,23 @@ class ScoreChart extends StatelessWidget {
   static const secondaryMeasureAxisId = 'secondaryMeasureAxisId';
 
   factory ScoreChart.withSampleData(String title, int index) {
-    List<charts.Series<LinearSales, int>> _createSampleData() {
+    List<charts.Series<DailyRecording, int>> _createSampleData() {
       final data = [
-        LinearSales(2, 7, 'N'),
-        LinearSales(9, 10, 'T'),
-        LinearSales(17, 6, 'N'),
-        LinearSales(22, 8, 'T'),
-        LinearSales(30, 5, 'N'),
+        DailyRecording(2, 7, 'N'),
+        DailyRecording(9, 10, 'T'),
+        DailyRecording(17, 6, 'N'),
+        DailyRecording(22, 8, 'T'),
+        DailyRecording(30, 5, 'N'),
       ];
 
       return [
-        charts.Series<LinearSales, int>(
-          id: 'Sales',
+        charts.Series<DailyRecording, int>(
+          id: 'Scores',
           colorFn: (_, __) => charts.ColorUtil.fromDartColor(colourList[index]),
-          domainFn: (LinearSales sales, _) => sales.year,
-          measureFn: (LinearSales sales, _) => sales.sales,
-          labelAccessorFn: (LinearSales sales, _) =>
-              '${sales.sales.toString()}',
+          domainFn: (DailyRecording recording, _) => recording.day,
+          measureFn: (DailyRecording recording, _) => recording.score,
+          labelAccessorFn: (DailyRecording recording, _) =>
+              '${recording.score.toString()}',
           data: data,
         )..setAttribute(charts.measureAxisIdKey, secondaryMeasureAxisId),
       ];
@@ -88,11 +93,12 @@ class ScoreChart extends StatelessWidget {
         showAxisLine: false,
       ),
       secondaryMeasureAxis: charts.NumericAxisSpec(
-          tickProviderSpec:
-              charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
-          renderSpec: charts.GridlineRendererSpec(
-            labelJustification: charts.TickLabelJustification.inside,
-          )),
+        tickProviderSpec:
+            charts.BasicNumericTickProviderSpec(desiredTickCount: 3),
+        renderSpec: charts.GridlineRendererSpec(
+          labelJustification: charts.TickLabelJustification.inside,
+        ),
+      ),
       behaviors: [
         charts.ChartTitle(
           axisTitle,
@@ -189,10 +195,10 @@ class ScoreChart extends StatelessWidget {
   }
 }
 
-class LinearSales {
-  final int year;
-  final int sales;
+class DailyRecording {
+  final int day;
+  final int score;
   final String type;
 
-  LinearSales(this.year, this.sales, this.type);
+  DailyRecording(this.day, this.score, this.type);
 }

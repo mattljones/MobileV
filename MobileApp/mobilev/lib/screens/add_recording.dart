@@ -1,12 +1,17 @@
+// Dart & Flutter imports
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// Package imports
 import 'package:just_audio/just_audio.dart' as ap;
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wakelock/wakelock.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
 import 'package:mobilev/widgets/audio_player.dart';
