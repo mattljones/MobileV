@@ -5,8 +5,11 @@ import 'dart:io' show Platform;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
-// MAIN NOTIFICATION SERVICE ---------------------------------------------------
+/*
+ * MAIN NOTIFICATION SERVICE ---------------------------------------------------
+ */
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -37,12 +40,16 @@ class NotificationService {
             macOS: null);
 
     tz.initializeTimeZones();
+    tz.setLocalLocation(
+        tz.getLocation(await FlutterNativeTimezone.getLocalTimezone()));
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 }
 
-// CONSTANTS -------------------------------------------------------------------
+/*
+ * CONSTANTS -------------------------------------------------------------------
+ */
 
 // Plugin initialisation
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -65,7 +72,9 @@ final NotificationDetails platformChannelSpecifics = Platform.isAndroid
     ? NotificationDetails(android: androidPlatformChannelSpecifics)
     : NotificationDetails(iOS: iOSPlatformChannelSpecifics);
 
-// HELPER FUNCTIONS ------------------------------------------------------------
+/*
+ * HELPER FUNCTIONS ------------------------------------------------------------
+ */
 
 tz.TZDateTime nextInstanceOfTime(int hour) {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
