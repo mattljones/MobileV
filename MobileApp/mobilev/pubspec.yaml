@@ -19,6 +19,8 @@ dependencies:
   share_plus: ^2.1.4
   flutter_local_notifications: ^8.0.0
   flutter_native_timezone: ^2.0.0
+  sqflite: ^2.0.0+3
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
