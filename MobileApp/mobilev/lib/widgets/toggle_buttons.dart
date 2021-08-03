@@ -1,15 +1,21 @@
+// Dart & Flutter imports
 import 'package:flutter/material.dart';
+
+// Module imports
 import 'package:mobilev/config/constants.dart';
 
 class MyToggleButtons extends StatelessWidget {
   final List<String> fields;
   final List<bool> isSelected;
+  final double fontSize;
   final void Function(int) onPressed;
 
-  MyToggleButtons(
-      {required this.fields,
-      required this.isSelected,
-      required this.onPressed});
+  MyToggleButtons({
+    required this.fields,
+    required this.isSelected,
+    required this.onPressed,
+    this.fontSize = 18.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +33,7 @@ class MyToggleButtons extends StatelessWidget {
             Text(
               field,
               style: TextStyle(
-                  fontSize: 18.0,
+                  fontSize: fontSize,
                   fontWeight: isSelected[fields.indexOf(field)]
                       ? FontWeight.w700
                       : null),

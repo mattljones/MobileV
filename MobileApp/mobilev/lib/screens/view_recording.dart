@@ -153,10 +153,15 @@ class ViewRecordingScreen extends StatelessWidget {
                 context: context,
                 builder: (_) => SimpleDialog(
                   title: Text(
-                    'Sharing options',
+                    'Direct sharing',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   children: [
+                    SimpleDialogOption(
+                      child: Text(
+                          'You can also share your recordings and/or word clouds directly (e.g. via WhatsApp)'),
+                    ),
+                    SizedBox(height: 10.0),
                     SimpleDialogOption(
                       child: StatusCard(
                         colour: kPrimaryColour,

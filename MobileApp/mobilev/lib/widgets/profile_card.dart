@@ -32,7 +32,10 @@ class ProfileCard extends StatelessWidget {
             title,
             style: TextStyle(fontWeight: FontWeight.w700),
           ),
-          trailing: Text(status),
+          trailing: Text(
+            status,
+            textAlign: TextAlign.end,
+          ),
         ),
       ),
     );

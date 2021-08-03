@@ -76,18 +76,19 @@ final NotificationDetails platformChannelSpecifics = Platform.isAndroid
  * HELPER FUNCTIONS ------------------------------------------------------------
  */
 
-tz.TZDateTime nextInstanceOfTime(int hour) {
+tz.TZDateTime nextInstanceOfTime(int hour, int minute) {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime scheduledDate =
-      tz.TZDateTime(tz.local, now.year, now.month, now.day, hour);
+      tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
   if (scheduledDate.isBefore(now)) {
     scheduledDate = scheduledDate.add(Duration(days: 1));
   }
   return scheduledDate;
 }
 
-tz.TZDateTime nextInstanceOfDateTime({required int day, required int hour}) {
-  tz.TZDateTime scheduledDate = nextInstanceOfTime(hour);
+tz.TZDateTime nextInstanceOfDateTime(
+    {required int day, required int hour, required int minute}) {
+  tz.TZDateTime scheduledDate = nextInstanceOfTime(hour, minute);
   while (scheduledDate.weekday != day) {
     scheduledDate = scheduledDate.add(Duration(days: 1));
   }
