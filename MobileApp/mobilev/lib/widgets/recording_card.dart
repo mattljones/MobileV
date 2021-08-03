@@ -192,7 +192,7 @@ class _RecordingCardState extends State<RecordingCard> {
                       label: 'Analysis pending',
                       icon: SpinKitRing(
                         color: Colors.white,
-                        size: 25.0,
+                        size: 24.0,
                         lineWidth: 3.0,
                       ),
                       iconFirst: false,

@@ -25,7 +25,7 @@ class ViewRecordingScreen extends StatelessWidget {
 
   SingleChildScrollView buildScoresTab(BuildContext context) =>
       SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 45.0),
+        padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,

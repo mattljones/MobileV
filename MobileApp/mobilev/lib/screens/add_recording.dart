@@ -87,7 +87,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               }
             },
           ),
-          SizedBox(height: 60.0),
+          SizedBox(height: 55.0),
           showPlayer
               ? Padding(
                   padding: EdgeInsets.only(top: 15.0),
@@ -140,7 +140,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 60.0),
+            SizedBox(height: 35.0),
             FormInputNumber(label: 'Score 1'),
             SizedBox(height: 30.0),
             FormInputNumber(label: 'Score 2'),
@@ -232,6 +232,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
     );
   }
 }
+
+// This code is based on: https://github.com/llfbandit/record/blob/master/record/example/lib/main.dart
 
 class AudioRecorder extends StatefulWidget {
   final void Function(String path) onStop;

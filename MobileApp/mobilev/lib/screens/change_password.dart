@@ -18,27 +18,28 @@ class ChangePasswordScreen extends StatelessWidget {
           padding: EdgeInsets.all(40.0),
           child: Column(
             children: [
+              SizedBox(height: 20.0),
               FormInputText(
                 label: 'Current password',
                 icon: Icons.lock,
                 obscureInput: true,
                 keyboard: TextInputType.text,
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 30.0),
               FormInputText(
                 label: 'New password',
                 icon: Icons.lock,
                 obscureInput: true,
                 keyboard: TextInputType.text,
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 30.0),
               FormInputText(
                 label: 'Confirm password',
                 icon: Icons.lock,
                 obscureInput: true,
                 keyboard: TextInputType.text,
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 30.0),
               FormButton(
                 text: 'Submit',
                 buttonColour: kPrimaryColour,
