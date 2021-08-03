@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 // Package imports
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mobilev/config/constants.dart';
 
 // Module imports
+import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
 import 'package:mobilev/services/notification_service.dart';
@@ -45,6 +45,7 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
             Column(
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Enable notifications',
@@ -55,7 +56,7 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                     SizedBox(width: 20.0),
                     Switch(
                       value: isEnabled,
-                      activeColor: kPrimaryColour,
+                      activeColor: kDarkAccentColour,
                       inactiveThumbColor: kCardColour,
                       inactiveTrackColor: kSecondaryTextColour,
                       onChanged: (value) {
@@ -146,7 +147,7 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                         await flutterLocalNotificationsPlugin.zonedSchedule(
                           1,
                           'Weekly reminder',
-                          'Please remember to make a recording.',
+                          'Please remember to make a recording',
                           nextInstanceOfDateTime(
                             day: daySet,
                             hour: timeSet!.hour,
