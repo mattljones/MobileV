@@ -21,3 +21,30 @@ enum AnalysisStatus { unavailable, pending, received, failed }
 
 final String testTranscript =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec mi metus. Donec tristique odio vitae purus eleifend venenatis. Morbi ut eros in sapien dapibus tempor rhoncus at risus. Etiam scelerisque turpis eros, vitae tincidunt enim posuere vel. Nullam at enim sed erat cursus rutrum eu et mauris. Maecenas blandit ullamcorper egestas. Morbi a felis pulvinar, sagittis lacus, consequat dui. Aenean eget lectus ultricies, gravida quam at, lacinia sapien.';
+
+// Other
+
+const days = {
+  '1': 'Mondays',
+  '2': 'Tuesdays',
+  '3': 'Wednesdays',
+  '4': 'Thursdays',
+  '5': 'Fridays',
+  '6': 'Saturdays',
+  '7': 'Sundays',
+};
+
+const months = {
+  '01': 'Jan',
+  '02': 'Feb',
+  '03': 'Mar',
+  '04': 'Apr',
+  '05': 'May',
+  '06': 'Jun',
+  '07': 'Jul',
+  '08': 'Aug',
+  '09': 'Sep',
+  '10': 'Oct',
+  '11': 'Nov',
+  '12': 'Dec',
+};

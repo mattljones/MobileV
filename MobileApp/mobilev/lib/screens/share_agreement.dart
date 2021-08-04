@@ -3,16 +3,38 @@ import 'package:flutter/material.dart';
 
 // Module imports
 import 'package:mobilev/config/constants.dart';
+import 'package:mobilev/models/user_data.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class ShareAgreementScreen extends StatefulWidget {
+  final UserData sharePreference;
+  final bool shareRecording;
+  final bool shareWordCloud;
+
+  ShareAgreementScreen({
+    required this.sharePreference,
+    required this.shareRecording,
+    required this.shareWordCloud,
+  });
+
   @override
-  _ShareAgreementScreenState createState() => _ShareAgreementScreenState();
+  _ShareAgreementScreenState createState() => _ShareAgreementScreenState(
+        this.sharePreference,
+        this.shareRecording,
+        this.shareWordCloud,
+      );
 }
 
 class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
-  bool shareRecording = true;
-  bool shareWordCloud = true;
+  UserData sharePreference;
+  bool shareRecording;
+  bool shareWordCloud;
+
+  _ShareAgreementScreenState(
+    this.sharePreference,
+    this.shareRecording,
+    this.shareWordCloud,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +82,11 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                   inactiveTrackColor: kSecondaryTextColour,
                   onChanged: (value) {
                     setState(() {
+                      sharePreference = UserData(
+                        domain: 'sharePreference',
+                        field1: value ? '1' : '0',
+                        field2: sharePreference.field2,
+                      );
                       shareRecording = value;
                     });
                   },
@@ -83,6 +110,10 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                   inactiveTrackColor: kSecondaryTextColour,
                   onChanged: (value) {
                     setState(() {
+                      sharePreference = UserData(
+                          domain: 'sharePreference',
+                          field1: sharePreference.field1,
+                          field2: value ? '1' : '0');
                       shareWordCloud = value;
                     });
                   },
@@ -97,7 +128,8 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                     text: 'Save',
                     buttonColour: kPrimaryColour,
                     textColour: Colors.white,
-                    onPressed: () {
+                    onPressed: () async {
+                      await UserData.updateUserData(sharePreference);
                       Navigator.pop(context, true);
                     },
                   ),

@@ -1,5 +1,5 @@
-// Package imports
-import 'package:sqflite/sqflite.dart';
+// Module imports
+import 'package:mobilev/services/database_service.dart';
 
 class Score {
   final int scoreID;
@@ -24,7 +24,7 @@ class Score {
 
   @override
   String toString() {
-    return 'UserData{scoreID: $scoreID, scoreName: $scoreName, isCurrent: $isCurrent}';
+    return 'Score{scoreID: $scoreID, scoreName: $scoreName, isCurrent: $isCurrent}';
   }
 
   // Queries -------------------------------------------------------------------

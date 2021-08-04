@@ -8,21 +8,19 @@ class ProfileCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String status;
-  final String route;
+  final void Function() onTap;
 
   ProfileCard({
     required this.icon,
     required this.title,
     required this.status,
-    required this.route,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
+      onTap: onTap,
       child: Card(
         margin: EdgeInsets.only(bottom: 12.0),
         color: kBackgroundPrimaryColour,

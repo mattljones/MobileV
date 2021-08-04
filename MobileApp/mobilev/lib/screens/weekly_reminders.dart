@@ -9,18 +9,37 @@ import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
 import 'package:mobilev/services/notification_service.dart';
+import 'package:mobilev/models/user_data.dart';
 
 class WeeklyRemindersScreen extends StatefulWidget {
+  final bool isEnabled;
+  final UserData remindersPreference;
+  final int? daySet;
+  final TimeOfDay? timeSet;
+
+  WeeklyRemindersScreen({
+    required this.isEnabled,
+    required this.remindersPreference,
+    this.daySet,
+    this.timeSet,
+  });
+
   @override
-  _WeeklyRemindersScreenState createState() => _WeeklyRemindersScreenState();
+  _WeeklyRemindersScreenState createState() => _WeeklyRemindersScreenState(
+        isEnabled: isEnabled,
+        remindersPreference: remindersPreference,
+        daySet: daySet,
+        timeSet: timeSet,
+      );
 }
 
 class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
-  bool isEnabled = false;
-  List<bool> isSelected = [true, false, false, false, false, false, false];
-  int daySet = 1;
-  TextEditingController textEditingController = TextEditingController();
+  bool isEnabled;
+  UserData remindersPreference;
+  int? daySet;
   TimeOfDay? timeSet;
+  List<bool> isSelected = [false, false, false, false, false, false, false];
+  TextEditingController? textEditingController;
   Map<String, int> days = {
     'Mon': 1,
     'Tue': 2,
@@ -31,8 +50,34 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
     'Sun': 7,
   };
 
+  _WeeklyRemindersScreenState({
+    required this.isEnabled,
+    required this.remindersPreference,
+    this.daySet,
+    this.timeSet,
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    daySet = daySet == null ? DateTime.now().weekday : daySet;
+    timeSet = timeSet == null ? TimeOfDay.now() : timeSet;
+    isSelected[daySet! - 1] = true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    textEditingController =
+        TextEditingController(text: timeSet!.format(context));
+    remindersPreference = UserData(
+        domain: 'remindersPreference',
+        field1: daySet.toString(),
+        field2: (timeSet!.hour < 10 ? '0' : '') +
+            timeSet!.hour.toString() +
+            ':' +
+            (timeSet!.minute < 10 ? '0' : '') +
+            timeSet!.minute.toString());
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Weekly reminders'),
@@ -62,11 +107,6 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                       onChanged: (value) {
                         setState(() {
                           isEnabled = value;
-                          if (value) {
-                            textEditingController.text = timeSet != null
-                                ? timeSet!.format(context)
-                                : TimeOfDay.now().format(context);
-                          }
                         });
                       },
                     ),
@@ -92,6 +132,10 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                                 isSelected[buttonIndex] = false;
                               }
                             }
+                            remindersPreference = UserData(
+                                domain: 'remindersPreference',
+                                field1: daySet.toString(),
+                                field2: remindersPreference.field2);
                           });
                         },
                       )
@@ -109,13 +153,22 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                           onTap: () async {
                             final TimeOfDay? newTime = await showTimePicker(
                               context: context,
-                              initialTime: TimeOfDay.now(),
+                              initialTime: timeSet ?? TimeOfDay.now(),
                             );
                             if (newTime != null) {
                               setState(() {
                                 timeSet = newTime;
-                                textEditingController.text =
+                                textEditingController!.text =
                                     newTime.format(context);
+                                remindersPreference = UserData(
+                                  domain: 'remindersPreference',
+                                  field1: remindersPreference.field1,
+                                  field2: (timeSet!.hour < 10 ? '0' : '') +
+                                      timeSet!.hour.toString() +
+                                      ':' +
+                                      (timeSet!.minute < 10 ? '0' : '') +
+                                      timeSet!.minute.toString(),
+                                );
                               });
                             }
                           },
@@ -142,14 +195,14 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                     buttonColour: kPrimaryColour,
                     textColour: Colors.white,
                     onPressed: () async {
+                      await flutterLocalNotificationsPlugin.cancelAll();
                       if (isEnabled) {
-                        await flutterLocalNotificationsPlugin.cancelAll();
                         await flutterLocalNotificationsPlugin.zonedSchedule(
                           1,
                           'Weekly reminder',
                           'Please remember to make a recording',
                           nextInstanceOfDateTime(
-                            day: daySet,
+                            day: daySet!,
                             hour: timeSet!.hour,
                             minute: timeSet!.minute,
                           ),
@@ -160,6 +213,11 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
                           uiLocalNotificationDateInterpretation:
                               UILocalNotificationDateInterpretation
                                   .absoluteTime,
+                        );
+                        await UserData.updateUserData(remindersPreference);
+                      } else {
+                        await UserData.updateUserData(
+                          UserData(domain: 'remindersPreference'),
                         );
                       }
                       Navigator.pop(context, true);

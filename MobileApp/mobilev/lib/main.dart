@@ -11,7 +11,7 @@ import 'package:mobilev/config/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await databaseService.init();
+  await databaseService.initSeed();
   await NotificationService().init();
   runApp(MobileVApp());
 }
@@ -23,7 +23,7 @@ class MobileVApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MobileV',
       theme: theme,
-      initialRoute: '/my-home',
+      initialRoute: '/login',
       routes: routes,
     );
   }

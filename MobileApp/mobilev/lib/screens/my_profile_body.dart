@@ -1,12 +1,70 @@
 // Dart & Flutter imports
 import 'package:flutter/material.dart';
 
+// Package imports
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 // Module imports
 import 'package:mobilev/config/constants.dart';
+import 'package:mobilev/screens/change_password.dart';
+import 'package:mobilev/screens/share_agreement.dart';
+import 'package:mobilev/screens/weekly_reminders.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/profile_card.dart';
+import 'package:mobilev/models/user_data.dart';
 
-class ProfileBody extends StatelessWidget {
+class ProfileBody extends StatefulWidget {
+  @override
+  _ProfileBodyState createState() => _ProfileBodyState();
+}
+
+class _ProfileBodyState extends State<ProfileBody> {
+  bool firstNameLoading = true;
+  String? firstName = '';
+  bool sharePreferenceLoading = true;
+  UserData? sharePreference;
+  String shareString = '';
+  bool remindersPreferenceLoading = true;
+  UserData? remindersPreference;
+  String remindersString = '';
+
+  void getFirstName() {
+    UserData.selectUserData('firstName').then((data) {
+      setState(() {
+        firstName = data.field1;
+        firstNameLoading = false;
+      });
+    });
+  }
+
+  void getSharePreference() {
+    UserData.selectUserData('sharePreference').then((data) {
+      setState(() {
+        sharePreference = data;
+        shareString = sharePreference!.toShareString();
+        sharePreferenceLoading = false;
+      });
+    });
+  }
+
+  void getRemindersPreference() {
+    UserData.selectUserData('remindersPreference').then((data) {
+      setState(() {
+        remindersPreference = data;
+        remindersString = remindersPreference!.toRemindersString();
+        remindersPreferenceLoading = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getFirstName();
+    getSharePreference();
+    getRemindersPreference();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -14,50 +72,112 @@ class ProfileBody extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ListView(
-            shrinkWrap: true,
-            children: [
-              Text(
-                'Welcome, Matt!',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: 'PTSans',
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
+          if (firstNameLoading ||
+              sharePreferenceLoading ||
+              remindersPreferenceLoading)
+            Center(
+              child: SpinKitRing(
+                color: kSecondaryTextColour,
+                size: 24.0,
+                lineWidth: 3.0,
               ),
-              SizedBox(height: 15.0),
-              Text(
-                'Your SRO is Joseph Connor',
-                style: TextStyle(
-                  color: kSecondaryTextColour,
-                  fontFamily: 'PTSans',
-                  fontSize: 20,
+            )
+          else
+            ListView(
+              shrinkWrap: true,
+              children: [
+                Text(
+                  'Welcome, $firstName!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'PTSans',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              SizedBox(height: 30.0),
-              ProfileCard(
+                SizedBox(height: 15.0),
+                Text(
+                  'Your SRO is Joseph Connor',
+                  style: TextStyle(
+                    color: kSecondaryTextColour,
+                    fontFamily: 'PTSans',
+                    fontSize: 20,
+                  ),
+                ),
+                SizedBox(height: 30.0),
+                ProfileCard(
                   icon: Icons.share,
                   title: 'Share agreement',
-                  status: 'Recordings,\nWord clouds',
-                  route: '/share-agreement'),
-              ProfileCard(
+                  status: shareString,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return ShareAgreementScreen(
+                          sharePreference: sharePreference!,
+                          shareRecording: sharePreference!.field1 == '1',
+                          shareWordCloud: sharePreference!.field2 == '1',
+                        );
+                      }),
+                    ).then((value) {
+                      if (value != null && value) {
+                        getSharePreference();
+                      }
+                    });
+                  },
+                ),
+                ProfileCard(
                   icon: Icons.calendar_today_outlined,
                   title: 'Reminders',
-                  status: 'Wednesdays\n@ 10:00',
-                  route: '/weekly-reminders'),
-              ProfileCard(
+                  status: remindersString,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        var day = remindersPreference!.field1;
+                        var time = remindersPreference!.field2;
+                        return day != null && time != null
+                            ? WeeklyRemindersScreen(
+                                isEnabled: true,
+                                remindersPreference: remindersPreference!,
+                                daySet: int.parse(remindersPreference!.field1!),
+                                timeSet: TimeOfDay(
+                                    hour: int.parse(time.substring(0, 2)),
+                                    minute: int.parse(time.substring(3))))
+                            : WeeklyRemindersScreen(
+                                isEnabled: false,
+                                remindersPreference: remindersPreference!,
+                              );
+                      }),
+                    ).then((value) {
+                      if (value != null && value) {
+                        getRemindersPreference();
+                      }
+                    });
+                  },
+                ),
+                ProfileCard(
                   icon: Icons.lock,
                   title: 'Change password',
                   status: '',
-                  route: '/change-password'),
-            ],
-          ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return ChangePasswordScreen();
+                      }),
+                    );
+                  },
+                ),
+              ],
+            ),
           FormButton(
             text: 'Sign out',
             buttonColour: kAccentColour,
             textColour: Colors.black,
-            onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
           ),
         ],
       ),
