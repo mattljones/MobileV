@@ -39,6 +39,7 @@ class UserData {
     }
   }
 
+  // Useful for development
   @override
   String toString() {
     return 'UserData{domain: $domain, field1: $field1, field2: $field2}';
@@ -49,7 +50,7 @@ class UserData {
   // Select one (by domain)
   static Future<UserData> selectUserData(String domain) async {
     final db = databaseService.db;
-    final Map<String, dynamic> map = (await db.query(
+    final Map<String, dynamic> map = (await db!.query(
       'UserData',
       where: 'domain = ?',
       whereArgs: [domain],
@@ -65,7 +66,7 @@ class UserData {
   // Update one (by domain)
   static Future<void> updateUserData(UserData userData) async {
     final db = databaseService.db;
-    await db.update(
+    await db!.update(
       'UserData',
       userData.toMap(),
       where: 'domain = ?',

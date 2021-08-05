@@ -7,6 +7,7 @@ import 'package:mobilev/widgets/status_card.dart';
 import 'package:mobilev/widgets/chart_usage.dart';
 import 'package:mobilev/widgets/dropdown.dart';
 import 'package:mobilev/widgets/chart_scores.dart';
+import 'package:mobilev/widgets/word_cloud_dialog.dart';
 
 class AnalysisBody extends StatefulWidget {
   @override
@@ -165,49 +166,5 @@ class _AnalysisBodyState extends State<AnalysisBody>
             ],
           ),
         ));
-  }
-}
-
-class WordCloudDialog extends StatelessWidget {
-  final String date;
-
-  WordCloudDialog(this.date);
-
-  @override
-  Widget build(BuildContext context) {
-    final double size = MediaQuery.of(context).size.width * 0.8;
-
-    return Dialog(
-      insetPadding: EdgeInsets.zero,
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          // crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20.0),
-            Text(
-              date,
-              style: TextStyle(
-                fontFamily: 'PTSans',
-                fontSize: 22,
-              ),
-            ),
-            InteractiveViewer(
-              child: Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: ExactAssetImage(
-                          'assets/images/wordcloud_example.jpg'),
-                      fit: BoxFit.contain),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

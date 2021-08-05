@@ -7,22 +7,15 @@ import 'package:path/path.dart';
  */
 
 class DatabaseService {
-  late Database db;
+  Database? db;
 
-  // Empty database initialisation
+  // Regular database initialisation (and creation on first app open)
   Future<void> init() async {
     db = await openDatabase(
       join(await getDatabasesPath(), 'database.db'),
       onCreate: (db, version) async {
-        // Creating tables
-        await db.execute(sqlCreateScore);
-        await db.execute(sqlCreateUserData);
-        await db.execute(sqlCreateRecording);
-        // Inserting fixed UserData records
-        await db.execute(sqlInsertUsername);
-        await db.execute(sqlInsertFirstName);
-        await db.execute(sqlInsertSharePreference);
-        await db.execute(sqlInsertRemindersPreference);
+        await createTables(db);
+        await insertUserData(db);
       },
       version: 1,
     );
@@ -33,10 +26,7 @@ class DatabaseService {
     db = await openDatabase(
       join(await getDatabasesPath(), 'database.db'),
       onCreate: (db, version) async {
-        // Creating tables
-        await db.execute(sqlCreateScore);
-        await db.execute(sqlCreateUserData);
-        await db.execute(sqlCreateRecording);
+        await createTables(db);
         // Seeding with dummy data
         for (var insert in sqlSeeds) {
           await db.execute(insert);
@@ -44,6 +34,19 @@ class DatabaseService {
       },
       version: 1,
     );
+  }
+
+  Future<void> createTables(Database db) async {
+    await db.execute(sqlCreateScore);
+    await db.execute(sqlCreateUserData);
+    await db.execute(sqlCreateRecording);
+  }
+
+  // Inserts default UserData records
+  Future<void> insertUserData(Database db) async {
+    await db.execute(sqlInsertUsername);
+    await db.execute(sqlInsertSharePreference);
+    await db.execute(sqlInsertRemindersPreference);
   }
 }
 
@@ -86,20 +89,15 @@ CREATE TABLE Recording(
   wpm INTEGER,
   transcript TEXT,
   wordCloudFilePath TEXT,
-  FOREIGN KEY(score1ID) REFERENCES Score(scoreID),
-  FOREIGN KEY(score2ID) REFERENCES Score(scoreID),
-  FOREIGN KEY(score3ID) REFERENCES Score(scoreID)
+  FOREIGN KEY(score1ID) REFERENCES Score(scoreID) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY(score2ID) REFERENCES Score(scoreID) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY(score3ID) REFERENCES Score(scoreID) ON UPDATE CASCADE ON DELETE RESTRICT
 ); 
 ''';
 
 String sqlInsertUsername = '''
 INSERT INTO UserData (domain, field1, field2)
 VALUES ('username', null, null); 
-''';
-
-String sqlInsertFirstName = '''
-INSERT INTO UserData (domain, field1, field2)
-VALUES ('firstName', null, null); 
 ''';
 
 String sqlInsertSharePreference = '''
@@ -118,7 +116,6 @@ VALUES ('remindersPreference', null, null);
 
 List<String> sqlSeeds = [
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('username', 'test', null);''',
-  '''INSERT INTO UserData (domain, field1, field2) VALUES ('firstName', 'Matt', null);''',
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('sharePreference', '0', '1');''',
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('remindersPreference', '4', '19:00');''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (1, 'Breathing', 0);''',

@@ -60,6 +60,7 @@ class Recording {
     };
   }
 
+  // Useful for development
   @override
   String toString() {
     return '''
@@ -87,7 +88,7 @@ class Recording {
   // Select total recordings and minutes
   static Future<Map<String, dynamic>> selectTotals() async {
     final db = databaseService.db;
-    final Map<String, dynamic> totals = (await db.rawQuery('''
+    final Map<String, dynamic> totals = (await db!.rawQuery('''
       SELECT COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noMinutes 
       FROM Recording;
       '''))[0];
@@ -98,7 +99,7 @@ class Recording {
   // Select total usage
   static Future<List<Map<String, dynamic>>> selectUsage() async {
     final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db.rawQuery('''
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT strftime('%m', dateRecorded) AS month, COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noMinutes
       FROM Recording
       WHERE dateRecorded >= date('now', 'start of month', -3 months)
@@ -118,7 +119,7 @@ class Recording {
   // Select list of months for which have recordings
   static Future<List<String>> selectMonths() async {
     final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db.rawQuery('''
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT DISTINCT strftime('%m-%Y', dateRecorded) AS month
       FROM Recording
       ORDER BY date(dateRecorded) DESC
@@ -133,7 +134,7 @@ class Recording {
   static Future<List<Map<String, dynamic>>> selectWordClouds(
       String month) async {
     final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db.rawQuery('''
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT strftime('%d-%m', dateRecorded) AS date, wordCloudFilePath
       FROM Recording
       WHERE strftime('%m-%Y', dateRecorded) = $month
@@ -147,7 +148,7 @@ class Recording {
   // Get list of currently active scores
   static Future<List<Score>> selectActiveScores() async {
     final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db.query(
+    final List<Map<String, dynamic>> list = await db!.query(
       'Score',
       where: 'isCurrent = ?',
       whereArgs: [1],
@@ -167,7 +168,7 @@ class Recording {
     final db = databaseService.db;
     final List<Score> activeScores = await selectActiveScores();
 
-    final List<Map<String, dynamic>> list = await db.rawQuery('''
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
         SELECT strftime('%d', dateRecorded) AS day, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, wpm 
         FROM Recording
         WHERE strftime('%m-%Y', dateRecorded) = $month 

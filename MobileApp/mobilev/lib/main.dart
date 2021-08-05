@@ -11,7 +11,8 @@ import 'package:mobilev/config/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await databaseService.initSeed();
+  // await databaseService.init(); // Without dummy data
+  await databaseService.initSeed(); // With dummy data
   await NotificationService().init();
   runApp(MobileVApp());
 }

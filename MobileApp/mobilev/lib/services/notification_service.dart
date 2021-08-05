@@ -4,6 +4,7 @@
 import 'dart:io' show Platform;
 
 // Package imports
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -52,6 +53,30 @@ class NotificationService {
 /*
  * CONSTANTS -------------------------------------------------------------------
  */
+
+// Cancel all scheduled notifications
+Future<void> cancelAllNotifications() async {
+  await flutterLocalNotificationsPlugin.cancelAll();
+}
+
+// Weekly (recurring) notification scheduler
+Future<void> scheduleNotification(int daySet, TimeOfDay timeSet) async {
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    1,
+    'Weekly reminder',
+    'Please remember to make a recording',
+    nextInstanceOfDateTime(
+      day: daySet,
+      hour: timeSet.hour,
+      minute: timeSet.minute,
+    ),
+    platformChannelSpecifics,
+    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+  );
+}
 
 // Plugin instance creation
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

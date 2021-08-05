@@ -130,7 +130,8 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                     textColour: Colors.white,
                     onPressed: () async {
                       await UserData.updateUserData(sharePreference);
-                      Navigator.pop(context, true);
+                      Navigator.pop(
+                          context, true); // Refresh profile page on pop
                     },
                   ),
                 ),

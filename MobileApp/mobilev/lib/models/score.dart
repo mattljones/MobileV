@@ -22,6 +22,7 @@ class Score {
     };
   }
 
+  // Useful for development
   @override
   String toString() {
     return 'Score{scoreID: $scoreID, scoreName: $scoreName, isCurrent: $isCurrent}';

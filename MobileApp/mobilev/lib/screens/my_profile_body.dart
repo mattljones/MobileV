@@ -19,23 +19,12 @@ class ProfileBody extends StatefulWidget {
 }
 
 class _ProfileBodyState extends State<ProfileBody> {
-  bool firstNameLoading = true;
-  String? firstName = '';
   bool sharePreferenceLoading = true;
   UserData? sharePreference;
   String shareString = '';
   bool remindersPreferenceLoading = true;
   UserData? remindersPreference;
   String remindersString = '';
-
-  void getFirstName() {
-    UserData.selectUserData('firstName').then((data) {
-      setState(() {
-        firstName = data.field1;
-        firstNameLoading = false;
-      });
-    });
-  }
 
   void getSharePreference() {
     UserData.selectUserData('sharePreference').then((data) {
@@ -60,7 +49,6 @@ class _ProfileBodyState extends State<ProfileBody> {
   @override
   void initState() {
     super.initState();
-    getFirstName();
     getSharePreference();
     getRemindersPreference();
   }
@@ -72,9 +60,8 @@ class _ProfileBodyState extends State<ProfileBody> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (firstNameLoading ||
-              sharePreferenceLoading ||
-              remindersPreferenceLoading)
+          // Show spinner whilst asynchronous data is loading
+          if (sharePreferenceLoading || remindersPreferenceLoading)
             Center(
               child: SpinKitRing(
                 color: kSecondaryTextColour,
@@ -82,12 +69,13 @@ class _ProfileBodyState extends State<ProfileBody> {
                 lineWidth: 3.0,
               ),
             )
+          // Show content once all asynchronous data loaded
           else
             ListView(
               shrinkWrap: true,
               children: [
                 Text(
-                  'Welcome, $firstName!',
+                  'Welcome, Matt!',
                   style: TextStyle(
                     color: Colors.black,
                     fontFamily: 'PTSans',
@@ -121,7 +109,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                       }),
                     ).then((value) {
                       if (value != null && value) {
-                        getSharePreference();
+                        getSharePreference(); // Refresh data if save was pressed
                       }
                     });
                   },
@@ -139,19 +127,19 @@ class _ProfileBodyState extends State<ProfileBody> {
                         return day != null && time != null
                             ? WeeklyRemindersScreen(
                                 isEnabled: true,
-                                remindersPreference: remindersPreference!,
-                                daySet: int.parse(remindersPreference!.field1!),
+                                daySet: int.parse(day),
                                 timeSet: TimeOfDay(
-                                    hour: int.parse(time.substring(0, 2)),
-                                    minute: int.parse(time.substring(3))))
+                                  hour: int.parse(time.substring(0, 2)),
+                                  minute: int.parse(time.substring(3)),
+                                ),
+                              )
                             : WeeklyRemindersScreen(
                                 isEnabled: false,
-                                remindersPreference: remindersPreference!,
                               );
                       }),
                     ).then((value) {
                       if (value != null && value) {
-                        getRemindersPreference();
+                        getRemindersPreference(); // Refresh data if save was pressed
                       }
                     });
                   },
