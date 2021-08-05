@@ -8,14 +8,44 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mobilev/config/constants.dart';
 
 class UsageChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
+  final List chartData;
 
-  UsageChart(this.seriesList);
+  UsageChart(this.chartData);
 
-  factory UsageChart.withSampleData() {
-    return UsageChart(
-      _createSampleData(),
-    );
+  // Converting data to format required for plugin
+  List<charts.Series<MonthlyUsage, String>> generateSeriesList() {
+    final recordingsData = [
+      for (var month in chartData)
+        MonthlyUsage(month['month'], month['noRecordings'])
+    ];
+
+    final minutesData = [
+      for (var month in chartData)
+        MonthlyUsage(month['month'], month['noMinutes'])
+    ];
+
+    return [
+      charts.Series<MonthlyUsage, String>(
+        id: 'No. Recordings',
+        colorFn: (MonthlyUsage usage, _) =>
+            charts.ColorUtil.fromDartColor(kLightPrimaryColour),
+        domainFn: (MonthlyUsage usage, _) => usage.month,
+        measureFn: (MonthlyUsage usage, _) => usage.amount,
+        data: recordingsData,
+        labelAccessorFn: (MonthlyUsage usage, _) =>
+            '${usage.amount.toString()}',
+      ),
+      charts.Series<MonthlyUsage, String>(
+        id: 'No. Minutes',
+        colorFn: (MonthlyUsage usage, _) =>
+            charts.ColorUtil.fromDartColor(kLightAccentColour),
+        domainFn: (MonthlyUsage usage, _) => usage.month,
+        measureFn: (MonthlyUsage usage, _) => usage.amount,
+        data: minutesData,
+        labelAccessorFn: (MonthlyUsage usage, _) =>
+            '${usage.amount.toString()}',
+      )
+    ];
   }
 
   @override
@@ -23,7 +53,7 @@ class UsageChart extends StatelessWidget {
     return AbsorbPointer(
       absorbing: true,
       child: charts.BarChart(
-        List.from(seriesList),
+        List.from(generateSeriesList()),
         animate: true,
         barGroupingType: charts.BarGroupingType.grouped,
         primaryMeasureAxis: charts.NumericAxisSpec(
@@ -57,49 +87,9 @@ class UsageChart extends StatelessWidget {
       ),
     );
   }
-
-  static List<charts.Series<MonthlyUsage, String>> _createSampleData() {
-    final recordingsData = [
-      MonthlyUsage('May', 3),
-      MonthlyUsage('Jun', 6),
-      MonthlyUsage('Jul', 5),
-      MonthlyUsage('Aug', 4),
-    ];
-
-    final minutesData = [
-      MonthlyUsage('May', 6),
-      MonthlyUsage('Jun', 11),
-      MonthlyUsage('Jul', 9),
-      MonthlyUsage('Aug', 14),
-    ];
-
-    return [
-      charts.Series<MonthlyUsage, String>(
-        id: 'No. Recordings',
-        colorFn: (MonthlyUsage usage, _) => usage.month != 'Aug'
-            ? charts.ColorUtil.fromDartColor(kLightPrimaryColour)
-            : charts.ColorUtil.fromDartColor(kSecondaryTextColour),
-        domainFn: (MonthlyUsage usage, _) => usage.month,
-        measureFn: (MonthlyUsage usage, _) => usage.amount,
-        data: recordingsData,
-        labelAccessorFn: (MonthlyUsage usage, _) =>
-            '${usage.amount.toString()}',
-      ),
-      charts.Series<MonthlyUsage, String>(
-        id: 'No. Minutes',
-        colorFn: (MonthlyUsage usage, _) => usage.month != 'Aug'
-            ? charts.ColorUtil.fromDartColor(kLightAccentColour)
-            : charts.ColorUtil.fromDartColor(Colors.grey.shade400),
-        domainFn: (MonthlyUsage usage, _) => usage.month,
-        measureFn: (MonthlyUsage usage, _) => usage.amount,
-        data: minutesData,
-        labelAccessorFn: (MonthlyUsage usage, _) =>
-            '${usage.amount.toString()}',
-      )
-    ];
-  }
 }
 
+// Helper class
 class MonthlyUsage {
   final String month;
   final int amount;

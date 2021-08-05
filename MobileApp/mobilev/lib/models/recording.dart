@@ -83,35 +83,49 @@ class Recording {
       )''';
   }
 
+  static String roundMinutes(int seconds) {
+    var remainder = seconds.remainder(60);
+    return remainder == 0
+        ? (seconds / 60).toStringAsFixed(0)
+        : (seconds / 60).toStringAsFixed(1);
+  }
+
   // Queries -------------------------------------------------------------------
 
   // Select total recordings and minutes
   static Future<Map<String, dynamic>> selectTotals() async {
     final db = databaseService.db;
     final Map<String, dynamic> totals = (await db!.rawQuery('''
-      SELECT COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noMinutes 
+      SELECT COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noSeconds 
       FROM Recording;
       '''))[0];
 
-    return totals;
+    return {
+      'noRecordings': totals['noRecordings'],
+      'noMinutes':
+          totals['noSeconds'] != null ? roundMinutes(totals['noSeconds']) : '0',
+    };
   }
 
   // Select total usage
   static Future<List<Map<String, dynamic>>> selectUsage() async {
     final db = databaseService.db;
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
-      SELECT strftime('%m', dateRecorded) AS month, COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noMinutes
+      SELECT strftime('%m', dateRecorded) AS month, COUNT(DISTINCT dateRecorded) AS noRecordings, SUM(duration) AS noSeconds
       FROM Recording
-      WHERE dateRecorded >= date('now', 'start of month', -3 months)
-      GROUP BY date(dateRecorded, 'start of month')
-      ORDER BY date(dateRecorded) ASC
+      WHERE dateRecorded >= date('now', 'start of month', '-3 months')
+      GROUP BY month
+      ORDER BY strftime('%Y', dateRecorded) ASC, month ASC
       ''');
 
     return List.generate(list.length, (i) {
+      int? noSeconds = list[i]['noSeconds'];
       return {
         'month': months[list[i]['month']],
         'noRecordings': list[i]['noRecordings'],
-        'noMinutes': list[i]['noMinutes'],
+        'noMinutes': noSeconds != null
+            ? int.parse((noSeconds / 60).toStringAsFixed(0))
+            : 0,
       };
     });
   }

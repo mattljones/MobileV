@@ -1,11 +1,15 @@
 // Dart & Flutter imports
 import 'package:flutter/material.dart';
 
+// Package imports
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 // Module imports
+import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/status_card.dart';
-import 'package:mobilev/widgets/chart_usage.dart';
 import 'package:mobilev/widgets/dropdown.dart';
+import 'package:mobilev/widgets/chart_usage.dart';
 import 'package:mobilev/widgets/chart_scores.dart';
 import 'package:mobilev/widgets/word_cloud_dialog.dart';
 
@@ -16,8 +20,39 @@ class AnalysisBody extends StatefulWidget {
 
 class _AnalysisBodyState extends State<AnalysisBody>
     with SingleTickerProviderStateMixin {
+  bool statusCardTotalsLoading = true;
+  int? noRecordings;
+  String? noMinutes;
+  bool usageDataLoading = true;
+  List? usageData;
   String? monthDropdownValue;
   String? cloudDropdownValue;
+
+  void getStatusCardTotals() {
+    Recording.selectTotals().then((data) {
+      setState(() {
+        noRecordings = data['noRecordings'];
+        noMinutes = data['noMinutes'];
+        statusCardTotalsLoading = false;
+      });
+    });
+  }
+
+  void getUsageData() {
+    Recording.selectUsage().then((data) {
+      setState(() {
+        usageData = data;
+        usageDataLoading = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getStatusCardTotals();
+    getUsageData();
+  }
 
   Container buildUsageContent() => Container(
         child: Column(
@@ -31,7 +66,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
                       padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: StatusCard(
                         colour: kPrimaryColour,
-                        label: '25 recordings',
+                        label: '$noRecordings recordings',
                         icon: Icon(
                           Icons.mic,
                           color: Colors.white,
@@ -45,7 +80,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
                       padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: StatusCard(
                         colour: kDarkAccentColour,
-                        label: '38 minutes',
+                        label: '$noMinutes minutes',
                         icon: Icon(
                           Icons.timer,
                           color: Colors.white,
@@ -61,7 +96,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
               flex: 4,
               child: Padding(
                 padding: EdgeInsets.only(left: 15.0),
-                child: UsageChart.withSampleData(),
+                child: UsageChart(usageData!),
               ),
             ),
           ],
@@ -139,32 +174,42 @@ class _AnalysisBodyState extends State<AnalysisBody>
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 2,
-        child: Container(
-          padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                child: TabBar(
-                  indicatorColor: kPrimaryColour,
-                  tabs: [
-                    Tab(text: 'USAGE'),
-                    Tab(text: 'SCORES'),
-                  ],
-                ),
+      length: 2,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              child: TabBar(
+                indicatorColor: kPrimaryColour,
+                tabs: [
+                  Tab(text: 'USAGE'),
+                  Tab(text: 'SCORES'),
+                ],
               ),
-              Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
+            ),
+            Expanded(
+              child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  if (statusCardTotalsLoading || usageDataLoading)
+                    Center(
+                      child: SpinKitRing(
+                        color: kSecondaryTextColour,
+                        size: 24.0,
+                        lineWidth: 3.0,
+                      ),
+                    )
+                  else
                     buildUsageContent(),
-                    buildScoresContent(),
-                  ],
-                ),
+                  buildScoresContent(),
+                ],
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

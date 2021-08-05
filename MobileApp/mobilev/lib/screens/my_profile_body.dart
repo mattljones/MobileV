@@ -57,118 +57,120 @@ class _ProfileBodyState extends State<ProfileBody> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(35.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+      child:
           // Show spinner whilst asynchronous data is loading
-          if (sharePreferenceLoading || remindersPreferenceLoading)
-            Center(
-              child: SpinKitRing(
-                color: kSecondaryTextColour,
-                size: 24.0,
-                lineWidth: 3.0,
-              ),
-            )
-          // Show content once all asynchronous data loaded
-          else
-            ListView(
-              shrinkWrap: true,
-              children: [
-                Text(
-                  'Welcome, Matt!',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontFamily: 'PTSans',
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 15.0),
-                Text(
-                  'Your SRO is Joseph Connor',
-                  style: TextStyle(
+          (sharePreferenceLoading || remindersPreferenceLoading)
+              ? Center(
+                  child: SpinKitRing(
                     color: kSecondaryTextColour,
-                    fontFamily: 'PTSans',
-                    fontSize: 20,
+                    size: 24.0,
+                    lineWidth: 3.0,
                   ),
+                )
+              // Show content once all asynchronous data loaded
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ListView(
+                      shrinkWrap: true,
+                      children: [
+                        Text(
+                          'Welcome, Matt!',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'PTSans',
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 15.0),
+                        Text(
+                          'Your SRO is Joseph Connor',
+                          style: TextStyle(
+                            color: kSecondaryTextColour,
+                            fontFamily: 'PTSans',
+                            fontSize: 20,
+                          ),
+                        ),
+                        SizedBox(height: 30.0),
+                        ProfileCard(
+                          icon: Icons.share,
+                          title: 'Share agreement',
+                          status: shareString,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return ShareAgreementScreen(
+                                  sharePreference: sharePreference!,
+                                  shareRecording:
+                                      sharePreference!.field1 == '1',
+                                  shareWordCloud:
+                                      sharePreference!.field2 == '1',
+                                );
+                              }),
+                            ).then((value) {
+                              if (value != null && value) {
+                                getSharePreference(); // Refresh data if save was pressed
+                              }
+                            });
+                          },
+                        ),
+                        ProfileCard(
+                          icon: Icons.calendar_today_outlined,
+                          title: 'Reminders',
+                          status: remindersString,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                var day = remindersPreference!.field1;
+                                var time = remindersPreference!.field2;
+                                return day != null && time != null
+                                    ? WeeklyRemindersScreen(
+                                        isEnabled: true,
+                                        daySet: int.parse(day),
+                                        timeSet: TimeOfDay(
+                                          hour: int.parse(time.substring(0, 2)),
+                                          minute: int.parse(time.substring(3)),
+                                        ),
+                                      )
+                                    : WeeklyRemindersScreen(
+                                        isEnabled: false,
+                                      );
+                              }),
+                            ).then((value) {
+                              if (value != null && value) {
+                                getRemindersPreference(); // Refresh data if save was pressed
+                              }
+                            });
+                          },
+                        ),
+                        ProfileCard(
+                          icon: Icons.lock,
+                          title: 'Change password',
+                          status: '',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return ChangePasswordScreen();
+                              }),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    FormButton(
+                      text: 'Sign out',
+                      buttonColour: kAccentColour,
+                      textColour: Colors.black,
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(height: 30.0),
-                ProfileCard(
-                  icon: Icons.share,
-                  title: 'Share agreement',
-                  status: shareString,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return ShareAgreementScreen(
-                          sharePreference: sharePreference!,
-                          shareRecording: sharePreference!.field1 == '1',
-                          shareWordCloud: sharePreference!.field2 == '1',
-                        );
-                      }),
-                    ).then((value) {
-                      if (value != null && value) {
-                        getSharePreference(); // Refresh data if save was pressed
-                      }
-                    });
-                  },
-                ),
-                ProfileCard(
-                  icon: Icons.calendar_today_outlined,
-                  title: 'Reminders',
-                  status: remindersString,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        var day = remindersPreference!.field1;
-                        var time = remindersPreference!.field2;
-                        return day != null && time != null
-                            ? WeeklyRemindersScreen(
-                                isEnabled: true,
-                                daySet: int.parse(day),
-                                timeSet: TimeOfDay(
-                                  hour: int.parse(time.substring(0, 2)),
-                                  minute: int.parse(time.substring(3)),
-                                ),
-                              )
-                            : WeeklyRemindersScreen(
-                                isEnabled: false,
-                              );
-                      }),
-                    ).then((value) {
-                      if (value != null && value) {
-                        getRemindersPreference(); // Refresh data if save was pressed
-                      }
-                    });
-                  },
-                ),
-                ProfileCard(
-                  icon: Icons.lock,
-                  title: 'Change password',
-                  status: '',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return ChangePasswordScreen();
-                      }),
-                    );
-                  },
-                ),
-              ],
-            ),
-          FormButton(
-            text: 'Sign out',
-            buttonColour: kAccentColour,
-            textColour: Colors.black,
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
     );
   }
 }
