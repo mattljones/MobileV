@@ -8,12 +8,12 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mobilev/config/constants.dart';
 
 class ScoreChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
+  final List chartData;
   final String axisTitle;
   final int index;
 
   ScoreChart({
-    required this.seriesList,
+    required this.chartData,
     required this.axisTitle,
     required this.index,
   });
@@ -27,14 +27,11 @@ class ScoreChart extends StatelessWidget {
 
   static const secondaryMeasureAxisId = 'secondaryMeasureAxisId';
 
-  factory ScoreChart.withSampleData(String title, int index) {
-    List<charts.Series<DailyRecording, int>> _createSampleData() {
+  // Converting data to format required for plugin
+  List<charts.Series<DailyRecording, int>> generateSeriesList() {
       final data = [
-        DailyRecording(2, 7, 'N'),
-        DailyRecording(9, 10, 'T'),
-        DailyRecording(17, 6, 'N'),
-        DailyRecording(22, 8, 'T'),
-        DailyRecording(30, 5, 'N'),
+        for (var day in chartData)
+          DailyRecording(day['day'].substring(0, 2), day['score'], 'N',)
       ];
 
       return [
@@ -49,18 +46,12 @@ class ScoreChart extends StatelessWidget {
         )..setAttribute(charts.measureAxisIdKey, secondaryMeasureAxisId),
       ];
     }
-
-    return new ScoreChart(
-      seriesList: _createSampleData(),
-      axisTitle: title,
-      index: index,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return charts.LineChart(
-      List.from(seriesList),
+      List.from(generateSeriesList()),
       animate: false,
       defaultRenderer: charts.LineRendererConfig(
         includePoints: true,
@@ -195,6 +186,7 @@ class ScoreChart extends StatelessWidget {
   }
 }
 
+// Helper class
 class DailyRecording {
   final int day;
   final int score;

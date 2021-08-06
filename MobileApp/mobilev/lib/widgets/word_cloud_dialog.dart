@@ -1,10 +1,18 @@
 // Dart & Flutter imports
+import 'dart:io';
 import 'package:flutter/material.dart';
+
+// Module imports
+import 'package:mobilev/config/constants.dart';
 
 class WordCloudDialog extends StatelessWidget {
   final String date;
+  final String filePath;
 
-  WordCloudDialog(this.date);
+  WordCloudDialog({
+    required this.date,
+    required this.filePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +27,7 @@ class WordCloudDialog extends StatelessWidget {
           children: [
             SizedBox(height: 20.0),
             Text(
-              date,
+              date.substring(0, 2) + ' ' + fullMonths[date.substring(3)]!,
               style: TextStyle(
                 fontFamily: 'PTSans',
                 fontSize: 22,
@@ -31,9 +39,9 @@ class WordCloudDialog extends StatelessWidget {
                 height: size,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: ExactAssetImage(
-                          'assets/images/wordcloud_example.jpg'),
-                      fit: BoxFit.contain),
+                    image: FileImage(File(filePath)),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),

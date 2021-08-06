@@ -1,5 +1,10 @@
+// Dart & Flutter imports
+import 'dart:io';
+import 'package:flutter/services.dart';
+
 // Package imports
 import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 /*
@@ -31,6 +36,8 @@ class DatabaseService {
         for (var insert in sqlSeeds) {
           await db.execute(insert);
         }
+        // Copy example word clouds to application documents directory
+        await copyExampleAssets();
       },
       version: 1,
     );
@@ -47,6 +54,17 @@ class DatabaseService {
     await db.execute(sqlInsertUsername);
     await db.execute(sqlInsertSharePreference);
     await db.execute(sqlInsertRemindersPreference);
+  }
+
+  Future<void> copyExampleAssets() async {
+    List<String> files = ['test1.jpg', 'test2.jpg'];
+    for (var file in files) {
+      String path = join((await getApplicationDocumentsDirectory()).path, file);
+      ByteData data = await rootBundle.load(join('assets', 'examples', file));
+      List<int> bytes =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      await File(path).writeAsBytes(bytes, flush: true);
+    }
   }
 }
 
@@ -127,42 +145,44 @@ List<String> sqlSeeds = [
      VALUES ('2021-08-04 12:00:00', 'Numeric', 120, 'test.m4a', 2, 5, 3, 8, 4, 2560, 1, 'pending', null, null, null);''',
   // July data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-07-31 12:00:00', 'Numeric', 30, 'test.m4a', 1, 5, 3, 9, 4, 3004, 1, 'received', 60, null, null);''',
+     VALUES ('2021-07-31 12:00:00', 'Numeric', 30, 'test.m4a', 1, 5, 3, 9, 4, 3004, 1, 'received', 60, 'Lorem ipsum...', 'test1.jpg');''',
+  '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
+     VALUES ('2021-07-31 12:00:10', 'Numeric', 30, 'test.m4a', 1, 7, 3, 2, 4, 2010, 1, 'received', 50, 'Lorem ipsum...', 'test2.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-07-21 12:00:00', 'Text', 120, 'test.m4a', 2, 7, 3, 6, 4, 3160, 1, 'received', 55, 'Lorem ipsum...', null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-07-19 12:00:00', 'Numeric', 90, 'test.m4a', 1, 7, null, null, null, null, 1, 'received', 52, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-07-17 12:00:00', 'Text', 30, 'test.m4a', null, null, null, null, null, null, 1, 'received', 53, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2021-07-17 12:00:00', 'Text', 30, 'test.m4a', null, null, null, null, null, null, 1, 'received', 53, 'Lorem ipsum...', 'test1.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-07-16 12:00:00', 'Numeric', 120, 'test.m4a', 2, 4, 3, 6, 4, 3120, 1, 'received', 52, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-07-04 12:00:00', 'Text', 30, 'test.m4a', 2, 5, 3, 8, 4, 2950, 1, 'received', 61, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2021-07-04 12:00:00', 'Text', 30, 'test.m4a', 2, 5, 3, 8, 4, 2950, 1, 'received', 61, 'Lorem ipsum...', 'test2.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-07-01 12:00:00', 'Numeric', 60, 'test.m4a', 2, 2, 3, 10, 4, 2412, 1, 'received', 70, null, null);''',
   // June data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-06-29 12:00:00', 'Text', 90, 'test.m4a', 2, 8, 3, 6, 4, 3150, 1, 'received', 65, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2021-06-29 12:00:00', 'Text', 90, 'test.m4a', 2, 8, 3, 6, 4, 3150, 1, 'received', 65, 'Lorem ipsum...', 'test1.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-06-22 12:00:00', 'Numeric', 60, 'test.m4a', 2, 9, 3, 2, 4, 2598, 1, 'received', 51, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-06-18 12:00:00', 'Numeric', 30, 'test.m4a', 2, 10, 3, 6, null, null, 1, 'received', 40, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-06-06 12:00:00', 'Text', 30, 'test.m4a', 2, 5, 3, 8, 4, 2900, 1, 'received', 59, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2021-06-06 12:00:00', 'Text', 30, 'test.m4a', 2, 5, 3, 8, 4, 2900, 1, 'received', 59, 'Lorem ipsum...', 'test2.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-06-02 12:00:00', 'Numeric', 120, 'test.m4a', null, null, 1, 8, null, null, 1, 'received', 68, null, null);''',
   // May data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-05-27 12:00:00', 'Text', 90, 'test.m4a', 2, 4, 3, 6, 4, 3150, 1, 'received', 50, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2021-05-27 12:00:00', 'Text', 90, 'test.m4a', 2, 4, 3, 6, 4, 3150, 1, 'received', 50, 'Lorem ipsum...', 'test1.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-05-22 12:00:00', 'Numeric', 60, 'test.m4a', 2, 8, 3, 6, 4, 2598, 1, 'received', 72, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-05-10 12:00:00', 'Text', 30, 'test.m4a', 2, 7, 3, 8, 4, 2950, 1, 'received', 70, 'Lorem ipsum...', 'test.jpg');''',
-  // April data
+     VALUES ('2021-05-10 12:00:00', 'Text', 30, 'test.m4a', 2, 7, 3, 8, 4, 2950, 1, 'received', 70, 'Lorem ipsum...', 'test2.jpg');''',
+  // December data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2020-12-30 12:00:00', 'Text', 90, 'test.m4a', 2, 4, 3, 6, 4, 3150, 1, 'received', 50, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2020-12-30 12:00:00', 'Text', 90, 'test.m4a', 2, 4, 3, 6, 4, 3150, 1, 'received', 50, 'Lorem ipsum...', 'test1.jpg');''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2020-12-11 12:00:00', 'Numeric', 60, 'test.m4a', 2, 8, 3, 6, 4, 2598, 1, 'received', 72, null, null);''',
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2020-12-08 12:00:00', 'Text', 30, 'test.m4a', 2, 7, 3, 8, 4, 2950, 1, 'received', 70, 'Lorem ipsum...', 'test.jpg');''',
+     VALUES ('2020-12-08 12:00:00', 'Text', 30, 'test.m4a', 2, 7, 3, 8, 4, 2950, 1, 'received', 70, 'Lorem ipsum...', 'test2.jpg');''',
 ];

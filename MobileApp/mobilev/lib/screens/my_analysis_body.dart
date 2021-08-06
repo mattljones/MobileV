@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 // Package imports
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
@@ -25,8 +27,17 @@ class _AnalysisBodyState extends State<AnalysisBody>
   String? noMinutes;
   bool usageDataLoading = true;
   List? usageData;
+  bool monthsLoading = true;
+  Map<String, String>? activeMonths;
+  bool cloudsLoading = true;
+  Map? cloudData;
+  bool activeScoresLoading = true;
+  Map? activeScores;
+  bool monthlyScoresLoading = true;
+  Map? monthlyScores;
   String? monthDropdownValue;
   String? cloudDropdownValue;
+  String? cloudFilePath;
 
   void getStatusCardTotals() {
     Recording.selectTotals().then((data) {
@@ -47,11 +58,66 @@ class _AnalysisBodyState extends State<AnalysisBody>
     });
   }
 
+  void getMonths() {
+    Recording.selectMonths().then((data) {
+      print('months');
+      print(data);
+      print('');
+      setState(() {
+        activeMonths = data;
+        monthDropdownValue = activeMonths!.keys.first;
+        monthsLoading = false;
+      });
+    });
+  }
+
+  void getWordClouds() {
+    Recording.selectWordClouds().then((data) {
+      print('wordclouds');
+      print(data);
+      print('');
+      setState(() {
+        cloudData = data;
+        cloudsLoading = false;
+      });
+    });
+  }
+
+  void getActiveScores() {
+    Recording.selectActiveScores().then((data) {
+      print('activescores');
+      print(data);
+      print('');
+      setState(() {
+        activeScores = data;
+        activeScoresLoading = false;
+      });
+    });
+  }
+
+  void getAnalysis() async {
+    Recording.selectAnalysis().then((data) {
+      print('analysis');
+      print(data);
+      print('');
+      setState(() {
+        monthlyScores = data;
+        monthlyScoresLoading = false;
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    // Loading 'Usage' tab data
     getStatusCardTotals();
     getUsageData();
+    // Loading 'Scores' tab data
+    getMonths();
+    getWordClouds();
+    getActiveScores();
+    getAnalysis();
   }
 
   Container buildUsageContent() => Container(
@@ -112,27 +178,53 @@ class _AnalysisBodyState extends State<AnalysisBody>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MyDropdown(
-                    items: ['July 2021', 'June 2021', 'May 2021'],
-                    prompt: 'July 2021',
+                    items: activeMonths!.keys.toList(),
+                    prompt: activeMonths!.keys.first,
                     dropdownValue: monthDropdownValue,
                     onChanged: (newValue) {
                       setState(() {
                         monthDropdownValue = newValue!;
+                        cloudDropdownValue = null;
                       });
                     },
                   ),
                   SizedBox(width: 30.0),
                   MyDropdown(
-                    items: ['24 July', '17 July', '10 July'],
-                    prompt: 'View word cloud',
-                    dropdownValue: null,
+                    items: cloudData!.keys
+                            .contains(activeMonths![monthDropdownValue])
+                        ? List.generate(
+                            cloudData![activeMonths![monthDropdownValue]]
+                                .length,
+                            (index) =>
+                                cloudData![activeMonths![monthDropdownValue]]
+                                    [index]['day'])
+                        : [],
+                    prompt: cloudData!.keys
+                            .contains(activeMonths![monthDropdownValue])
+                        ? 'View word cloud'
+                        : 'No word clouds',
+                    dropdownValue: cloudDropdownValue,
                     onChanged: (newValue) async {
+                      String? filePath;
+                      for (var cloud
+                          in cloudData![activeMonths![monthDropdownValue]]) {
+                        if (cloud['day'] == newValue) {
+                          filePath = cloud['filePath'];
+                        }
+                      }
                       setState(() {
                         cloudDropdownValue = newValue!;
+                        cloudFilePath = filePath;
                       });
+                      String absPath = path.join(
+                          (await getApplicationDocumentsDirectory()).path,
+                          cloudFilePath);
                       await showDialog(
                         context: context,
-                        builder: (_) => WordCloudDialog(newValue!),
+                        builder: (_) => WordCloudDialog(
+                          date: cloudDropdownValue!.split(' (')[0],
+                          filePath: absPath,
+                        ),
                       );
                     },
                   ),
@@ -140,33 +232,27 @@ class _AnalysisBodyState extends State<AnalysisBody>
               ),
             ),
             Expanded(
-              flex: 6,
+              flex: int.parse(
+                  (24 / (activeScores!.keys.length + 1)).toStringAsFixed(0)),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: ScoreChart.withSampleData('Score 1', 0),
+                child: ScoreChart(
+                  chartData: monthlyScores![months[monthDropdownValue]]['wpm'],
+                  axisTitle: 'WPM',
+                  index: 0,
+                ),
               ),
             ),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: ScoreChart.withSampleData('Score 2', 1),
+            for (var i = 0; i < activeScores!.keys.length; i++)
+              Expanded(
+                flex: int.parse(
+                    (24 / (activeScores!.keys.length + 1)).toStringAsFixed(0)),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 6.0),
+                  child: ScoreChart.withSampleData(
+                      activeScores!.values.toList()[i], i + 1),
+                ),
               ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: ScoreChart.withSampleData('Score 3', 2),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: ScoreChart.withSampleData('WPM', 3),
-              ),
-            ),
           ],
         ),
       );
@@ -203,7 +289,19 @@ class _AnalysisBodyState extends State<AnalysisBody>
                     )
                   else
                     buildUsageContent(),
-                  buildScoresContent(),
+                  if (monthsLoading ||
+                      cloudsLoading ||
+                      activeScoresLoading ||
+                      monthlyScoresLoading)
+                    Center(
+                      child: SpinKitRing(
+                        color: kSecondaryTextColour,
+                        size: 24.0,
+                        lineWidth: 3.0,
+                      ),
+                    )
+                  else
+                    buildScoresContent(),
                 ],
               ),
             ),

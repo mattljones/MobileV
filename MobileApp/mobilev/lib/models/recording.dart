@@ -1,6 +1,6 @@
 // Module imports
+import 'package:flutter/widgets.dart';
 import 'package:mobilev/services/database_service.dart';
-import 'package:mobilev/models/score.dart';
 import 'package:mobilev/config/constants.dart';
 
 class Recording {
@@ -131,7 +131,7 @@ class Recording {
   }
 
   // Select list of months for which have recordings
-  static Future<List<String>> selectMonths() async {
+  static Future<Map<String, String>> selectMonths() async {
     final db = databaseService.db;
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT DISTINCT strftime('%m-%Y', dateRecorded) AS month
@@ -139,85 +139,120 @@ class Recording {
       ORDER BY date(dateRecorded) DESC
       ''');
 
-    return List.generate(list.length, (i) {
-      return list[i]['month'];
-    });
+    return Map<String, String>.fromIterable(
+      list,
+      key: (item) =>
+          months[item['month'].substring(0, 2)]! +
+          ' ' +
+          item['month'].substring(3),
+      value: (item) => item['month'],
+    );
   }
 
   // Select word clouds per month for which have recordings
-  static Future<List<Map<String, dynamic>>> selectWordClouds(
-      String month) async {
+  static Future<Map<dynamic, dynamic>> selectWordClouds() async {
     final db = databaseService.db;
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
-      SELECT strftime('%d-%m', dateRecorded) AS date, wordCloudFilePath
+      SELECT strftime('%d-%m-%Y', dateRecorded) AS date, wordCloudFilePath
       FROM Recording
-      WHERE strftime('%m-%Y', dateRecorded) = $month
-      AND wordCloudFilePath IS NOT NULL 
+      WHERE wordCloudFilePath IS NOT NULL 
       ORDER BY date(dateRecorded) DESC
       ''');
 
-    return list;
+    var output = {};
+    for (var wordCloud in list) {
+      String date = wordCloud['date'];
+      String month = date.substring(3);
+
+      if (output.keys.contains(month)) {
+        int count = 1;
+        for (var wordCloud in output[month]) {
+          if ((wordCloud['day']) ==
+              date.substring(0, 2) + ' ' + months[date.substring(3, 5)]!) {
+            count++;
+          }
+        }
+        String? day;
+        if (count > 1) {
+          day = date.substring(0, 2) +
+              ' ' +
+              months[date.substring(3, 5)]! +
+              ' ($count)';
+        } else {
+          day = date.substring(0, 2) + ' ' + months[date.substring(3, 5)]!;
+        }
+        output[month].add(
+          {'day': day, 'filePath': wordCloud['wordCloudFilePath']},
+        );
+      } else {
+        String day = date.substring(0, 2) + ' ' + months[date.substring(3, 5)]!;
+        output[month] = [
+          {'day': day, 'filePath': wordCloud['wordCloudFilePath']},
+        ];
+      }
+    }
+
+    return output;
   }
 
   // Get list of currently active scores
-  static Future<List<Score>> selectActiveScores() async {
+  static Future<Map<int, String>> selectActiveScores() async {
     final db = databaseService.db;
     final List<Map<String, dynamic>> list = await db!.query(
       'Score',
+      columns: ['scoreID', 'scoreName'],
       where: 'isCurrent = ?',
       whereArgs: [1],
+      orderBy: 'scoreID ASC',
     );
 
-    return List.generate(list.length, (i) {
-      return Score(
-        scoreID: list[i]['scoreID'],
-        scoreName: list[i]['scoreName'],
-        isCurrent: list[i]['isCurrent'],
-      );
-    });
+    return Map<int, String>.fromIterable(
+      list,
+      key: (item) => item['scoreID'],
+      value: (item) => item['scoreName'],
+    );
   }
 
-  // Select score analysis for a given month
-  static Future<Iterable<dynamic>> selectAnalysis(String month) async {
+  // Select score analysis for active months
+  static Future<Map<dynamic, dynamic>> selectAnalysis() async {
     final db = databaseService.db;
-    final List<Score> activeScores = await selectActiveScores();
+    final List months = (await selectMonths()).values.toList();
+    final Map activeScores = await selectActiveScores();
+    final List scores = [...activeScores.keys, 'wpm'];
 
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
-        SELECT strftime('%d', dateRecorded) AS day, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, wpm 
+        SELECT strftime('%d-%m-%Y', dateRecorded) AS date, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, wpm
         FROM Recording
-        WHERE strftime('%m-%Y', dateRecorded) = $month 
         GROUP BY date(dateRecorded, 'start of day')
         ''');
 
     var output = {};
-    for (var score in activeScores) {
-      output[score.scoreID] = [score.scoreName, []];
+    for (var month in months) {
+      output[month] = Map.fromIterable(
+        scores,
+        key: (item) => item,
+        value: (item) => [],
+      );
     }
-    output['wpm'] = ['wpm', []];
 
     for (var recording in list) {
-      if (output.keys.contains(recording['score1ID'])) {
-        output[recording['score1ID']][1].add(
-          {recording['day']: recording['score1Value']},
-        );
-      }
-      if (output.keys.contains(recording['score2ID'])) {
-        output[recording['score2ID']][1].add(
-          {recording['day']: recording['score2Value']},
-        );
-      }
-      if (output.keys.contains(recording['score3ID'])) {
-        output[recording['score3ID']][1].add(
-          {recording['day']: recording['score3Value']},
-        );
+      String month = recording['date'].toString().substring(3);
+      for (int num in [1, 2, 3]) {
+        if (activeScores.keys.contains(recording['score${num}ID'])) {
+          output[month][recording['score${num}ID']].add({
+            'day': int.parse(recording['date'].toString().substring(0, 2)),
+            'score': recording['score${num}Value'],
+          });
+        }
       }
       if (recording['wpm'] != null) {
-        output['wpm'][1].add(
-          {recording['day']: recording['wpm']},
-        );
+        output[month]['wpm'].add({
+          'day': int.parse(recording['date'].toString().substring(0, 2)),
+          'score': recording['wpm'],
+        });
       }
     }
 
-    return output.values;
+    return output;
   }
 }
