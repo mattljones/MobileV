@@ -8,6 +8,8 @@ import 'package:mobilev/widgets/form_input_text.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
+  final emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +37,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 40.0),
                 FormInputText(
+                  controller: emailController,
                   label: 'Email',
                   icon: Icons.email,
                   obscureInput: false,

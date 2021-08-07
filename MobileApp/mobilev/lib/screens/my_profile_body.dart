@@ -102,6 +102,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                               context,
                               MaterialPageRoute(builder: (context) {
                                 return ShareAgreementScreen(
+                                  firstLogin: false,
                                   sharePreference: sharePreference!,
                                   shareRecording:
                                       sharePreference!.field1 == '1',

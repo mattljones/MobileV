@@ -92,7 +92,7 @@ class Recording {
 
   // Queries -------------------------------------------------------------------
 
-  // Select total recordings and minutes
+  // Select total number of recordings and minutes
   static Future<Map<String, dynamic>> selectTotals() async {
     final db = databaseService.db;
     final Map<String, dynamic> totals = (await db!.rawQuery('''

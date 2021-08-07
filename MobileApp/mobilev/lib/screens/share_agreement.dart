@@ -7,11 +7,13 @@ import 'package:mobilev/models/user_data.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class ShareAgreementScreen extends StatefulWidget {
+  final bool firstLogin;
   final UserData sharePreference;
   final bool shareRecording;
   final bool shareWordCloud;
 
   ShareAgreementScreen({
+    required this.firstLogin,
     required this.sharePreference,
     required this.shareRecording,
     required this.shareWordCloud,
@@ -19,6 +21,7 @@ class ShareAgreementScreen extends StatefulWidget {
 
   @override
   _ShareAgreementScreenState createState() => _ShareAgreementScreenState(
+        this.firstLogin,
         this.sharePreference,
         this.shareRecording,
         this.shareWordCloud,
@@ -26,11 +29,13 @@ class ShareAgreementScreen extends StatefulWidget {
 }
 
 class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
+  final bool firstLogin;
   UserData sharePreference;
   bool shareRecording;
   bool shareWordCloud;
 
   _ShareAgreementScreenState(
+    this.firstLogin,
     this.sharePreference,
     this.shareRecording,
     this.shareWordCloud,
@@ -130,8 +135,12 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                     textColour: Colors.white,
                     onPressed: () async {
                       await UserData.updateUserData(sharePreference);
-                      Navigator.pop(
-                          context, true); // Refresh profile page on pop
+                      if (firstLogin) {
+                        Navigator.pushReplacementNamed(context, '/my-home');
+                      } else {
+                        // Refresh profile page on pop
+                        Navigator.pop(context, true);
+                      }
                     },
                   ),
                 ),

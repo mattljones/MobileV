@@ -2,11 +2,16 @@
 import 'package:flutter/material.dart';
 
 // Module imports
+import 'package:mobilev/models/user_data.dart';
+import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_input_text.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class LoginScreen extends StatelessWidget {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +47,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 30.0),
                 FormInputText(
+                  controller: usernameController,
                   label: 'Username',
                   icon: Icons.person,
                   obscureInput: false,
@@ -49,6 +55,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20.0),
                 FormInputText(
+                  controller: passwordController,
                   label: 'Password',
                   icon: Icons.lock,
                   obscureInput: true,
@@ -59,8 +66,45 @@ class LoginScreen extends StatelessWidget {
                   text: 'Sign in',
                   buttonColour: kPrimaryColour,
                   textColour: Colors.white,
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/my-home'),
+                  onPressed: () async {
+                    // Fetch username from database
+                    String? storedUsername =
+                        (await UserData.selectUserData('username')).field1;
+                    // If username inputted matches that in the database, check in back-end
+                    if (usernameController.text == storedUsername) {
+                      Navigator.pushReplacementNamed(context, '/my-home');
+                    }
+                    // Else if a username is stored but not a match, show an error
+                    // Else if no username is stored, store, check in back-end then show sharing agreement
+                    else if (storedUsername == null) {
+                      // Store in database
+                      UserData.updateUserData(
+                        UserData(
+                            domain: 'username',
+                            field1: usernameController.text,
+                            field2: null),
+                      );
+                      // Check in back-end
+                      // Show sharing agreement
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ShareAgreementScreen(
+                              firstLogin: true,
+                              sharePreference: UserData(
+                                domain: 'sharePreference',
+                                field1: '0',
+                                field2: '0',
+                              ),
+                              shareRecording: false,
+                              shareWordCloud: false,
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  },
                 ),
                 SizedBox(height: 40.0),
                 GestureDetector(
