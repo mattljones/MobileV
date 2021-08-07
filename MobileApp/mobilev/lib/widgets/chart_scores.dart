@@ -27,25 +27,40 @@ class ScoreChart extends StatelessWidget {
 
   static const secondaryMeasureAxisId = 'secondaryMeasureAxisId';
 
+  // Skips an x-axis label if adjacent (to prevent overlap in UI)
+  List getCollisionFreeChartData() {
+    var tempList = [];
+    var collisionFreeList = [];
+    for (var day in chartData) {
+      if (tempList.contains(day['day'] - 1)) {
+        continue;
+      } else {
+        tempList.add(day['day']);
+        collisionFreeList.add({'day': day['day'], 'type': day['type']});
+      }
+    }
+
+    return collisionFreeList;
+  }
+
   // Converting data to format required for plugin
   List<charts.Series<DailyRecording, int>> generateSeriesList() {
-      final data = [
-        for (var day in chartData)
-          DailyRecording(day['day'].substring(0, 2), day['score'], 'N',)
-      ];
+    final data = [
+      for (var day in chartData)
+        DailyRecording(day['day'], day['score'], day['type'])
+    ];
 
-      return [
-        charts.Series<DailyRecording, int>(
-          id: 'Scores',
-          colorFn: (_, __) => charts.ColorUtil.fromDartColor(colourList[index]),
-          domainFn: (DailyRecording recording, _) => recording.day,
-          measureFn: (DailyRecording recording, _) => recording.score,
-          labelAccessorFn: (DailyRecording recording, _) =>
-              '${recording.score.toString()}',
-          data: data,
-        )..setAttribute(charts.measureAxisIdKey, secondaryMeasureAxisId),
-      ];
-    }
+    return [
+      charts.Series<DailyRecording, int>(
+        id: 'Scores',
+        colorFn: (_, __) => charts.ColorUtil.fromDartColor(colourList[index]),
+        domainFn: (DailyRecording recording, _) => recording.day,
+        measureFn: (DailyRecording recording, _) => recording.score,
+        labelAccessorFn: (DailyRecording recording, _) =>
+            '${recording.score.toString()}',
+        data: data,
+      )..setAttribute(charts.measureAxisIdKey, secondaryMeasureAxisId),
+    ];
   }
 
   @override
@@ -66,11 +81,10 @@ class ScoreChart extends StatelessWidget {
         viewport: charts.NumericExtents(0, 32),
         tickProviderSpec: charts.StaticNumericTickProviderSpec(
           [
-            charts.TickSpec(2),
-            charts.TickSpec(9),
-            charts.TickSpec(17),
-            charts.TickSpec(22),
-            charts.TickSpec(30),
+            for (var day in getCollisionFreeChartData())
+              charts.TickSpec(
+                day['day'],
+              )
           ],
         ),
         renderSpec: charts.GridlineRendererSpec(
@@ -104,81 +118,23 @@ class ScoreChart extends StatelessWidget {
         ),
         charts.RangeAnnotation(
           [
-            charts.RangeAnnotationSegment(
-              3,
-              3,
-              charts.RangeAnnotationAxisType.domain,
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              labelDirection: charts.AnnotationLabelDirection.horizontal,
-              labelPosition: charts.AnnotationLabelPosition.margin,
-              labelStyleSpec: charts.TextStyleSpec(),
-              startLabel: 'N',
-            ),
-            charts.RangeAnnotationSegment(
-              1,
-              3,
-              charts.RangeAnnotationAxisType.domain,
-            ),
-            charts.RangeAnnotationSegment(
-              10,
-              10,
-              charts.RangeAnnotationAxisType.domain,
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              labelDirection: charts.AnnotationLabelDirection.horizontal,
-              labelPosition: charts.AnnotationLabelPosition.margin,
-              labelStyleSpec: charts.TextStyleSpec(),
-              startLabel: 'T',
-            ),
-            charts.RangeAnnotationSegment(
-              8,
-              10,
-              charts.RangeAnnotationAxisType.domain,
-            ),
-            charts.RangeAnnotationSegment(
-              18,
-              18,
-              charts.RangeAnnotationAxisType.domain,
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              labelDirection: charts.AnnotationLabelDirection.horizontal,
-              labelPosition: charts.AnnotationLabelPosition.margin,
-              labelStyleSpec: charts.TextStyleSpec(),
-              startLabel: 'T',
-            ),
-            charts.RangeAnnotationSegment(
-              16,
-              18,
-              charts.RangeAnnotationAxisType.domain,
-            ),
-            charts.RangeAnnotationSegment(
-              23,
-              23,
-              charts.RangeAnnotationAxisType.domain,
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              labelDirection: charts.AnnotationLabelDirection.horizontal,
-              labelPosition: charts.AnnotationLabelPosition.margin,
-              labelStyleSpec: charts.TextStyleSpec(),
-              startLabel: 'N',
-            ),
-            charts.RangeAnnotationSegment(
-              21,
-              23,
-              charts.RangeAnnotationAxisType.domain,
-            ),
-            charts.RangeAnnotationSegment(
-              31,
-              31,
-              charts.RangeAnnotationAxisType.domain,
-              labelAnchor: charts.AnnotationLabelAnchor.end,
-              labelDirection: charts.AnnotationLabelDirection.horizontal,
-              labelPosition: charts.AnnotationLabelPosition.margin,
-              labelStyleSpec: charts.TextStyleSpec(),
-              startLabel: 'N',
-            ),
-            charts.RangeAnnotationSegment(
-              29,
-              31,
-              charts.RangeAnnotationAxisType.domain,
-            ),
+            for (var day in chartData)
+              charts.RangeAnnotationSegment(
+                day['day'] + 1,
+                day['day'] + 1,
+                charts.RangeAnnotationAxisType.domain,
+                labelAnchor: charts.AnnotationLabelAnchor.end,
+                labelDirection: charts.AnnotationLabelDirection.horizontal,
+                labelPosition: charts.AnnotationLabelPosition.margin,
+                labelStyleSpec: charts.TextStyleSpec(fontSize: 11),
+                startLabel: day['type'][0],
+              ),
+            for (var day in chartData)
+              charts.RangeAnnotationSegment(
+                day['day'] - 1,
+                day['day'] + 1,
+                charts.RangeAnnotationAxisType.domain,
+              ),
           ],
         ),
       ],

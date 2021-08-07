@@ -8,10 +8,6 @@ import 'package:mobilev/screens/my_recordings_body.dart';
 import 'package:mobilev/screens/my_profile_body.dart';
 
 class MyHomeScreen extends StatefulWidget {
-  // final int tab;
-  //
-  // MyHomeScreen([this.tab = 1]);
-
   @override
   _MyHomeScreenState createState() => _MyHomeScreenState();
 }
@@ -24,8 +20,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     1: ['My recordings', RecordingsBody()],
     2: ['My profile', ProfileBody()],
   };
-
-  // _MyHomeScreenState(this.current);
 
   @override
   Widget build(BuildContext context) {

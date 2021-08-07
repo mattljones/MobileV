@@ -1,6 +1,6 @@
 // Module imports
-import 'package:flutter/widgets.dart';
 import 'package:mobilev/services/database_service.dart';
+import 'package:mobilev/models/score.dart';
 import 'package:mobilev/config/constants.dart';
 
 class Recording {
@@ -195,33 +195,15 @@ class Recording {
     return output;
   }
 
-  // Get list of currently active scores
-  static Future<Map<int, String>> selectActiveScores() async {
-    final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db!.query(
-      'Score',
-      columns: ['scoreID', 'scoreName'],
-      where: 'isCurrent = ?',
-      whereArgs: [1],
-      orderBy: 'scoreID ASC',
-    );
-
-    return Map<int, String>.fromIterable(
-      list,
-      key: (item) => item['scoreID'],
-      value: (item) => item['scoreName'],
-    );
-  }
-
   // Select score analysis for active months
   static Future<Map<dynamic, dynamic>> selectAnalysis() async {
     final db = databaseService.db;
     final List months = (await selectMonths()).values.toList();
-    final Map activeScores = await selectActiveScores();
+    final Map activeScores = await Score.selectActiveScores();
     final List scores = [...activeScores.keys, 'wpm'];
 
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
-        SELECT strftime('%d-%m-%Y', dateRecorded) AS date, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, wpm
+        SELECT strftime('%d-%m-%Y', dateRecorded) AS date, type, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, wpm
         FROM Recording
         GROUP BY date(dateRecorded, 'start of day')
         ''');
@@ -242,6 +224,7 @@ class Recording {
           output[month][recording['score${num}ID']].add({
             'day': int.parse(recording['date'].toString().substring(0, 2)),
             'score': recording['score${num}Value'],
+            'type': recording['type']
           });
         }
       }
@@ -249,6 +232,7 @@ class Recording {
         output[month]['wpm'].add({
           'day': int.parse(recording['date'].toString().substring(0, 2)),
           'score': recording['wpm'],
+          'type': recording['type']
         });
       }
     }

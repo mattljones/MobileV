@@ -6,9 +6,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
 import 'package:mobilev/config/constants.dart';
-import 'package:mobilev/screens/change_password.dart';
 import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/screens/weekly_reminders.dart';
+import 'package:mobilev/screens/change_password.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/profile_card.dart';
 import 'package:mobilev/models/user_data.dart';

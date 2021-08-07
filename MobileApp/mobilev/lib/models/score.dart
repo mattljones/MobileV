@@ -30,4 +30,21 @@ class Score {
 
   // Queries -------------------------------------------------------------------
 
+  // Get list of currently active scores
+  static Future<Map<int, String>> selectActiveScores() async {
+    final db = databaseService.db;
+    final List<Map<String, dynamic>> list = await db!.query(
+      'Score',
+      columns: ['scoreID', 'scoreName'],
+      where: 'isCurrent = ?',
+      whereArgs: [1],
+      orderBy: 'scoreID ASC',
+    );
+
+    return Map<int, String>.fromIterable(
+      list,
+      key: (item) => item['scoreID'],
+      value: (item) => item['scoreName'],
+    );
+  }
 }

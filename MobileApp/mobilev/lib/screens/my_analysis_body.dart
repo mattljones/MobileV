@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
+import 'package:mobilev/models/score.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/status_card.dart';
 import 'package:mobilev/widgets/dropdown.dart';
@@ -36,8 +37,6 @@ class _AnalysisBodyState extends State<AnalysisBody>
   bool monthlyScoresLoading = true;
   Map? monthlyScores;
   String? monthDropdownValue;
-  String? cloudDropdownValue;
-  String? cloudFilePath;
 
   void getStatusCardTotals() {
     Recording.selectTotals().then((data) {
@@ -60,12 +59,10 @@ class _AnalysisBodyState extends State<AnalysisBody>
 
   void getMonths() {
     Recording.selectMonths().then((data) {
-      print('months');
-      print(data);
-      print('');
       setState(() {
         activeMonths = data;
-        monthDropdownValue = activeMonths!.keys.first;
+        monthDropdownValue =
+            activeMonths!.keys.isNotEmpty ? activeMonths!.keys.first : null;
         monthsLoading = false;
       });
     });
@@ -73,9 +70,6 @@ class _AnalysisBodyState extends State<AnalysisBody>
 
   void getWordClouds() {
     Recording.selectWordClouds().then((data) {
-      print('wordclouds');
-      print(data);
-      print('');
       setState(() {
         cloudData = data;
         cloudsLoading = false;
@@ -84,10 +78,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
   }
 
   void getActiveScores() {
-    Recording.selectActiveScores().then((data) {
-      print('activescores');
-      print(data);
-      print('');
+    Score.selectActiveScores().then((data) {
       setState(() {
         activeScores = data;
         activeScoresLoading = false;
@@ -97,9 +88,6 @@ class _AnalysisBodyState extends State<AnalysisBody>
 
   void getAnalysis() async {
     Recording.selectAnalysis().then((data) {
-      print('analysis');
-      print(data);
-      print('');
       setState(() {
         monthlyScores = data;
         monthlyScoresLoading = false;
@@ -177,18 +165,21 @@ class _AnalysisBodyState extends State<AnalysisBody>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Month selection dropdown
                   MyDropdown(
                     items: activeMonths!.keys.toList(),
-                    prompt: activeMonths!.keys.first,
+                    prompt: activeMonths!.keys.isNotEmpty
+                        ? activeMonths!.keys.first
+                        : '',
                     dropdownValue: monthDropdownValue,
                     onChanged: (newValue) {
                       setState(() {
                         monthDropdownValue = newValue!;
-                        cloudDropdownValue = null;
                       });
                     },
                   ),
                   SizedBox(width: 30.0),
+                  // Word cloud dropdown
                   MyDropdown(
                     items: cloudData!.keys
                             .contains(activeMonths![monthDropdownValue])
@@ -203,8 +194,9 @@ class _AnalysisBodyState extends State<AnalysisBody>
                             .contains(activeMonths![monthDropdownValue])
                         ? 'View word cloud'
                         : 'No word clouds',
-                    dropdownValue: cloudDropdownValue,
+                    dropdownValue: null,
                     onChanged: (newValue) async {
+                      // Update dropdown
                       String? filePath;
                       for (var cloud
                           in cloudData![activeMonths![monthDropdownValue]]) {
@@ -212,17 +204,14 @@ class _AnalysisBodyState extends State<AnalysisBody>
                           filePath = cloud['filePath'];
                         }
                       }
-                      setState(() {
-                        cloudDropdownValue = newValue!;
-                        cloudFilePath = filePath;
-                      });
+                      // Get absolute word cloud path + build alert dialog
                       String absPath = path.join(
                           (await getApplicationDocumentsDirectory()).path,
-                          cloudFilePath);
+                          filePath);
                       await showDialog(
                         context: context,
                         builder: (_) => WordCloudDialog(
-                          date: cloudDropdownValue!.split(' (')[0],
+                          date: newValue!.split(' (')[0],
                           filePath: absPath,
                         ),
                       );
@@ -237,7 +226,9 @@ class _AnalysisBodyState extends State<AnalysisBody>
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: ScoreChart(
-                  chartData: monthlyScores![months[monthDropdownValue]]['wpm'],
+                  chartData: activeMonths!.keys.isNotEmpty
+                      ? monthlyScores![activeMonths![monthDropdownValue]]['wpm']
+                      : [],
                   axisTitle: 'WPM',
                   index: 0,
                 ),
@@ -249,8 +240,14 @@ class _AnalysisBodyState extends State<AnalysisBody>
                     (24 / (activeScores!.keys.length + 1)).toStringAsFixed(0)),
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 6.0),
-                  child: ScoreChart.withSampleData(
-                      activeScores!.values.toList()[i], i + 1),
+                  child: ScoreChart(
+                    chartData: activeMonths!.keys.isNotEmpty
+                        ? monthlyScores![activeMonths![monthDropdownValue]]
+                            [activeScores!.keys.toList()[i]]
+                        : [],
+                    axisTitle: activeScores!.values.toList()[i],
+                    index: i + 1,
+                  ),
                 ),
               ),
           ],
@@ -279,6 +276,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
               child: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
+                  // Show spinner whilst loading
                   if (statusCardTotalsLoading || usageDataLoading)
                     Center(
                       child: SpinKitRing(
@@ -287,8 +285,20 @@ class _AnalysisBodyState extends State<AnalysisBody>
                         lineWidth: 3.0,
                       ),
                     )
+                  else if (noRecordings == 0)
+                    Center(
+                      child: Text(
+                        'You haven\'t made any recordings yet!',
+                        style: TextStyle(
+                          fontFamily: 'PTSans',
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
+                      ),
+                    )
                   else
                     buildUsageContent(),
+                  // Show spinner whilst loading
                   if (monthsLoading ||
                       cloudsLoading ||
                       activeScoresLoading ||
@@ -298,6 +308,17 @@ class _AnalysisBodyState extends State<AnalysisBody>
                         color: kSecondaryTextColour,
                         size: 24.0,
                         lineWidth: 3.0,
+                      ),
+                    )
+                  else if (noRecordings == 0)
+                    Center(
+                      child: Text(
+                        'You haven\'t made any recordings yet!',
+                        style: TextStyle(
+                          fontFamily: 'PTSans',
+                          color: Colors.red,
+                          fontSize: 18,
+                        ),
                       ),
                     )
                   else
