@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 
 // Package imports
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
@@ -276,47 +276,43 @@ class _AnalysisBodyState extends State<AnalysisBody>
               child: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  // Show spinner whilst loading
+                  // Show hourglass whilst loading
                   if (statusCardTotalsLoading || usageDataLoading)
-                    Center(
-                      child: SpinKitRing(
-                        color: kSecondaryTextColour,
-                        size: 24.0,
-                        lineWidth: 3.0,
-                      ),
+                    SpinKitPouringHourglass(
+                      color: kSecondaryTextColour,
                     )
                   else if (noRecordings == 0)
-                    Center(
+                    Padding(
+                      padding: EdgeInsets.only(top: 50.0),
                       child: Text(
-                        'You haven\'t made any recordings yet!',
+                        'You haven\'t made any recordings yet.',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'PTSans',
-                          color: Colors.red,
+                          color: kSecondaryTextColour,
                           fontSize: 18,
                         ),
                       ),
                     )
                   else
                     buildUsageContent(),
-                  // Show spinner whilst loading
+                  // Show hourglass whilst loading
                   if (monthsLoading ||
                       cloudsLoading ||
                       activeScoresLoading ||
                       monthlyScoresLoading)
-                    Center(
-                      child: SpinKitRing(
-                        color: kSecondaryTextColour,
-                        size: 24.0,
-                        lineWidth: 3.0,
-                      ),
+                    SpinKitPouringHourglass(
+                      color: kSecondaryTextColour,
                     )
                   else if (noRecordings == 0)
-                    Center(
+                    Padding(
+                      padding: EdgeInsets.only(top: 50.0),
                       child: Text(
-                        'You haven\'t made any recordings yet!',
+                        'You haven\'t made any recordings yet.',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'PTSans',
-                          color: Colors.red,
+                          color: kSecondaryTextColour,
                           fontSize: 18,
                         ),
                       ),

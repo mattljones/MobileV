@@ -92,6 +92,91 @@ class Recording {
 
   // Queries -------------------------------------------------------------------
 
+  // Select most recent recordings
+  static Future<List<dynamic>> selectMostRecent() async {
+    final db = databaseService.db;
+    final scores = await Score.selectAllScores();
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
+      SELECT strftime('%d/%m/%Y', dateRecorded) AS date, *
+      FROM Recording
+      LIMIT 8
+      ''');
+
+    var output = [];
+
+    for (var index = 0; index < list.length; index++) {
+      var recording = Map.from(list[index]);
+      var recScores = {};
+      if (recording['wpm'] != null) {
+        recScores['WPM'] = recording['wpm'];
+      }
+      for (var i in [1, 2, 3]) {
+        if (recording['score${i}ID'] != null) {
+          recScores[scores[recording['score${i}ID']]] =
+              recording['score${i}Value'];
+        }
+      }
+      recording['scores'] = recScores;
+      output.add(recording);
+    }
+
+    return output;
+  }
+
+  // Select all recordings, grouped by month
+  static Future<Map<dynamic, List>> selectByMonth() async {
+    final db = databaseService.db;
+    final scores = await Score.selectAllScores();
+    final List months = (await selectMonths()).values.toList();
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
+      SELECT strftime('%m-%Y', dateRecorded) as month, strftime('%d/%m/%Y', dateRecorded) AS date, *
+      FROM Recording
+      ''');
+
+    var output = Map.fromIterable(
+      months,
+      key: (item) => item,
+      value: (item) => [],
+    );
+
+    for (var index = 0; index < list.length; index++) {
+      var recording = Map.from(list[index]);
+      var recScores = {};
+      if (recording['wpm'] != null) {
+        recScores['WPM'] = recording['wpm'];
+      }
+      for (var i in [1, 2, 3]) {
+        if (recording['score${i}ID'] != null) {
+          recScores[scores[recording['score${i}ID']]] =
+              recording['score${i}Value'];
+        }
+      }
+      recording['scores'] = recScores;
+      output[recording['month']]!.add(recording);
+    }
+
+    return output;
+  }
+
+  // Select list of months for which have recordings
+  static Future<Map<String, String>> selectMonths() async {
+    final db = databaseService.db;
+    final List<Map<String, dynamic>> list = await db!.rawQuery('''
+      SELECT DISTINCT strftime('%m-%Y', dateRecorded) AS month
+      FROM Recording
+      ORDER BY date(dateRecorded) DESC
+      ''');
+
+    return Map<String, String>.fromIterable(
+      list,
+      key: (item) =>
+          months[item['month'].substring(0, 2)]! +
+          ' ' +
+          item['month'].substring(3),
+      value: (item) => item['month'],
+    );
+  }
+
   // Select total number of recordings and minutes
   static Future<Map<String, dynamic>> selectTotals() async {
     final db = databaseService.db;
@@ -128,25 +213,6 @@ class Recording {
             : 0,
       };
     });
-  }
-
-  // Select list of months for which have recordings
-  static Future<Map<String, String>> selectMonths() async {
-    final db = databaseService.db;
-    final List<Map<String, dynamic>> list = await db!.rawQuery('''
-      SELECT DISTINCT strftime('%m-%Y', dateRecorded) AS month
-      FROM Recording
-      ORDER BY date(dateRecorded) DESC
-      ''');
-
-    return Map<String, String>.fromIterable(
-      list,
-      key: (item) =>
-          months[item['month'].substring(0, 2)]! +
-          ' ' +
-          item['month'].substring(3),
-      value: (item) => item['month'],
-    );
   }
 
   // Select word clouds per month for which have recordings

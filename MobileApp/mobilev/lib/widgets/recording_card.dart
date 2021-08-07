@@ -29,21 +29,13 @@ class RecordingCard extends StatefulWidget {
   });
 
   @override
-  _RecordingCardState createState() => _RecordingCardState(
-      dateRecorded, type, duration, isShared, analysisStatus, scores);
+  _RecordingCardState createState() => _RecordingCardState();
 }
 
 class _RecordingCardState extends State<RecordingCard> {
-  final String dateRecorded;
-  final String type;
-  final int duration;
-  bool isShared;
-  AnalysisStatus analysisStatus;
-  Map<String, int> scores;
-
   List<Widget> constructScores() {
     List<Widget> list = [];
-    scores.forEach((key, value) {
+    widget.scores.forEach((key, value) {
       list.add(
         RecordingCardScore(scoreName: key, scoreValue: value),
       );
@@ -53,9 +45,6 @@ class _RecordingCardState extends State<RecordingCard> {
     });
     return list;
   }
-
-  _RecordingCardState(this.dateRecorded, this.type, this.duration,
-      this.isShared, this.analysisStatus, this.scores);
 
   static String expansionTitle = 'View scores';
 
@@ -67,7 +56,7 @@ class _RecordingCardState extends State<RecordingCard> {
       margin: EdgeInsets.fromLTRB(4.0, 20.0, 4.0, 0.0),
       child: Container(
         padding: EdgeInsets.fromLTRB(
-            15.0, 15.0, 15.0, scores.isNotEmpty ? 0.0 : 15.0),
+            15.0, 15.0, 15.0, widget.scores.isNotEmpty ? 0.0 : 15.0),
         child: Column(
           children: [
             GestureDetector(
@@ -79,8 +68,8 @@ class _RecordingCardState extends State<RecordingCard> {
                   context,
                   MaterialPageRoute(builder: (context) {
                     return ViewRecordingScreen(
-                      scores: scores,
-                      analysisStatus: analysisStatus,
+                      scores: widget.scores,
+                      analysisStatus: widget.analysisStatus,
                       audioPath: audioPath,
                     );
                   }),
@@ -90,7 +79,7 @@ class _RecordingCardState extends State<RecordingCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    dateRecorded,
+                    widget.dateRecorded,
                     style: TextStyle(
                       color: kPrimaryColour,
                       fontSize: 22.0,
@@ -107,11 +96,11 @@ class _RecordingCardState extends State<RecordingCard> {
                       ),
                       children: [
                         TextSpan(
-                          text: type,
+                          text: widget.type,
                           style: TextStyle(fontWeight: FontWeight.w700),
                         ),
                         TextSpan(
-                          text: '  |  ${duration}s',
+                          text: '  |  ${widget.duration}s',
                           style: TextStyle(fontWeight: FontWeight.w300),
                         )
                       ],
@@ -129,8 +118,8 @@ class _RecordingCardState extends State<RecordingCard> {
                   context,
                   MaterialPageRoute(builder: (context) {
                     return ViewRecordingScreen(
-                      scores: scores,
-                      analysisStatus: analysisStatus,
+                      scores: widget.scores,
+                      analysisStatus: widget.analysisStatus,
                       audioPath: audioPath,
                     );
                   }),
@@ -147,8 +136,8 @@ class _RecordingCardState extends State<RecordingCard> {
                   context,
                   MaterialPageRoute(builder: (context) {
                     return ViewRecordingScreen(
-                      scores: scores,
-                      analysisStatus: analysisStatus,
+                      scores: widget.scores,
+                      analysisStatus: widget.analysisStatus,
                       audioPath: audioPath,
                     );
                   }),
@@ -156,7 +145,7 @@ class _RecordingCardState extends State<RecordingCard> {
               },
               child: Row(
                 children: [
-                  isShared
+                  widget.isShared
                       ? StatusCard(
                           colour: Colors.green,
                           label: 'Shared',
@@ -176,7 +165,7 @@ class _RecordingCardState extends State<RecordingCard> {
                           iconFirst: false,
                         ),
                   SizedBox(width: 10.0),
-                  if (analysisStatus == AnalysisStatus.unavailable)
+                  if (widget.analysisStatus == AnalysisStatus.unavailable)
                     StatusCard(
                       colour: kSecondaryTextColour,
                       label: 'Analysis unavailable',
@@ -186,18 +175,20 @@ class _RecordingCardState extends State<RecordingCard> {
                       ),
                       iconFirst: false,
                     ),
-                  if (analysisStatus == AnalysisStatus.pending)
+                  if (widget.analysisStatus == AnalysisStatus.pending)
                     StatusCard(
                       colour: Colors.orange,
                       label: 'Analysis pending',
-                      icon: SpinKitRing(
+                      icon: SpinKitWave(
+                        type: SpinKitWaveType.center,
                         color: Colors.white,
-                        size: 24.0,
-                        lineWidth: 3.0,
+                        size: 19.7,
+                        itemCount: 7,
+                        // lineWidth: 3.0,
                       ),
                       iconFirst: false,
                     ),
-                  if (analysisStatus == AnalysisStatus.received)
+                  if (widget.analysisStatus == AnalysisStatus.received)
                     StatusCard(
                       colour: Colors.green,
                       label: 'Analysis received',
@@ -207,7 +198,7 @@ class _RecordingCardState extends State<RecordingCard> {
                       ),
                       iconFirst: false,
                     ),
-                  if (analysisStatus == AnalysisStatus.failed)
+                  if (widget.analysisStatus == AnalysisStatus.failed)
                     StatusCard(
                       colour: Colors.red,
                       label: 'Analysis failed',
@@ -221,7 +212,7 @@ class _RecordingCardState extends State<RecordingCard> {
               ),
             ),
             SizedBox(width: 10.0),
-            if (scores.isNotEmpty)
+            if (widget.scores.isNotEmpty)
               ExpansionTile(
                 textColor: Colors.black,
                 iconColor: Colors.black,

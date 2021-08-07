@@ -58,14 +58,10 @@ class _ProfileBodyState extends State<ProfileBody> {
     return Container(
       padding: EdgeInsets.all(35.0),
       child:
-          // Show spinner whilst asynchronous data is loading
+          // Show hourglass whilst asynchronous data is loading
           (sharePreferenceLoading || remindersPreferenceLoading)
-              ? Center(
-                  child: SpinKitRing(
-                    color: kSecondaryTextColour,
-                    size: 24.0,
-                    lineWidth: 3.0,
-                  ),
+              ? SpinKitPouringHourglass(
+                  color: kSecondaryTextColour,
                 )
               // Show content once all asynchronous data loaded
               : Column(

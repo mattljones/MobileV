@@ -19,6 +19,13 @@ const kCardColour = Color(0xFFDEDEDE);
 // Enumerated types
 enum AnalysisStatus { unavailable, pending, received, failed }
 
+const analysisStatus = {
+  'unavailable': AnalysisStatus.unavailable,
+  'pending': AnalysisStatus.pending,
+  'received': AnalysisStatus.received,
+  'failed': AnalysisStatus.failed,
+};
+
 // Other
 const days = {
   '1': 'Mondays',

@@ -181,7 +181,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Add a recording'),
+          title: Text('Add recording'),
         ),
         body: DefaultTabController(
           length: 2,

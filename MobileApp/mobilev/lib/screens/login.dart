@@ -8,7 +8,12 @@ import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/form_input_text.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
