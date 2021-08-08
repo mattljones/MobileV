@@ -6,7 +6,7 @@ import 'package:mobilev/config/constants.dart';
 class Recording {
   final String dateRecorded;
   final String type;
-  final String duration;
+  final int duration;
   final String audioFilePath;
   final int? score1ID;
   final int? score1Value;
@@ -14,7 +14,7 @@ class Recording {
   final int? score2Value;
   final int? score3ID;
   final int? score3Value;
-  final bool isShared;
+  final int isShared;
   final String analysisStatus;
   final int? wpm;
   final String? transcript;
@@ -92,6 +92,26 @@ class Recording {
 
   // Queries -------------------------------------------------------------------
 
+  // Insert a new recording
+  static Future<void> insertRecording(Recording recording) async {
+    final db = databaseService.db;
+    await db!.insert(
+      'Recording',
+      recording.toMap(),
+    );
+  }
+
+  // Update one (by domain)
+  static Future<void> updateRecording(Recording recording) async {
+    final db = databaseService.db;
+    await db!.update(
+      'Recording',
+      recording.toMap(),
+      where: 'dateRecorded = ?',
+      whereArgs: [recording.dateRecorded],
+    );
+  }
+
   // Select most recent recordings
   static Future<List<dynamic>> selectMostRecent() async {
     final db = databaseService.db;
@@ -99,6 +119,7 @@ class Recording {
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT strftime('%d/%m/%Y', dateRecorded) AS date, *
       FROM Recording
+      ORDER BY dateRecorded DESC
       LIMIT 8
       ''');
 
@@ -120,6 +141,7 @@ class Recording {
       output.add(recording);
     }
 
+    print(output);
     return output;
   }
 
@@ -131,6 +153,7 @@ class Recording {
     final List<Map<String, dynamic>> list = await db!.rawQuery('''
       SELECT strftime('%m-%Y', dateRecorded) as month, strftime('%d/%m/%Y', dateRecorded) AS date, *
       FROM Recording
+      ORDER BY dateRecorded DESC
       ''');
 
     var output = Map.fromIterable(

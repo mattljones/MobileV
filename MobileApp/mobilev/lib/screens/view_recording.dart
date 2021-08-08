@@ -13,15 +13,42 @@ import 'package:mobilev/widgets/status_card.dart';
 import 'package:mobilev/widgets/form_input_number.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
-class ViewRecordingScreen extends StatelessWidget {
+class ViewRecordingScreen extends StatefulWidget {
   final Map<String, int> scores;
   final AnalysisStatus analysisStatus;
   final String audioPath;
 
-  ViewRecordingScreen(
-      {required this.scores,
-      required this.analysisStatus,
-      required this.audioPath});
+  ViewRecordingScreen({
+    required this.scores,
+    required this.analysisStatus,
+    required this.audioPath,
+  });
+
+  @override
+  _ViewRecordingScreenState createState() => _ViewRecordingScreenState(
+        this.scores,
+        this.analysisStatus,
+        this.audioPath,
+      );
+}
+
+class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
+  final score1Controller = TextEditingController();
+  final score2Controller = TextEditingController();
+  final score3Controller = TextEditingController();
+  final Map<String, int> scores;
+  final AnalysisStatus analysisStatus;
+  final String audioPath;
+
+  _ViewRecordingScreenState(this.scores, this.analysisStatus, this.audioPath);
+
+  @override
+  void dispose() {
+    score1Controller.dispose();
+    score2Controller.dispose();
+    score3Controller.dispose();
+    super.dispose();
+  }
 
   SingleChildScrollView buildScoresTab(BuildContext context) =>
       SingleChildScrollView(
@@ -57,16 +84,19 @@ class ViewRecordingScreen extends StatelessWidget {
             ),
             SizedBox(height: 30.0),
             FormInputNumber(
+              controller: score1Controller,
               label: 'Score 1',
               initialValue: "68",
             ),
             SizedBox(height: 30.0),
             FormInputNumber(
+              controller: score2Controller,
               label: 'Score 2',
               initialValue: scores['ScoreName 2'].toString(),
             ),
             SizedBox(height: 30.0),
             FormInputNumber(
+              controller: score3Controller,
               label: 'Score 3',
               initialValue: scores['ScoreName 3'].toString(),
             ),
@@ -175,7 +205,7 @@ class ViewRecordingScreen extends StatelessWidget {
                       onPressed: () async {
                         var directory =
                             await getApplicationDocumentsDirectory();
-                        String filePath = '${directory.path}/test.m4a';
+                        String filePath = '${directory.path}/$audioPath';
                         Share.shareFiles(
                           [filePath],
                         );

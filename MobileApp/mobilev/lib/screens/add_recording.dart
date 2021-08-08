@@ -9,14 +9,20 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart' as ap;
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:wakelock/wakelock.dart';
 
 // Module imports
+import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
 import 'package:mobilev/widgets/audio_player.dart';
 import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/form_input_number.dart';
+
+/*
+ * ADD RECORDING LAYOUT & LOGIC ------------------------------------------------
+ */
 
 class AddRecordingScreen extends StatefulWidget {
   @override
@@ -26,31 +32,69 @@ class AddRecordingScreen extends StatefulWidget {
 class _AddRecordingScreenState extends State<AddRecordingScreen>
     with TickerProviderStateMixin {
   int tabIndex = 0;
+  List<String> types = ['Numeric', 'Text'];
   List<bool> typeIsSelected = [true, false];
+  String typeSet = 'Numeric';
   List<int> durations = [30, 60, 90, 120];
   List<bool> durationIsSelected = [true, false, false, false];
   int durationSet = 30;
   bool hasRecording = false;
   bool showPlayer = false;
   ap.AudioSource? audioSource;
+  final score1Controller = TextEditingController();
+  final score2Controller = TextEditingController();
+  final score3Controller = TextEditingController();
 
   @override
-  void initState() {
-    showPlayer = false;
-    super.initState();
+  void dispose() {
+    score1Controller.dispose();
+    score2Controller.dispose();
+    score3Controller.dispose();
+    super.dispose();
   }
 
+  // Helper function to update state based on whether the user has made a recording
   void updateRecordingStatus(bool status) {
     status
         ? setState(() => hasRecording = true)
         : setState(() => hasRecording = false);
   }
 
+  // Helper function for saving a new recording
+  void saveRecording() async {
+    String timeNow = DateTime.now().toString().substring(0, 19);
+    // Make the time safe for using in a filename
+    String timeNowPath =
+        timeNow.replaceAll(' ', '_').replaceAll(':', '-') + '.m4a';
+    // Rename saved audio file to uniquely identify it
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    File audio = File(join(directoryPath, 'new_recording.m4a'));
+    audio.renameSync(join(directoryPath, timeNowPath));
+
+    // Save recording details to database
+    var newRecording = Recording(
+      dateRecorded: timeNow,
+      type: typeSet,
+      duration: durationSet,
+      audioFilePath: timeNowPath,
+      score1ID: 2,
+      score1Value: int.parse(score1Controller.text),
+      score2ID: 3,
+      score2Value: int.parse(score2Controller.text),
+      score3ID: 4,
+      score3Value: int.parse(score3Controller.text),
+      isShared: 0,
+      analysisStatus: 'unavailable',
+    );
+    await Recording.insertRecording(newRecording);
+  }
+
   Column buildRecordTab(BuildContext context) => Column(
         children: [
           SizedBox(height: 30.0),
+          // Type selection
           MyToggleButtons(
-            fields: ['Numeric', 'Text'],
+            fields: types,
             isSelected: typeIsSelected,
             onPressed: (int index) {
               setState(() {
@@ -59,6 +103,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                     buttonIndex++) {
                   if (buttonIndex == index) {
                     typeIsSelected[buttonIndex] = true;
+                    typeSet = types[buttonIndex];
                   } else {
                     typeIsSelected[buttonIndex] = false;
                   }
@@ -67,8 +112,9 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
             },
           ),
           SizedBox(height: 30.0),
+          // Duration selection
           MyToggleButtons(
-            fields: ['30s', '60s', '90s', '120s'],
+            fields: [for (var duration in durations) '${duration}s'],
             isSelected: durationIsSelected,
             onPressed: (int index) {
               if (!hasRecording) {
@@ -88,6 +134,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
             },
           ),
           SizedBox(height: 55.0),
+          // Either show a record button or audio player depending on state
           showPlayer
               ? Padding(
                   padding: EdgeInsets.only(top: 15.0),
@@ -116,7 +163,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                     ),
                   ],
                 ),
-          if (hasRecording)
+          // If the user has a recording, show a 'continue' button
+          if (hasRecording && showPlayer)
             Container(
               padding: EdgeInsets.fromLTRB(20.0, 80.0, 20.0, 0.0),
               child: FormButton(
@@ -141,18 +189,28 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 35.0),
-            FormInputNumber(label: 'Score 1'),
+            FormInputNumber(
+              controller: score1Controller,
+              label: 'Well being',
+            ),
             SizedBox(height: 30.0),
-            FormInputNumber(label: 'Score 2'),
+            FormInputNumber(
+              controller: score2Controller,
+              label: 'GAD7',
+            ),
             SizedBox(height: 30.0),
-            FormInputNumber(label: 'Score 3'),
+            FormInputNumber(
+              controller: score3Controller,
+              label: 'Steps',
+            ),
             SizedBox(height: 30.0),
             FormButton(
               text: 'Save',
               buttonColour: kSecondaryTextColour,
               textColour: Colors.white,
               onPressed: () {
-                Navigator.pop(context, true);
+                saveRecording();
+                Navigator.pop(this.context, true);
               },
             ),
             SizedBox(height: 15.0),
@@ -160,8 +218,9 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               text: 'Save & Share',
               buttonColour: kPrimaryColour,
               textColour: Colors.white,
-              onPressed: () {
-                Navigator.pop(context, true);
+              onPressed: () async {
+                saveRecording();
+                Navigator.pop(this.context, true);
               },
             ),
           ],
@@ -172,8 +231,9 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        var directory = await getApplicationDocumentsDirectory();
-        String filePath = '${directory.path}/test.m4a';
+        // Delete recording if one was made but not saved
+        var directoryPath = (await getApplicationDocumentsDirectory()).path;
+        String filePath = join(directoryPath, 'new_recording.m4a');
         if (File(filePath).existsSync()) {
           File(filePath).delete();
         }
@@ -194,12 +254,12 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                   Container(
                     child: TabBar(
                       indicatorColor: kPrimaryColour,
-                      unselectedLabelColor: hasRecording
+                      unselectedLabelColor: hasRecording && showPlayer
                           ? kPrimaryTextColour
                           : kSecondaryTextColour,
                       onTap: (index) {
                         SystemChannels.textInput.invokeMethod('TextInput.hide');
-                        if (!hasRecording) {
+                        if (!hasRecording || !showPlayer) {
                           DefaultTabController.of(context)?.animateTo(0);
                         } else if (index == 0) {
                           sleep(Duration(milliseconds: 100));
@@ -233,6 +293,10 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   }
 }
 
+/*
+ * RECORDING FUNCTIONALITY -----------------------------------------------------
+ */
+
 // This code is based on: https://github.com/llfbandit/record/blob/master/record/example/lib/main.dart
 
 class AudioRecorder extends StatefulWidget {
@@ -256,7 +320,6 @@ class _AudioRecorderState extends State<AudioRecorder> {
   int countdownRemaining = 3;
   Timer? countdownTimer;
   late int timeRemaining;
-
   Timer? recordTimer;
 
   @override
@@ -294,6 +357,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   void startCountdownTimer() {
     countdownTimer?.cancel();
+    widget.updateRecordingStatus(true);
     setState(() => isCountingDown = true);
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       if (countdownRemaining == 1) {
@@ -323,8 +387,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
         setState(() {
           timeRemaining = widget.durationSet;
         });
-        var directory = await getApplicationDocumentsDirectory();
-        await audioRecorder.start(path: '${directory.path}/test.m4a');
+        String directoryPath = (await getApplicationDocumentsDirectory()).path;
+        String audioPath = join(directoryPath, 'new_recording.m4a');
+        await audioRecorder.start(path: audioPath);
         bool _isRecording = await audioRecorder.isRecording();
         setState(() {
           isRecording = _isRecording;

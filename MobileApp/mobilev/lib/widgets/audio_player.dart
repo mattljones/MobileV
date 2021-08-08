@@ -27,7 +27,7 @@ class AudioPlayer extends StatefulWidget {
 
 class AudioPlayerState extends State<AudioPlayer> {
   static const double _controlSize = 56;
-  static const double _deleteBtnSize = 24;
+  static const double _deleteBtnSize = 30;
 
   final _audioPlayer = ap.AudioPlayer();
   late StreamSubscription<ap.PlayerState> _playerStateChangedSubscription;

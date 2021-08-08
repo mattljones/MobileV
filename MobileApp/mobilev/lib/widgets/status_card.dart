@@ -24,6 +24,7 @@ class StatusCard extends StatelessWidget {
         : [textWidget, SizedBox(width: 10.0), icon];
 
     return Container(
+      height: 44.0,
       decoration: BoxDecoration(
         color: colour,
         borderRadius: BorderRadius.all(
@@ -33,6 +34,7 @@ class StatusCard extends StatelessWidget {
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: children,
       ),
     );

@@ -18,6 +18,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundPrimaryColour,

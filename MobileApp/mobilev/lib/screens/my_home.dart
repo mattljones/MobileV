@@ -21,6 +21,11 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     2: ['My profile', ProfileBody()],
   };
 
+  // Function for refreshing recordings body if a recording was added
+  RecordingsBody getRecordingsBody() {
+    return RecordingsBody();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +74,13 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 size: 35.0,
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/add-recording');
+                Navigator.pushNamed(context, '/add-recording').then((value) {
+                  if (value != null && value == true) {
+                    setState(() {
+                      _screenData[1][1] = getRecordingsBody();
+                    }); // Refresh data if save was pressed
+                  }
+                });
               },
             ),
       body: _screenData[current][1],

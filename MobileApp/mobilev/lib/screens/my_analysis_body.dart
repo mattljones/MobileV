@@ -285,7 +285,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
                     Padding(
                       padding: EdgeInsets.only(top: 50.0),
                       child: Text(
-                        'You haven\'t made any recordings yet.',
+                        'You haven\'t made any recordings yet',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'PTSans',
@@ -308,7 +308,7 @@ class _AnalysisBodyState extends State<AnalysisBody>
                     Padding(
                       padding: EdgeInsets.only(top: 50.0),
                       child: Text(
-                        'You haven\'t made any recordings yet.',
+                        'You haven\'t made any recordings yet',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'PTSans',

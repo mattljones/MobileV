@@ -165,16 +165,6 @@ class _RecordingCardState extends State<RecordingCard> {
                           iconFirst: false,
                         ),
                   SizedBox(width: 10.0),
-                  if (widget.analysisStatus == AnalysisStatus.unavailable)
-                    StatusCard(
-                      colour: kSecondaryTextColour,
-                      label: 'Analysis unavailable',
-                      icon: Icon(
-                        Icons.disabled_by_default_outlined,
-                        color: Colors.white,
-                      ),
-                      iconFirst: false,
-                    ),
                   if (widget.analysisStatus == AnalysisStatus.pending)
                     StatusCard(
                       colour: Colors.orange,
@@ -187,8 +177,8 @@ class _RecordingCardState extends State<RecordingCard> {
                         // lineWidth: 3.0,
                       ),
                       iconFirst: false,
-                    ),
-                  if (widget.analysisStatus == AnalysisStatus.received)
+                    )
+                  else if (widget.analysisStatus == AnalysisStatus.received)
                     StatusCard(
                       colour: Colors.green,
                       label: 'Analysis received',
@@ -197,8 +187,8 @@ class _RecordingCardState extends State<RecordingCard> {
                         color: Colors.white,
                       ),
                       iconFirst: false,
-                    ),
-                  if (widget.analysisStatus == AnalysisStatus.failed)
+                    )
+                  else if (widget.analysisStatus == AnalysisStatus.failed)
                     StatusCard(
                       colour: Colors.red,
                       label: 'Analysis failed',

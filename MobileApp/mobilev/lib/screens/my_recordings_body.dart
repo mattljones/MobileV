@@ -31,6 +31,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Map<String, String>? months;
 
   void getMostRecentData() {
+    mostRecentLoading = true;
     Recording.selectMostRecent().then((data) {
       setState(() {
         mostRecentData = data;
@@ -40,6 +41,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
   }
 
   void getMonthlyData() {
+    monthlyLoading = true;
     Recording.selectByMonth().then((data) {
       setState(() {
         monthlyData = data;
@@ -49,6 +51,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
   }
 
   void getMonths() {
+    monthsLoading = true;
     Recording.selectMonths().then((data) {
       setState(() {
         months = data;
@@ -63,6 +66,15 @@ class _RecordingsBodyState extends State<RecordingsBody>
     _scrollController = ScrollController();
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
+    getMostRecentData();
+    getMonthlyData();
+    getMonths();
+  }
+
+  @mustCallSuper
+  @protected
+  void didUpdateWidget(covariant oldWidget) {
+    super.didUpdateWidget(oldWidget);
     getMostRecentData();
     getMonthlyData();
     getMonths();
@@ -103,7 +115,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                         TextSpan(
                             text: 'button',
                             style: TextStyle(color: kDarkAccentColour)),
-                        TextSpan(text: ' to make a recording.'),
+                        TextSpan(text: ' to make a recording'),
                       ],
                     ),
                   ),
@@ -158,7 +170,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                         TextSpan(
                             text: 'button',
                             style: TextStyle(color: kDarkAccentColour)),
-                        TextSpan(text: ' to make a recording.'),
+                        TextSpan(text: ' to make a recording'),
                       ],
                     ),
                   ),
