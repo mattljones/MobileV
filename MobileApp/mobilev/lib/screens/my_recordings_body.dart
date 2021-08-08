@@ -31,7 +31,6 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Map<String, String>? months;
 
   void getMostRecentData() {
-    mostRecentLoading = true;
     Recording.selectMostRecent().then((data) {
       setState(() {
         mostRecentData = data;
@@ -41,7 +40,6 @@ class _RecordingsBodyState extends State<RecordingsBody>
   }
 
   void getMonthlyData() {
-    monthlyLoading = true;
     Recording.selectByMonth().then((data) {
       setState(() {
         monthlyData = data;
@@ -51,7 +49,6 @@ class _RecordingsBodyState extends State<RecordingsBody>
   }
 
   void getMonths() {
-    monthsLoading = true;
     Recording.selectMonths().then((data) {
       setState(() {
         months = data;
@@ -127,13 +124,23 @@ class _RecordingsBodyState extends State<RecordingsBody>
                 children: [
                   for (var recording in mostRecentData!)
                     RecordingCard(
-                      dateRecorded: recording['date'],
+                      dateRecorded: recording['dateRecorded'],
+                      date: recording['date'],
                       type: recording['type'],
                       duration: recording['duration'],
+                      audioFilePath: recording['audioFilePath'],
+                      scores: Map.from(recording['scores']),
                       isShared: recording['isShared'] == 1 ? true : false,
                       analysisStatus:
                           analysisStatus[recording['analysisStatus']]!,
-                      scores: Map.from(recording['scores']),
+                      wpm: recording['wpm'],
+                      transcript: recording['transcript'],
+                      wordCloudFilePath: recording['wordCloudFilePath'],
+                      updateRecordingsScreen: () {
+                        getMostRecentData();
+                        getMonthlyData();
+                        getMonths();
+                      },
                     ),
                   SizedBox(height: 20.0),
                 ],
@@ -195,13 +202,23 @@ class _RecordingsBodyState extends State<RecordingsBody>
                   ),
                   for (var recording in monthlyData![months![dropdownValue]]!)
                     RecordingCard(
-                      dateRecorded: recording['date'],
+                      dateRecorded: recording['dateRecorded'],
+                      date: recording['date'],
                       type: recording['type'],
                       duration: recording['duration'],
+                      audioFilePath: recording['audioFilePath'],
+                      scores: Map.from(recording['scores']),
                       isShared: recording['isShared'] == 1 ? true : false,
                       analysisStatus:
                           analysisStatus[recording['analysisStatus']]!,
-                      scores: Map.from(recording['scores']),
+                      wpm: recording['wpm'],
+                      transcript: recording['transcript'],
+                      wordCloudFilePath: recording['wordCloudFilePath'],
+                      updateRecordingsScreen: () {
+                        getMostRecentData();
+                        getMonthlyData();
+                        getMonths();
+                      },
                     ),
                   SizedBox(height: 20.0),
                 ],

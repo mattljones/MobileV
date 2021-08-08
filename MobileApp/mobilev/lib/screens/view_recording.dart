@@ -1,12 +1,14 @@
 // Dart & Flutter imports
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Package imports
 import 'package:just_audio/just_audio.dart' as ap;
 import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
 
 // Module imports
+import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/audio_player.dart';
 import 'package:mobilev/widgets/status_card.dart';
@@ -14,39 +16,75 @@ import 'package:mobilev/widgets/form_input_number.dart';
 import 'package:mobilev/widgets/form_button.dart';
 
 class ViewRecordingScreen extends StatefulWidget {
-  final Map<String, int> scores;
-  final AnalysisStatus analysisStatus;
+  final String dateRecorded;
   final String audioPath;
+  final int? wpm;
+  final Map scores;
+  final String? wordCloudPath;
+  final String? transcript;
 
   ViewRecordingScreen({
-    required this.scores,
-    required this.analysisStatus,
+    required this.dateRecorded,
     required this.audioPath,
+    required this.wpm,
+    required this.scores,
+    required this.wordCloudPath,
+    required this.transcript,
   });
 
   @override
   _ViewRecordingScreenState createState() => _ViewRecordingScreenState(
-        this.scores,
-        this.analysisStatus,
+        this.dateRecorded,
         this.audioPath,
+        this.wpm,
+        this.scores,
+        this.wordCloudPath,
+        this.transcript,
       );
 }
 
 class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
-  final score1Controller = TextEditingController();
-  final score2Controller = TextEditingController();
-  final score3Controller = TextEditingController();
-  final Map<String, int> scores;
-  final AnalysisStatus analysisStatus;
+  final String dateRecorded;
   final String audioPath;
+  final int? wpm;
+  final Map scores;
+  final String? wordCloudPath;
+  final String? transcript;
+  List scoreControllers = [];
 
-  _ViewRecordingScreenState(this.scores, this.analysisStatus, this.audioPath);
+  _ViewRecordingScreenState(this.dateRecorded, this.audioPath, this.wpm,
+      this.scores, this.wordCloudPath, this.transcript);
+
+  void updateRecording() async {
+    Map<String, int> newScores = {};
+    for (var i = 0; i < scores.keys.length; i++) {
+      int current = int.parse(scoreControllers[i].text);
+      if (current != scores.values.toList()[i][1]) {
+        newScores['score${i + 1}Value'] = current;
+      }
+    }
+    if (newScores.isNotEmpty) {
+      await Recording.updateRecording(
+        dateRecorded: dateRecorded,
+        newScores: newScores,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    for (var i = 0; i < scores.keys.length; i++) {
+      scoreControllers.add(
+          TextEditingController(text: scores.values.toList()[i][1].toString()));
+    }
+  }
 
   @override
   void dispose() {
-    score1Controller.dispose();
-    score2Controller.dispose();
-    score3Controller.dispose();
+    for (var scoreController in scoreControllers) {
+      scoreController.dispose();
+    }
     super.dispose();
   }
 
@@ -76,58 +114,51 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   TextSpan(
-                    text: (scores['WPM'] ?? 'N/A').toString(),
+                    text: (wpm ?? 'N/A').toString(),
                     style: TextStyle(fontWeight: FontWeight.w300),
                   )
                 ],
               ),
             ),
             SizedBox(height: 30.0),
-            FormInputNumber(
-              controller: score1Controller,
-              label: 'Score 1',
-              initialValue: "68",
-            ),
-            SizedBox(height: 30.0),
-            FormInputNumber(
-              controller: score2Controller,
-              label: 'Score 2',
-              initialValue: scores['ScoreName 2'].toString(),
-            ),
-            SizedBox(height: 30.0),
-            FormInputNumber(
-              controller: score3Controller,
-              label: 'Score 3',
-              initialValue: scores['ScoreName 3'].toString(),
-            ),
-            SizedBox(height: 30.0),
-            Row(
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: FormButton(
-                    text: 'Save',
-                    buttonColour: kSecondaryTextColour,
-                    textColour: Colors.white,
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                  ),
+            for (var i = 0; i < scores.keys.length; i++)
+              Padding(
+                padding: EdgeInsets.only(bottom: 30.0),
+                child: FormInputNumber(
+                  controller: scoreControllers[i],
+                  label: scores.values.toList()[i][0],
                 ),
-                SizedBox(width: 10.0),
-                Flexible(
-                  flex: 3,
-                  child: FormButton(
-                    text: 'Save & Share',
-                    buttonColour: kPrimaryColour,
-                    textColour: Colors.white,
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
+              ),
+            if (scores.keys.length > 0)
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: FormButton(
+                      text: 'Save',
+                      buttonColour: kSecondaryTextColour,
+                      textColour: Colors.white,
+                      onPressed: () {
+                        updateRecording();
+                        Navigator.pop(context, true);
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(width: 10.0),
+                  Flexible(
+                    flex: 3,
+                    child: FormButton(
+                      text: 'Save & Share',
+                      buttonColour: kPrimaryColour,
+                      textColour: Colors.white,
+                      onPressed: () {
+                        updateRecording();
+                        Navigator.pop(context, true);
+                      },
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       );
@@ -141,7 +172,9 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
             SizedBox(height: 20.0),
             Material(
               child: InteractiveViewer(
-                child: Image.asset('assets/images/wordcloud_example.jpg'),
+                child: Image.file(
+                  File(wordCloudPath!),
+                ),
               ),
               elevation: 10.0,
             ),
@@ -157,7 +190,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
             ),
             SizedBox(height: 10.0),
             Text(
-              testTranscript,
+              transcript!,
               style: TextStyle(
                 fontSize: 17.0,
                 height: 1.4,
@@ -203,38 +236,39 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                         iconFirst: true,
                       ),
                       onPressed: () async {
-                        var directory =
-                            await getApplicationDocumentsDirectory();
-                        String filePath = '${directory.path}/$audioPath';
-                        Share.shareFiles(
-                          [filePath],
-                        );
+                        Share.shareFiles([audioPath]);
                       },
                     ),
-                    SimpleDialogOption(
-                      child: StatusCard(
-                        colour: kPrimaryColour,
-                        label: 'Word Cloud',
-                        icon: Icon(
-                          Icons.share,
-                          color: Colors.white,
+                    if (wordCloudPath != null)
+                      SimpleDialogOption(
+                        child: StatusCard(
+                          colour: kPrimaryColour,
+                          label: 'Word Cloud',
+                          icon: Icon(
+                            Icons.share,
+                            color: Colors.white,
+                          ),
+                          iconFirst: true,
                         ),
-                        iconFirst: true,
+                        onPressed: () async {
+                          Share.shareFiles([wordCloudPath!]);
+                        },
                       ),
-                      onPressed: () {},
-                    ),
-                    SimpleDialogOption(
-                      child: StatusCard(
-                        colour: kPrimaryColour,
-                        label: 'Recording + Word Cloud',
-                        icon: Icon(
-                          Icons.share,
-                          color: Colors.white,
+                    if (wordCloudPath != null)
+                      SimpleDialogOption(
+                        child: StatusCard(
+                          colour: kPrimaryColour,
+                          label: 'Recording + Word Cloud',
+                          icon: Icon(
+                            Icons.share,
+                            color: Colors.white,
+                          ),
+                          iconFirst: true,
                         ),
-                        iconFirst: true,
+                        onPressed: () async {
+                          Share.shareFiles([audioPath, wordCloudPath!]);
+                        },
                       ),
-                      onPressed: () {},
-                    ),
                   ],
                 ),
               );
@@ -266,7 +300,8 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                         "Delete",
                         style: TextStyle(color: Colors.red),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        await Recording.deleteRecording(dateRecorded);
                         Navigator.pop(context);
                         Navigator.pop(context, true);
                       },
@@ -289,6 +324,20 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                   padding: EdgeInsets.fromLTRB(30.0, 5.0, 30.0, 20.0),
                   child: TabBar(
                     indicatorColor: kPrimaryColour,
+                    unselectedLabelColor: transcript != null
+                        ? kPrimaryTextColour
+                        : kSecondaryTextColour,
+                    onTap: (index) {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      if (transcript == null) {
+                        DefaultTabController.of(context)?.animateTo(0);
+                      } else if (index == 1) {
+                        sleep(Duration(milliseconds: 100));
+                        DefaultTabController.of(context)?.animateTo(index);
+                      } else {
+                        DefaultTabController.of(context)?.animateTo(index);
+                      }
+                    },
                     tabs: [
                       Tab(text: 'SCORES'),
                       Tab(text: 'ANALYSIS'),
@@ -300,7 +349,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       buildScoresTab(context),
-                      buildAnalysisTab(),
+                      if (transcript != null) buildAnalysisTab() else Text(''),
                     ],
                   ),
                 ),

@@ -101,14 +101,26 @@ class Recording {
     );
   }
 
-  // Update one (by domain)
-  static Future<void> updateRecording(Recording recording) async {
+  // Update a recording's scores
+  static Future<void> updateRecording(
+      {required String dateRecorded,
+      required Map<String, int> newScores}) async {
     final db = databaseService.db;
     await db!.update(
       'Recording',
-      recording.toMap(),
+      newScores,
       where: 'dateRecorded = ?',
-      whereArgs: [recording.dateRecorded],
+      whereArgs: [dateRecorded],
+    );
+  }
+
+  // Delete a recording
+  static Future<void> deleteRecording(String dateRecorded) async {
+    final db = databaseService.db;
+    await db!.delete(
+      'Recording',
+      where: 'dateRecorded = ?',
+      whereArgs: [dateRecorded],
     );
   }
 
@@ -128,20 +140,18 @@ class Recording {
     for (var index = 0; index < list.length; index++) {
       var recording = Map.from(list[index]);
       var recScores = {};
-      if (recording['wpm'] != null) {
-        recScores['WPM'] = recording['wpm'];
-      }
       for (var i in [1, 2, 3]) {
         if (recording['score${i}ID'] != null) {
-          recScores[scores[recording['score${i}ID']]] =
-              recording['score${i}Value'];
+          recScores[recording['score${i}ID']] = [
+            scores[recording['score${i}ID']],
+            recording['score${i}Value']
+          ];
         }
       }
       recording['scores'] = recScores;
       output.add(recording);
     }
 
-    print(output);
     return output;
   }
 
@@ -165,13 +175,12 @@ class Recording {
     for (var index = 0; index < list.length; index++) {
       var recording = Map.from(list[index]);
       var recScores = {};
-      if (recording['wpm'] != null) {
-        recScores['WPM'] = recording['wpm'];
-      }
       for (var i in [1, 2, 3]) {
         if (recording['score${i}ID'] != null) {
-          recScores[scores[recording['score${i}ID']]] =
-              recording['score${i}Value'];
+          recScores[recording['score${i}ID']] = [
+            scores[recording['score${i}ID']],
+            recording['score${i}Value']
+          ];
         }
       }
       recording['scores'] = recScores;

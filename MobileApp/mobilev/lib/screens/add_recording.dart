@@ -60,23 +60,38 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
         : setState(() => hasRecording = false);
   }
 
+  // Helper function to construct the correct file name for the new recording
+  String constructFileName(String timeNow) {
+    String newFileName = timeNow.replaceAll(' ', '_').replaceAll(':', '-') +
+        '_Recording' +
+        '_$typeSet' +
+        '_${durationSet}s' +
+        '_Well being_' +
+        score1Controller.text +
+        '_GAD7_' +
+        score2Controller.text +
+        '_Steps_' +
+        score3Controller.text +
+        '.m4a';
+
+    return newFileName;
+  }
+
   // Helper function for saving a new recording
   void saveRecording() async {
     String timeNow = DateTime.now().toString().substring(0, 19);
-    // Make the time safe for using in a filename
-    String timeNowPath =
-        timeNow.replaceAll(' ', '_').replaceAll(':', '-') + '.m4a';
     // Rename saved audio file to uniquely identify it
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    String newFileName = constructFileName(timeNow);
     File audio = File(join(directoryPath, 'new_recording.m4a'));
-    audio.renameSync(join(directoryPath, timeNowPath));
+    audio.renameSync(join(directoryPath, newFileName));
 
     // Save recording details to database
     var newRecording = Recording(
       dateRecorded: timeNow,
       type: typeSet,
       duration: durationSet,
-      audioFilePath: timeNowPath,
+      audioFilePath: newFileName,
       score1ID: 2,
       score1Value: int.parse(score1Controller.text),
       score2ID: 3,

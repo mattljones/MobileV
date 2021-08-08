@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // Package imports
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 // Module imports
 import 'package:mobilev/config/constants.dart';
@@ -13,31 +14,52 @@ import 'package:mobilev/widgets/recording_card_score.dart';
 
 class RecordingCard extends StatefulWidget {
   final String dateRecorded;
+  final String date;
   final String type;
   final int duration;
+  final String audioFilePath;
+  final Map scores;
   final bool isShared;
   final AnalysisStatus analysisStatus;
-  final Map<String, int> scores;
+  final int? wpm;
+  final String? transcript;
+  final String? wordCloudFilePath;
+  final void Function() updateRecordingsScreen;
 
-  RecordingCard({
-    required this.dateRecorded,
-    required this.type,
-    required this.duration,
-    required this.isShared,
-    required this.analysisStatus,
-    required this.scores,
-  });
+  RecordingCard(
+      {required this.dateRecorded,
+      required this.date,
+      required this.type,
+      required this.duration,
+      required this.audioFilePath,
+      required this.analysisStatus,
+      required this.scores,
+      required this.isShared,
+      required this.wpm,
+      required this.transcript,
+      required this.wordCloudFilePath,
+      required this.updateRecordingsScreen});
 
   @override
   _RecordingCardState createState() => _RecordingCardState();
 }
 
 class _RecordingCardState extends State<RecordingCard> {
+  static String expansionTitle = 'View scores';
+
   List<Widget> constructScores() {
     List<Widget> list = [];
+    if (widget.wpm != null) {
+      list.add(
+        RecordingCardScore(scoreName: 'WPM', scoreValue: widget.wpm!),
+      );
+      list.add(
+        SizedBox(height: 10.0),
+      );
+    }
     widget.scores.forEach((key, value) {
       list.add(
-        RecordingCardScore(scoreName: key, scoreValue: value),
+        RecordingCardScore(scoreName: value[0], scoreValue: value[1]),
       );
       list.add(
         SizedBox(height: 10.0),
@@ -46,7 +68,30 @@ class _RecordingCardState extends State<RecordingCard> {
     return list;
   }
 
-  static String expansionTitle = 'View scores';
+  void loadViewRecordingScreen(BuildContext context) async {
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    String audioAbsPath = join(directoryPath, widget.audioFilePath);
+    String? cloudAbsPath = widget.wordCloudFilePath != null
+        ? join(directoryPath, widget.wordCloudFilePath)
+        : null;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return ViewRecordingScreen(
+          dateRecorded: widget.dateRecorded,
+          audioPath: audioAbsPath,
+          wpm: widget.wpm,
+          scores: widget.scores,
+          wordCloudPath: cloudAbsPath,
+          transcript: widget.transcript,
+        );
+      }),
+    ).then((value) {
+      if (value != null && value) {
+        widget.updateRecordingsScreen(); // Refresh data if save was pressed
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,25 +106,14 @@ class _RecordingCardState extends State<RecordingCard> {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                var directory = await getApplicationDocumentsDirectory();
-                String audioPath = '${directory.path}/test.m4a';
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return ViewRecordingScreen(
-                      scores: widget.scores,
-                      analysisStatus: widget.analysisStatus,
-                      audioPath: audioPath,
-                    );
-                  }),
-                );
+              onTap: () {
+                loadViewRecordingScreen(context);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.dateRecorded,
+                    widget.date,
                     style: TextStyle(
                       color: kPrimaryColour,
                       fontSize: 22.0,
@@ -111,37 +145,15 @@ class _RecordingCardState extends State<RecordingCard> {
             ),
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                var directory = await getApplicationDocumentsDirectory();
-                String audioPath = '${directory.path}/test.m4a';
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return ViewRecordingScreen(
-                      scores: widget.scores,
-                      analysisStatus: widget.analysisStatus,
-                      audioPath: audioPath,
-                    );
-                  }),
-                );
+              onTap: () {
+                loadViewRecordingScreen(context);
               },
               child: SizedBox(height: 15.0),
             ),
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                var directory = await getApplicationDocumentsDirectory();
-                String audioPath = '${directory.path}/test.m4a';
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return ViewRecordingScreen(
-                      scores: widget.scores,
-                      analysisStatus: widget.analysisStatus,
-                      audioPath: audioPath,
-                    );
-                  }),
-                );
+              onTap: () {
+                loadViewRecordingScreen(context);
               },
               child: Row(
                 children: [
