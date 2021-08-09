@@ -343,7 +343,6 @@ def update_app_account(userID):
     user.firstName = request.get_json()['firstName']
     user.lastName = request.get_json()['lastName']
     user.email = request.get_json()['email']
-    user.username = request.get_json()['username']
     user.sroID = request.get_json()['sroID']
 
     db.session.commit()
