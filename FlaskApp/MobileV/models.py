@@ -146,8 +146,8 @@ class Share(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     shareID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    dateRecorded = db.Column(db.TIMESTAMP, nullable=False)
-    testType = db.Column(db.String(10), nullable=True)
+    dateRecorded = db.Column(db.TIMESTAMP, unique=True, nullable=False)
+    type = db.Column(db.String(10), nullable=True)
     duration = db.Column(db.SmallInteger, nullable=True)
     WPM = db.Column(db.SmallInteger, nullable=False)
     score1_name = db.Column(db.String(15), nullable=True)
@@ -156,8 +156,8 @@ class Share(db.Model):
     score2_value = db.Column(db.SmallInteger, nullable=True)
     score3_name = db.Column(db.String(15), nullable=True)
     score3_value = db.Column(db.SmallInteger, nullable=True)
-    filePath = db.Column(db.String(50), nullable=False)
     fileType = db.Column(db.String(20), nullable=False)
+    filePath = db.Column(db.String(50), nullable=False)
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
 
 

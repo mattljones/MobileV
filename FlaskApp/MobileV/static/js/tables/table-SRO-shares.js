@@ -47,12 +47,11 @@ function createSROSharesDataTable(userID) {
       };
 
       rows.push([dateRecorded,
-                 share.testType + ' (' + share.duration + 's)', 
+                 '<b>' + share.fileType + ': ' + '</b>' + share.type + ' (' + share.duration + 's)', 
                  '<b>' + share.WPM + '</b>', 
                  handleNulls(share.score1_name, 'name') + handleNulls(share.score1_value, 'value'),
                  handleNulls(share.score2_name, 'name') + handleNulls(share.score2_value, 'value'),
                  handleNulls(share.score3_name, 'name') + handleNulls(share.score3_value, 'value'),
-                 share.fileType, 
                  buttons]);
 
     };
@@ -61,13 +60,12 @@ function createSROSharesDataTable(userID) {
     $("#table-SRO-shares").DataTable({
       data: rows,
       columns: [
-        {title: "Date Recorded"},
-        {title: "Share Type"},
+        {title: "Date"},
+        {title: "Share type"},
         {title: "WPM"},
         {title: "Score 1"},
         {title: "Score 2"},
         {title: "Score 3"},
-        {title: "File Type"},
         {title: "Actions"}
       ],
       columnDefs: [{ 'targets': 0, type: 'date-eu' }],

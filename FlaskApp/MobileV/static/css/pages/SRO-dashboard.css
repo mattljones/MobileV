@@ -22,6 +22,7 @@ hr {
     padding: 0.7rem;
     vertical-align: middle;
     font-size: 0.9em;
+    white-space: nowrap;
 }
 
 /* Success message toasts */
