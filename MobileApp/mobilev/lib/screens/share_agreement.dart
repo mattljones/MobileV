@@ -138,8 +138,14 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                       if (firstLogin) {
                         Navigator.pushReplacementNamed(context, '/my-home');
                       } else {
-                        // Refresh profile page on pop
-                        Navigator.pop(context, true);
+                        // Used for accepting share agreement on add/view recording pages
+                        if (sharePreference.field1 != '0' ||
+                            sharePreference.field2 != '0') {
+                          Navigator.pop(context, true);
+                        } else {
+                          // Refresh profile page body
+                          Navigator.pop(context, false);
+                        }
                       }
                     },
                   ),

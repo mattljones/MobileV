@@ -113,7 +113,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 }),
                               ).then((value) {
                                 // Refresh data if save was pressed
-                                if (value != null && value) {
+                                if (value != null) {
                                   getSharePreference();
                                 }
                               });

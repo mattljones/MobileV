@@ -86,13 +86,13 @@ class _RecordingsBodyState extends State<RecordingsBody>
     if (type == 1) {
       final snackBar = SnackBar(
         backgroundColor: kSecondaryTextColour,
-        content: Text('Recording saved'),
+        content: Text('Recording updated'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else if (type == 2) {
       final snackBar = SnackBar(
         backgroundColor: kSecondaryTextColour,
-        content: Text('Recording saved & shared'),
+        content: Text('Recording updated & shared'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else if (type == 3) {

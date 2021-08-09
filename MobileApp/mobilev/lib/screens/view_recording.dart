@@ -9,6 +9,8 @@ import 'package:share_plus/share_plus.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
+import 'package:mobilev/models/user_data.dart';
+import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/audio_player.dart';
 import 'package:mobilev/widgets/status_card.dart';
@@ -154,9 +156,39 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                       text: 'Save & Share',
                       buttonColour: kPrimaryColour,
                       textColour: Colors.white,
-                      onPressed: () {
-                        updateRecording();
-                        Navigator.pop(context, 2);
+                      onPressed: () async {
+                        // Check if user has accepted the sharing agreement
+                        UserData sharePreference =
+                            await UserData.selectUserData('sharePreference');
+                        if (sharePreference.field1 == '0' &&
+                            sharePreference.field2 == '0') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ShareAgreementScreen(
+                                  firstLogin: false,
+                                  sharePreference: sharePreference,
+                                  shareRecording: false,
+                                  shareWordCloud: false,
+                                );
+                              },
+                            ),
+                          ).then((value) {
+                            // Notify user if they accepted the agreement
+                            if (value != null && value == true) {
+                              final snackBar = SnackBar(
+                                backgroundColor: kSecondaryTextColour,
+                                content: Text('Share agreement accepted'),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            }
+                          });
+                        } else {
+                          updateRecording();
+                          Navigator.pop(context, 2);
+                        }
                       },
                     ),
                   ),

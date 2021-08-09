@@ -9,11 +9,13 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart' as ap;
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 import 'package:wakelock/wakelock.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
+import 'package:mobilev/models/user_data.dart';
+import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
 import 'package:mobilev/widgets/audio_player.dart';
@@ -83,8 +85,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
     // Rename saved audio file to uniquely identify it
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
     String newFileName = constructFileName(timeNow);
-    File audio = File(join(directoryPath, 'new_recording.m4a'));
-    audio.renameSync(join(directoryPath, newFileName));
+    File audio = File(path.join(directoryPath, 'new_recording.m4a'));
+    audio.renameSync(path.join(directoryPath, newFileName));
 
     // Save recording details to database
     var newRecording = Recording(
@@ -234,8 +236,37 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               buttonColour: kPrimaryColour,
               textColour: Colors.white,
               onPressed: () async {
-                saveRecording();
-                Navigator.pop(this.context, true);
+                // Check if user has accepted the sharing agreement
+                UserData sharePreference =
+                    await UserData.selectUserData('sharePreference');
+                if (sharePreference.field1 == '0' &&
+                    sharePreference.field2 == '0') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ShareAgreementScreen(
+                          firstLogin: false,
+                          sharePreference: sharePreference,
+                          shareRecording: false,
+                          shareWordCloud: false,
+                        );
+                      },
+                    ),
+                  ).then((value) {
+                    // Notify user if they accepted the agreement
+                    if (value != null && value == true) {
+                      final snackBar = SnackBar(
+                        backgroundColor: kSecondaryTextColour,
+                        content: Text('Share agreement accepted'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  });
+                } else {
+                  saveRecording();
+                  Navigator.pop(this.context, true);
+                }
               },
             ),
           ],
@@ -248,7 +279,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       onWillPop: () async {
         // Delete recording if one was made but not saved
         var directoryPath = (await getApplicationDocumentsDirectory()).path;
-        String filePath = join(directoryPath, 'new_recording.m4a');
+        String filePath = path.join(directoryPath, 'new_recording.m4a');
         if (File(filePath).existsSync()) {
           File(filePath).delete();
         }
@@ -403,7 +434,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           timeRemaining = widget.durationSet;
         });
         String directoryPath = (await getApplicationDocumentsDirectory()).path;
-        String audioPath = join(directoryPath, 'new_recording.m4a');
+        String audioPath = path.join(directoryPath, 'new_recording.m4a');
         await audioRecorder.start(path: audioPath);
         bool _isRecording = await audioRecorder.isRecording();
         setState(() {
