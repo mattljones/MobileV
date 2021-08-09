@@ -433,56 +433,62 @@ class _AudioRecorderState extends State<AudioRecorder> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        RawMaterialButton(
-          elevation: 10.0,
-          disabledElevation: 10.0,
-          constraints: BoxConstraints.tightFor(
-            width: 110.0,
-            height: 110.0,
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (overscroll) {
+        overscroll.disallowGlow();
+        return true;
+      },
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          RawMaterialButton(
+            elevation: 10.0,
+            disabledElevation: 10.0,
+            constraints: BoxConstraints.tightFor(
+              width: 110.0,
+              height: 110.0,
+            ),
+            shape: CircleBorder(),
+            child: buildRecordButtonChild(),
+            fillColor: isRecording ? Colors.red : kAccentColour,
+            onPressed: isRecording
+                ? null
+                : () {
+                    Wakelock.enable();
+                    startCountdownTimer();
+                  },
           ),
-          shape: CircleBorder(),
-          child: buildRecordButtonChild(),
-          fillColor: isRecording ? Colors.red : kAccentColour,
-          onPressed: isRecording
-              ? null
-              : () {
-                  Wakelock.enable();
-                  startCountdownTimer();
-                },
-        ),
-        SizedBox(height: 30.0),
-        Text(
-          isRecording
-              ? timeRemaining.toString() + 's'
-              : widget.durationSet.toString() + 's',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'PTMono',
-            fontSize: 30.0,
-          ),
-        ),
-        SizedBox(height: 30.0),
-        if (isRecording)
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isCancelled = true;
-              });
-              stopRecording();
-            },
-            child: Text(
-              'Cancel',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.red,
-                decoration: TextDecoration.underline,
-              ),
+          SizedBox(height: 30.0),
+          Text(
+            isRecording
+                ? timeRemaining.toString() + 's'
+                : widget.durationSet.toString() + 's',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'PTMono',
+              fontSize: 30.0,
             ),
           ),
-      ],
+          SizedBox(height: 30.0),
+          if (isRecording)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isCancelled = true;
+                });
+                stopRecording();
+              },
+              child: Text(
+                'Cancel',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.red,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

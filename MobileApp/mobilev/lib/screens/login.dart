@@ -121,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 25.0),
                 GestureDetector(
                   onTap: () {
+                    FocusScope.of(context).unfocus();
                     Navigator.pushNamed(context, '/forgot-password').then(
                       (value) {
                         // Notify user that email link has been sent
