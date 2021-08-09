@@ -55,6 +55,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   _ViewRecordingScreenState(this.dateRecorded, this.audioPath, this.wpm,
       this.scores, this.wordCloudPath, this.transcript);
 
+  // Helper function to update a recording
   void updateRecording() async {
     Map<String, int> newScores = {};
     for (var i = 0; i < scores.keys.length; i++) {
@@ -74,6 +75,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   @override
   void initState() {
     super.initState();
+    // Only instantiate the text controllers that are needed (expensive)
     for (var i = 0; i < scores.keys.length; i++) {
       scoreControllers.add(
           TextEditingController(text: scores.values.toList()[i][1].toString()));
@@ -129,6 +131,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                   label: scores.values.toList()[i][0],
                 ),
               ),
+            // Only show save/update buttons if there is more than one score
             if (scores.keys.length > 0)
               Row(
                 children: [
@@ -206,6 +209,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
       appBar: AppBar(
         title: Text('View recording'),
         actions: [
+          // Share (e.g. via WhatsApp) functionality
           IconButton(
             icon: Icon(
               Icons.share,
@@ -274,6 +278,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
               );
             },
           ),
+          // Delete recording functionality
           IconButton(
             icon: Icon(
               Icons.delete,
@@ -329,6 +334,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                         : kSecondaryTextColour,
                     onTap: (index) {
                       SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      // Do not allow navigation to analysis tab if no analysis present
                       if (transcript == null) {
                         DefaultTabController.of(context)?.animateTo(0);
                       } else if (index == 1) {
@@ -349,6 +355,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       buildScoresTab(context),
+                      // Do not build analysis tab if no analysis present
                       if (transcript != null) buildAnalysisTab() else Text(''),
                     ],
                   ),

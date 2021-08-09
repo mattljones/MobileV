@@ -183,7 +183,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                   ),
                 ),
               )
-            // Show specified month's recording data
+            // Otherwise show specified month's recording data
             else
               Column(
                 children: [

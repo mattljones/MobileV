@@ -76,9 +76,10 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(context, '/add-recording').then((value) {
                   if (value != null && value == true) {
+                    // Refresh data if save was pressed (i.e. a new recording was added)
                     setState(() {
                       _screenData[1][1] = getRecordingsBody();
-                    }); // Refresh data if save was pressed
+                    });
                   }
                 });
               },

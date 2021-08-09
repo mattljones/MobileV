@@ -47,6 +47,7 @@ class RecordingCard extends StatefulWidget {
 class _RecordingCardState extends State<RecordingCard> {
   static String expansionTitle = 'View scores';
 
+  // Constructs scores in the correct format for the card
   List<Widget> constructScores() {
     List<Widget> list = [];
     if (widget.wpm != null) {
@@ -68,6 +69,7 @@ class _RecordingCardState extends State<RecordingCard> {
     return list;
   }
 
+  // Function to pass data to/load the view recording screen on tap
   void loadViewRecordingScreen(BuildContext context) async {
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
     String audioAbsPath = join(directoryPath, widget.audioFilePath);
@@ -87,8 +89,9 @@ class _RecordingCardState extends State<RecordingCard> {
         );
       }),
     ).then((value) {
+      // Refresh data on main page if an update was made
       if (value != null && value) {
-        widget.updateRecordingsScreen(); // Refresh data if save was pressed
+        widget.updateRecordingsScreen();
       }
     });
   }
@@ -109,6 +112,7 @@ class _RecordingCardState extends State<RecordingCard> {
               onTap: () {
                 loadViewRecordingScreen(context);
               },
+              // Top row of card
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -150,6 +154,7 @@ class _RecordingCardState extends State<RecordingCard> {
               },
               child: SizedBox(height: 15.0),
             ),
+            // Middle row of card
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
@@ -214,6 +219,7 @@ class _RecordingCardState extends State<RecordingCard> {
               ),
             ),
             SizedBox(width: 10.0),
+            // Bottom row of card (scores expandable widget)
             if (widget.scores.isNotEmpty)
               ExpansionTile(
                 textColor: Colors.black,
