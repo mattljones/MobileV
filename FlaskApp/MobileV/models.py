@@ -166,7 +166,7 @@ class Score(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     scoreID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    scoreName = db.Column(db.String(15), nullable=False)
+    scoreName = db.Column(db.String(10), nullable=False)
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
 
 
