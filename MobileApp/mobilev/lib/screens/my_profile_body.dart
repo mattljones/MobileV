@@ -26,6 +26,13 @@ class _ProfileBodyState extends State<ProfileBody> {
   UserData? remindersPreference;
   String remindersString = '';
 
+  @override
+  void initState() {
+    super.initState();
+    getSharePreference();
+    getRemindersPreference();
+  }
+
   void getSharePreference() {
     UserData.selectUserData('sharePreference').then((data) {
       setState(() {
@@ -44,13 +51,6 @@ class _ProfileBodyState extends State<ProfileBody> {
         remindersPreferenceLoading = false;
       });
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getSharePreference();
-    getRemindersPreference();
   }
 
   @override
@@ -107,8 +107,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 );
                               }),
                             ).then((value) {
+                              // Refresh data if save was pressed
                               if (value != null && value) {
-                                getSharePreference(); // Refresh data if save was pressed
+                                getSharePreference();
                               }
                             });
                           },
@@ -137,8 +138,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                       );
                               }),
                             ).then((value) {
+                              // Refresh data if save was pressed
                               if (value != null && value) {
-                                getRemindersPreference(); // Refresh data if save was pressed
+                                getRemindersPreference();
                               }
                             });
                           },
@@ -153,18 +155,30 @@ class _ProfileBodyState extends State<ProfileBody> {
                               MaterialPageRoute(builder: (context) {
                                 return ChangePasswordScreen();
                               }),
-                            );
+                            ).then((value) {
+                              if (value != null && value) {
+                                final snackBar = SnackBar(
+                                  backgroundColor: kSecondaryTextColour,
+                                  content: Text('Password changed'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            });
                           },
                         ),
                       ],
                     ),
-                    FormButton(
-                      text: 'Sign out',
-                      buttonColour: kAccentColour,
-                      textColour: Colors.black,
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/login');
-                      },
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 30.0),
+                      child: FormButton(
+                        text: 'Sign out',
+                        buttonColour: kAccentColour,
+                        textColour: Colors.black,
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
                     ),
                   ],
                 ),

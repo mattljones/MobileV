@@ -118,10 +118,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 40.0),
+                SizedBox(height: 25.0),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/forgot-password');
+                    Navigator.pushNamed(context, '/forgot-password').then(
+                      (value) {
+                        // Notify user that email link has been sent
+                        if (value != null && value == true) {
+                          final snackBar = SnackBar(
+                            backgroundColor: kSecondaryTextColour,
+                            content: Text('Email reset link sent'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                    );
                   },
                   child: Text(
                     'Forgot your password?',

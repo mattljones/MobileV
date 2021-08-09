@@ -55,23 +55,6 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   _ViewRecordingScreenState(this.dateRecorded, this.audioPath, this.wpm,
       this.scores, this.wordCloudPath, this.transcript);
 
-  // Helper function to update a recording
-  void updateRecording() async {
-    Map<String, int> newScores = {};
-    for (var i = 0; i < scores.keys.length; i++) {
-      int current = int.parse(scoreControllers[i].text);
-      if (current != scores.values.toList()[i][1]) {
-        newScores['score${i + 1}Value'] = current;
-      }
-    }
-    if (newScores.isNotEmpty) {
-      await Recording.updateRecording(
-        dateRecorded: dateRecorded,
-        newScores: newScores,
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -88,6 +71,23 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
       scoreController.dispose();
     }
     super.dispose();
+  }
+
+  // Helper function to update a recording
+  void updateRecording() async {
+    Map<String, int> newScores = {};
+    for (var i = 0; i < scores.keys.length; i++) {
+      int current = int.parse(scoreControllers[i].text);
+      if (current != scores.values.toList()[i][1]) {
+        newScores['score${i + 1}Value'] = current;
+      }
+    }
+    if (newScores.isNotEmpty) {
+      await Recording.updateRecording(
+        dateRecorded: dateRecorded,
+        newScores: newScores,
+      );
+    }
   }
 
   SingleChildScrollView buildScoresTab(BuildContext context) =>
@@ -131,7 +131,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                   label: scores.values.toList()[i][0],
                 ),
               ),
-            // Only show save/update buttons if there is more than one score
+            // Only show save/update buttons if there is at least one score field
             if (scores.keys.length > 0)
               Row(
                 children: [
@@ -143,7 +143,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                       textColour: Colors.white,
                       onPressed: () {
                         updateRecording();
-                        Navigator.pop(context, true);
+                        Navigator.pop(context, 1);
                       },
                     ),
                   ),
@@ -156,7 +156,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                       textColour: Colors.white,
                       onPressed: () {
                         updateRecording();
-                        Navigator.pop(context, true);
+                        Navigator.pop(context, 2);
                       },
                     ),
                   ),
@@ -308,7 +308,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                       onPressed: () async {
                         await Recording.deleteRecording(dateRecorded);
                         Navigator.pop(context);
-                        Navigator.pop(context, true);
+                        Navigator.pop(context, 3);
                       },
                     ),
                   ],

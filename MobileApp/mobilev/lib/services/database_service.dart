@@ -142,7 +142,9 @@ List<String> sqlSeeds = [
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (4, 'Steps', 1);''',
   // August data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
-     VALUES ('2021-08-04 12:00:00', 'Numeric', 120, 'test1.m4a', 2, 5, 3, 8, 4, 2560, 1, 'pending', null, null, null);''',
+     VALUES ('2021-08-12 12:00:00', 'Text', 60, 'test2.m4a', 2, 8, 3, 7, 4, 3120, 1, 'pending', null, null, null);''',
+  '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
+     VALUES ('2021-08-04 12:00:00', 'Numeric', 120, 'test1.m4a', 2, 5, 3, 8, 4, 2560, 1, 'received', 55, 'Lorem ipsum...', 'test2.jpg');''',
   // July data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-07-31 12:00:00', 'Numeric', 30, 'test2.m4a', 1, 5, 3, 9, 4, 3004, 1, 'received', 60, 'Lorem ipsum...', 'test1.jpg');''',

@@ -41,14 +41,6 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
     this.timeSet,
   });
 
-  String zeroPadTime(TimeOfDay timeSet) {
-    return (timeSet.hour < 10 ? '0' : '') +
-        timeSet.hour.toString() +
-        ':' +
-        (timeSet.minute < 10 ? '0' : '') +
-        timeSet.minute.toString();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -62,6 +54,14 @@ class _WeeklyRemindersScreenState extends State<WeeklyRemindersScreen> {
       field1: daySet.toString(),
       field2: zeroPadTime(timeSet!),
     );
+  }
+
+  String zeroPadTime(TimeOfDay timeSet) {
+    return (timeSet.hour < 10 ? '0' : '') +
+        timeSet.hour.toString() +
+        ':' +
+        (timeSet.minute < 10 ? '0' : '') +
+        timeSet.minute.toString();
   }
 
   @override

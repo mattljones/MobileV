@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 // Package imports
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
@@ -37,6 +36,19 @@ class _AnalysisBodyState extends State<AnalysisBody>
   bool monthlyScoresLoading = true;
   Map? monthlyScores;
   String? monthDropdownValue;
+
+  @override
+  void initState() {
+    super.initState();
+    // Loading 'Usage' tab data
+    getStatusCardTotals();
+    getUsageData();
+    // Loading 'Scores' tab data
+    getMonths();
+    getWordClouds();
+    getActiveScores();
+    getAnalysis();
+  }
 
   void getStatusCardTotals() {
     Recording.selectTotals().then((data) {
@@ -93,19 +105,6 @@ class _AnalysisBodyState extends State<AnalysisBody>
         monthlyScoresLoading = false;
       });
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Loading 'Usage' tab data
-    getStatusCardTotals();
-    getUsageData();
-    // Loading 'Scores' tab data
-    getMonths();
-    getWordClouds();
-    getActiveScores();
-    getAnalysis();
   }
 
   Container buildUsageContent() => Container(
@@ -276,11 +275,9 @@ class _AnalysisBodyState extends State<AnalysisBody>
               child: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  // Show hourglass whilst loading
+                  // Show nothing whilst loading
                   if (statusCardTotalsLoading || usageDataLoading)
-                    SpinKitPouringHourglass(
-                      color: kSecondaryTextColour,
-                    )
+                    Text('')
                   else if (noRecordings == 0)
                     Padding(
                       padding: EdgeInsets.only(top: 50.0),
@@ -296,14 +293,12 @@ class _AnalysisBodyState extends State<AnalysisBody>
                     )
                   else
                     buildUsageContent(),
-                  // Show hourglass whilst loading
+                  // Show nothing whilst loading
                   if (monthsLoading ||
                       cloudsLoading ||
                       activeScoresLoading ||
                       monthlyScoresLoading)
-                    SpinKitPouringHourglass(
-                      color: kSecondaryTextColour,
-                    )
+                    Text('')
                   else if (noRecordings == 0)
                     Padding(
                       padding: EdgeInsets.only(top: 50.0),

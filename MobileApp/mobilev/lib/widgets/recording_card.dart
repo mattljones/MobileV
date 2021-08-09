@@ -24,7 +24,7 @@ class RecordingCard extends StatefulWidget {
   final int? wpm;
   final String? transcript;
   final String? wordCloudFilePath;
-  final void Function() updateRecordingsScreen;
+  final void Function(int) updateRecordingsScreen;
 
   RecordingCard(
       {required this.dateRecorded,
@@ -90,8 +90,12 @@ class _RecordingCardState extends State<RecordingCard> {
       }),
     ).then((value) {
       // Refresh data on main page if an update was made
-      if (value != null && value) {
-        widget.updateRecordingsScreen();
+      if (value != null && value == 1) {
+        widget.updateRecordingsScreen(1); // Saved
+      } else if (value != null && value == 2) {
+        widget.updateRecordingsScreen(2); // Saved & shared
+      } else if (value != null && value == 3) {
+        widget.updateRecordingsScreen(3); // Deleted
       }
     });
   }

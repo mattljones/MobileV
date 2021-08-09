@@ -2,9 +2,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// Package imports
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 // Module imports
 import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/config/constants.dart';
@@ -29,6 +26,32 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Map? monthlyData;
   bool monthsLoading = true;
   Map<String, String>? months;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _tabController = TabController(length: 2, vsync: this);
+    super.initState();
+    getMostRecentData();
+    getMonthlyData();
+    getMonths();
+  }
+
+  @mustCallSuper
+  @protected
+  void didUpdateWidget(covariant oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    getMostRecentData();
+    getMonthlyData();
+    getMonths();
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    _scrollController?.dispose();
+    super.dispose();
+  }
 
   void getMostRecentData() {
     Recording.selectMostRecent().then((data) {
@@ -58,43 +81,38 @@ class _RecordingsBodyState extends State<RecordingsBody>
     });
   }
 
-  @override
-  void initState() {
-    _scrollController = ScrollController();
-    _tabController = TabController(length: 2, vsync: this);
-    super.initState();
+  // Helper callback function for updating the screen after a recording is edited or deleted
+  void updateRecordingsScreen(int type) {
+    if (type == 1) {
+      final snackBar = SnackBar(
+        backgroundColor: kSecondaryTextColour,
+        content: Text('Recording saved'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else if (type == 2) {
+      final snackBar = SnackBar(
+        backgroundColor: kSecondaryTextColour,
+        content: Text('Recording saved & shared'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else if (type == 3) {
+      final snackBar = SnackBar(
+        backgroundColor: kSecondaryTextColour,
+        content: Text('Recording deleted'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
     getMostRecentData();
     getMonthlyData();
     getMonths();
-  }
-
-  @mustCallSuper
-  @protected
-  void didUpdateWidget(covariant oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    getMostRecentData();
-    getMonthlyData();
-    getMonths();
-  }
-
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    _scrollController?.dispose();
-    super.dispose();
   }
 
   Container loadMostRecentContent() => Container(
         child: ListView(
           children: [
-            // If data still loading, show hourglass
+            // If data still loading, show nothing
             if (mostRecentLoading)
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: SpinKitPouringHourglass(
-                  color: kSecondaryTextColour,
-                ),
-              )
+              Text('')
             // If no recordings have been made, show prompt message
             else if (mostRecentData!.isEmpty)
               Padding(
@@ -136,11 +154,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                       wpm: recording['wpm'],
                       transcript: recording['transcript'],
                       wordCloudFilePath: recording['wordCloudFilePath'],
-                      updateRecordingsScreen: () {
-                        getMostRecentData();
-                        getMonthlyData();
-                        getMonths();
-                      },
+                      updateRecordingsScreen: updateRecordingsScreen,
                     ),
                   SizedBox(height: 20.0),
                 ],
@@ -152,14 +166,9 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Container loadByMonthContent() => Container(
         child: ListView(
           children: [
-            // If data is loading, show hourglass
+            // If data is loading, show nothing
             if (monthsLoading || monthlyLoading)
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: SpinKitPouringHourglass(
-                  color: kSecondaryTextColour,
-                ),
-              )
+              Text('')
             // If no recordings have been made, show text prompt
             else if (monthlyData!.isEmpty)
               Padding(
@@ -214,11 +223,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                       wpm: recording['wpm'],
                       transcript: recording['transcript'],
                       wordCloudFilePath: recording['wordCloudFilePath'],
-                      updateRecordingsScreen: () {
-                        getMostRecentData();
-                        getMonthlyData();
-                        getMonths();
-                      },
+                      updateRecordingsScreen: updateRecordingsScreen,
                     ),
                   SizedBox(height: 20.0),
                 ],

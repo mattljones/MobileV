@@ -75,12 +75,23 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/add-recording').then((value) {
-                  if (value != null && value == true) {
-                    // Refresh data if save was pressed (i.e. a new recording was added)
-                    setState(() {
-                      _screenData[1][1] = getRecordingsBody();
-                    });
+                  // Refresh data if save was pressed (i.e. a new recording was added)
+                  if (value != null && value == false) {
+                    final snackBar = SnackBar(
+                      backgroundColor: kSecondaryTextColour,
+                      content: Text('Recording saved'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } else if (value != null && value == true) {
+                    final snackBar = SnackBar(
+                      backgroundColor: kSecondaryTextColour,
+                      content: Text('Recording saved & shared'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
+                  setState(() {
+                    _screenData[1][1] = getRecordingsBody();
+                  });
                 });
               },
             ),

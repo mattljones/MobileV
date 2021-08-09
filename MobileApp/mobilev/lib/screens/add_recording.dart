@@ -225,7 +225,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
               textColour: Colors.white,
               onPressed: () {
                 saveRecording();
-                Navigator.pop(this.context, true);
+                Navigator.pop(this.context, false);
               },
             ),
             SizedBox(height: 15.0),
