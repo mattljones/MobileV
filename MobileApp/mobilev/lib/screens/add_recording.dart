@@ -13,8 +13,10 @@ import 'package:path/path.dart' as path;
 import 'package:wakelock/wakelock.dart';
 
 // Module imports
+import 'package:mobilev/services/network_service.dart';
 import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/models/user_data.dart';
+import 'package:mobilev/models/score.dart';
 import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/widgets/toggle_buttons.dart';
@@ -33,6 +35,7 @@ class AddRecordingScreen extends StatefulWidget {
 
 class _AddRecordingScreenState extends State<AddRecordingScreen>
     with TickerProviderStateMixin {
+  final formKey = GlobalKey<FormState>();
   int tabIndex = 0;
   List<String> types = ['Numeric', 'Text'];
   List<bool> typeIsSelected = [true, false];
@@ -43,15 +46,53 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   bool hasRecording = false;
   bool showPlayer = false;
   ap.AudioSource? audioSource;
-  final score1Controller = TextEditingController();
-  final score2Controller = TextEditingController();
-  final score3Controller = TextEditingController();
+  bool scoresLoading = true;
+  bool scoresLoaded = false;
+  Map? latestScores;
+  List scoreControllers = [];
+
+  void getScores() {
+    NetworkService.getScores().then((data) async {
+      // If data couldn't be loaded, use latest 'current' scores stored on device
+      if (data == false) {
+        var localScores = await Score.selectActiveScores();
+        setState(() {
+          latestScores = localScores;
+          scoresLoading = false;
+          // Initialise only the controllers that are needed (expensive)
+          for (var i = 0; i < latestScores!.keys.length; i++) {
+            scoreControllers.add(TextEditingController());
+          }
+        });
+      }
+      // Otherwise, use scores retrieved from server
+      else {
+        setState(() {
+          latestScores = data;
+          scoresLoading = false;
+          scoresLoaded = true;
+          // Initialise only the controllers that are needed (expensive)
+          for (var i = 0; i < latestScores!.keys.length; i++) {
+            scoreControllers.add(TextEditingController());
+          }
+          // Update scores saved in database
+        });
+        await Score.updateActiveScores(latestScores!);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getScores();
+  }
 
   @override
   void dispose() {
-    score1Controller.dispose();
-    score2Controller.dispose();
-    score3Controller.dispose();
+    for (var scoreController in scoreControllers) {
+      scoreController.dispose();
+    }
     super.dispose();
   }
 
@@ -65,16 +106,16 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   // Helper function to construct the correct file name for the new recording
   String constructFileName(String timeNow) {
     String newFileName = timeNow.replaceAll(' ', '_').replaceAll(':', '-') +
-        '_Recording' +
+        '_Audio' +
         '_$typeSet' +
-        '_${durationSet}s' +
-        '_Well being_' +
-        score1Controller.text +
-        '_GAD7_' +
-        score2Controller.text +
-        '_Steps_' +
-        score3Controller.text +
-        '.m4a';
+        '_${durationSet}s';
+
+    for (var i = 0; i < latestScores!.keys.length; i++) {
+      newFileName +=
+          '_${latestScores!.values.toList()[i]}_' + scoreControllers[i].text;
+    }
+
+    newFileName += '.m4a';
 
     return newFileName;
   }
@@ -94,12 +135,24 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       type: typeSet,
       duration: durationSet,
       audioFilePath: newFileName,
-      score1ID: 2,
-      score1Value: int.parse(score1Controller.text),
-      score2ID: 3,
-      score2Value: int.parse(score2Controller.text),
-      score3ID: 4,
-      score3Value: int.parse(score3Controller.text),
+      score1ID: latestScores!.keys.length > 0
+          ? int.parse(latestScores!.keys.toList()[0])
+          : null,
+      score1Value: latestScores!.keys.length > 0
+          ? int.parse(scoreControllers[0].text)
+          : null,
+      score2ID: latestScores!.keys.length > 1
+          ? int.parse(latestScores!.keys.toList()[1])
+          : null,
+      score2Value: latestScores!.keys.length > 1
+          ? int.parse(scoreControllers[1].text)
+          : null,
+      score3ID: latestScores!.keys.length > 2
+          ? int.parse(latestScores!.keys.toList()[2])
+          : null,
+      score3Value: latestScores!.keys.length > 2
+          ? int.parse(scoreControllers[2].text)
+          : null,
       isShared: 0,
       analysisStatus: 'unavailable',
     );
@@ -202,74 +255,98 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
 
   SingleChildScrollView buildShareTab() => SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 35.0),
-            FormInputNumber(
-              controller: score1Controller,
-              label: 'Well being',
-            ),
-            SizedBox(height: 30.0),
-            FormInputNumber(
-              controller: score2Controller,
-              label: 'GAD7',
-            ),
-            SizedBox(height: 30.0),
-            FormInputNumber(
-              controller: score3Controller,
-              label: 'Steps',
-            ),
-            SizedBox(height: 30.0),
-            FormButton(
-              text: 'Save',
-              buttonColour: kSecondaryTextColour,
-              textColour: Colors.white,
-              onPressed: () {
-                saveRecording();
-                Navigator.pop(this.context, false);
-              },
-            ),
-            SizedBox(height: 15.0),
-            FormButton(
-              text: 'Save & Share',
-              buttonColour: kPrimaryColour,
-              textColour: Colors.white,
-              onPressed: () async {
-                // Check if user has accepted the sharing agreement
-                UserData sharePreference =
-                    await UserData.selectUserData('sharePreference');
-                if (sharePreference.field1 == '0' &&
-                    sharePreference.field2 == '0') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ShareAgreementScreen(
-                          firstLogin: false,
-                          sharePreference: sharePreference,
-                          shareRecording: false,
-                          shareWordCloud: false,
-                        );
-                      },
-                    ),
-                  ).then((value) {
-                    // Notify user if they accepted the agreement
-                    if (value != null && value == true) {
-                      final snackBar = SnackBar(
-                        backgroundColor: kSecondaryTextColour,
-                        content: Text('Share agreement accepted'),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 35.0),
+              // If unable to load latest scores, explain to the user
+              if (scoresLoaded == false)
+                Padding(
+                  padding: EdgeInsets.only(bottom: 30.0),
+                  child: Text(
+                    'Unable to download the latest scoring domains. Most recently loaded scores can be used instead:',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              // If still loading, show nothing
+              if (scoresLoading)
+                Text('')
+              // Otherwise, dynamically list scores
+              else
+                for (var i = 0; i < latestScores!.keys.length; i++)
+                  Column(
+                    children: [
+                      FormInputNumber(
+                        controller: scoreControllers[i],
+                        label: latestScores!.values.toList()[i],
+                        validator: (value) {
+                          if (value!.length == 0) {
+                            return 'Please provide this score';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 30.0),
+                    ],
+                  ),
+              FormButton(
+                text: 'Save',
+                buttonColour: kSecondaryTextColour,
+                textColour: Colors.white,
+                onPressed: () {
+                  // Check all fields complete
+                  if (formKey.currentState!.validate()) {
+                    saveRecording();
+                    Navigator.pop(this.context, false);
+                  }
+                },
+              ),
+              SizedBox(height: 15.0),
+              FormButton(
+                text: 'Save & Share',
+                buttonColour: kPrimaryColour,
+                textColour: Colors.white,
+                onPressed: () async {
+                  // Check all fields complete
+                  if (formKey.currentState!.validate()) {
+                    // Check if user has accepted the sharing agreement
+                    UserData sharePreference =
+                        await UserData.selectUserData('sharePreference');
+                    if (sharePreference.field1 == '0' &&
+                        sharePreference.field2 == '0') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ShareAgreementScreen(
+                              firstLogin: false,
+                              sharePreference: sharePreference,
+                              shareRecording: false,
+                              shareWordCloud: false,
+                            );
+                          },
+                        ),
+                      ).then((value) {
+                        // Notify user if they accepted the agreement
+                        if (value != null && value == true) {
+                          final snackBar = SnackBar(
+                            backgroundColor: kSecondaryTextColour,
+                            content: Text('Share agreement accepted'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      });
+                    } else {
+                      saveRecording();
+                      Navigator.pop(this.context, true);
                     }
-                  });
-                } else {
-                  saveRecording();
-                  Navigator.pop(this.context, true);
-                }
-              },
-            ),
-          ],
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       );
 

@@ -181,7 +181,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
               if (monthsLoading || monthlyLoading)
                 Text('')
               // If no recordings have been made, show text prompt
-              else if (monthlyData!.isEmpty)
+              else if (monthlyData!.isEmpty || months!.isEmpty)
                 Padding(
                   padding: EdgeInsets.only(top: 50.0),
                   child: Center(

@@ -5,10 +5,13 @@ import 'package:flutter/services.dart';
 class FormInputNumber extends StatelessWidget {
   final TextEditingController controller;
   final String label;
+  final String? Function(String?)? validator;
   final String? initialValue;
+
   FormInputNumber({
     required this.controller,
     required this.label,
+    this.validator,
     this.initialValue,
   });
 
@@ -16,6 +19,7 @@ class FormInputNumber extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      validator: validator,
       initialValue: initialValue,
       decoration: InputDecoration(
           filled: true,

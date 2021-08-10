@@ -1,5 +1,6 @@
 // Module imports
 import 'package:mobilev/services/database_service.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Score {
   final int scoreID;
@@ -61,5 +62,37 @@ class Score {
       key: (item) => item['scoreID'],
       value: (item) => item['scoreName'],
     );
+  }
+
+  // Update scores saved in the database
+  static Future<void> updateActiveScores(Map latestScores) async {
+    final db = databaseService.db;
+
+    List<int> scoreIDs = [];
+    for (String scoreID in latestScores.keys) {
+      scoreIDs.add(int.parse(scoreID));
+    }
+
+    // Label newly non-current scores as non-current
+    await db!.update(
+      'Score',
+      {'isCurrent': 0},
+      where:
+          'scoreID NOT IN (${('?' * (latestScores.keys.length)).split('').join(', ')})',
+      whereArgs: scoreIDs,
+    );
+
+    // Insert new scores
+    for (var i = 0; i < latestScores.keys.length; i++) {
+      await db.insert(
+        'Score',
+        {
+          'scoreID': int.parse(latestScores.keys.toList()[i]),
+          'scoreName': latestScores.values.toList()[i],
+          'isCurrent': 1
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 }
