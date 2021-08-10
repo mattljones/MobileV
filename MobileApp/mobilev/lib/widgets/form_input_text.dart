@@ -7,18 +7,21 @@ class FormInputText extends StatelessWidget {
   final IconData icon;
   final bool obscureInput;
   final TextInputType keyboard;
+  final String? Function(String?)? validator;
 
   FormInputText(
       {required this.controller,
       required this.label,
       required this.icon,
       required this.obscureInput,
-      required this.keyboard});
+      required this.keyboard,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
+      validator: validator,
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,

@@ -5,8 +5,8 @@ class FormButton extends StatelessWidget {
   final String text;
   final Color buttonColour;
   final Color textColour;
+  final Widget? icon;
   final void Function() onPressed;
-  final Icon? icon;
 
   FormButton(
       {required this.text,

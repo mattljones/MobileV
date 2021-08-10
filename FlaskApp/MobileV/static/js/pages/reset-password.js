@@ -4,6 +4,11 @@ RESET PASSWORD PAGE FUNCTIONALITY
 
 $(function() {
 
+  // HIDE RETURN TO LOGIN PAGE OPTION IF APP USER------------------------------
+  if (window.location.pathname.substring(16, 19) == 'app') {
+    $("#login-link").addClass('d-none');
+  }
+
   // SHOW/HIDE PASSWORD CHECKBOXES --------------------------------------------
 
   $(":checkbox").click(function() {
@@ -102,7 +107,7 @@ $(function() {
                                             <i class="fas fa-check-square mr-2"></i>
                                             Your password has been reset.
                                             <br><br>
-                                            <em class="text-secondary">Please sign in to the app with your new password.</em>
+                                            <em class="text-secondary">You can now sign in to the app with your new password.</em>
                                           </div>`);
         }
   
