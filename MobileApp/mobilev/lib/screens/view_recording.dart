@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 // Package imports
 import 'package:just_audio/just_audio.dart' as ap;
 import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 // Module imports
 import 'package:mobilev/models/recording.dart';
@@ -19,6 +21,8 @@ import 'package:mobilev/widgets/form_button.dart';
 
 class ViewRecordingScreen extends StatefulWidget {
   final String dateRecorded;
+  final String type;
+  final int duration;
   final String audioPath;
   final int? wpm;
   final Map scores;
@@ -27,6 +31,8 @@ class ViewRecordingScreen extends StatefulWidget {
 
   ViewRecordingScreen({
     required this.dateRecorded,
+    required this.type,
+    required this.duration,
     required this.audioPath,
     required this.wpm,
     required this.scores,
@@ -37,6 +43,8 @@ class ViewRecordingScreen extends StatefulWidget {
   @override
   _ViewRecordingScreenState createState() => _ViewRecordingScreenState(
         this.dateRecorded,
+        this.type,
+        this.duration,
         this.audioPath,
         this.wpm,
         this.scores,
@@ -47,6 +55,8 @@ class ViewRecordingScreen extends StatefulWidget {
 
 class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   final String dateRecorded;
+  final String type;
+  final int duration;
   final String audioPath;
   final int? wpm;
   final Map scores;
@@ -54,8 +64,15 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   final String? transcript;
   List scoreControllers = [];
 
-  _ViewRecordingScreenState(this.dateRecorded, this.audioPath, this.wpm,
-      this.scores, this.wordCloudPath, this.transcript);
+  _ViewRecordingScreenState(
+      this.dateRecorded,
+      this.type,
+      this.duration,
+      this.audioPath,
+      this.wpm,
+      this.scores,
+      this.wordCloudPath,
+      this.transcript);
 
   @override
   void initState() {
@@ -75,19 +92,53 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
     super.dispose();
   }
 
+  // Helper function to construct the correct file name for an updated recording
+  String constructFileName(String fileType) {
+    String newFileName =
+        dateRecorded.replaceAll(' ', '_').replaceAll(':', '-') +
+            '_$fileType' +
+            '_$type' +
+            '_${duration}s';
+
+    for (var i = 0; i < scores.keys.length; i++) {
+      newFileName +=
+          '_${scores.values.toList()[i][0]}_' + scoreControllers[i].text;
+    }
+
+    newFileName += fileType == 'Audio' ? '.m4a' : '.jpg';
+
+    return newFileName;
+  }
+
   // Helper function to update a recording
   void updateRecording() async {
-    Map<String, int> newScores = {};
+    Map<String, dynamic> newFields = {};
     for (var i = 0; i < scores.keys.length; i++) {
       int current = int.parse(scoreControllers[i].text);
       if (current != scores.values.toList()[i][1]) {
-        newScores['score${i + 1}Value'] = current;
+        newFields['score${i + 1}Value'] = current;
       }
     }
-    if (newScores.isNotEmpty) {
+    if (newFields.isNotEmpty) {
+      String directoryPath = (await getApplicationDocumentsDirectory()).path;
+
+      // Update audio file path
+      String newAudioFilePath = constructFileName('Audio');
+      newFields['audioFilePath'] = newAudioFilePath;
+      File audio = File(path.join(directoryPath, audioPath));
+      audio.renameSync(path.join(directoryPath, newAudioFilePath));
+
+      // Update word cloud file path (if it exists)
+      if (wordCloudPath != null) {
+        String newWordCloudFilePath = constructFileName('WordCloud');
+        newFields['wordCloudFilePath'] = newWordCloudFilePath;
+        File cloud = File(path.join(directoryPath, wordCloudPath));
+        cloud.renameSync(path.join(directoryPath, newWordCloudFilePath));
+      }
+
       await Recording.updateRecording(
         dateRecorded: dateRecorded,
-        newScores: newScores,
+        newFields: newFields,
       );
     }
   }

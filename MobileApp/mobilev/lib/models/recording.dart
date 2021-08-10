@@ -104,11 +104,11 @@ class Recording {
   // Update a recording's scores
   static Future<void> updateRecording(
       {required String dateRecorded,
-      required Map<String, int> newScores}) async {
+      required Map<String, dynamic> newFields}) async {
     final db = databaseService.db;
     await db!.update(
       'Recording',
-      newScores,
+      newFields,
       where: 'dateRecorded = ?',
       whereArgs: [dateRecorded],
     );

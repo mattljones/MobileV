@@ -81,6 +81,8 @@ class _RecordingCardState extends State<RecordingCard> {
       MaterialPageRoute(builder: (context) {
         return ViewRecordingScreen(
           dateRecorded: widget.dateRecorded,
+          type: widget.type,
+          duration: widget.duration,
           audioPath: audioAbsPath,
           wpm: widget.wpm,
           scores: widget.scores,
