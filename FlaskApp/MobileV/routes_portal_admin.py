@@ -267,7 +267,7 @@ def add_app_account():
     msg = Message("MobileV - Welcome!", recipients=[email])
     msg.html = """
         <h2>Mobile<span style="font-weight: normal">V</span></h2>
-        <img src='https://drive.google.com/uc?id=1jSc-lucH1scGpChQnvfJUUcMsoRo179i' width='100' height='82'>
+        <img src='https://drive.google.com/uc?id=1rMbHcxETdn7hkPwKgi2SKy-IiN1g04Ma' width='100' height='82'>
         <p>Dear {},</p>
         <p>A MobileV app account has just been created for you, associated with {}.</p>
         <p><b>Username:</b> {}<br>
@@ -313,7 +313,7 @@ def add_SRO_account():
     msg = Message("MobileV - Welcome!", recipients=[email])
     msg.html = """
         <h2>Mobile<span style="font-weight: normal">V</span></h2>
-        <img src='https://drive.google.com/uc?id=1jSc-lucH1scGpChQnvfJUUcMsoRo179i' width='100' height='82'>
+        <img src='https://drive.google.com/uc?id=1rMbHcxETdn7hkPwKgi2SKy-IiN1g04Ma' width='100' height='82'>
         <p>Dear {},</p>
         <p>A MobileV SRO account has just been created for you.</p>
         <p><b>Username:</b> {}<br>

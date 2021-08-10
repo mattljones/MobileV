@@ -131,6 +131,23 @@ class AppUser(db.Model):
     scores = db.relationship("Score", passive_deletes="all")
     pendingTranscripts = db.relationship("PendingTranscript", passive_deletes="all")
 
+    def change_password(self, new_password):
+        self.password = generate_password_hash(new_password)
+        db.session.commit()
+
+    def get_jwt_token(self, expires_in=1800):
+        return jwt.encode(
+            {'userID': self.userID, 'exp': time() + expires_in},
+            environ.get("SECRET_KEY"), algorithm="HS256")
+
+    @staticmethod
+    def verify_jwt_token(token):
+        try:
+            userID = jwt.decode(token, environ.get("SECRET_KEY"), algorithms=['HS256'])['userID']
+        except:
+            return None
+        return AppUser.query.get(userID)
+
 
 class IBMCred(db.Model):
     __tablename__ = "IBMCred"

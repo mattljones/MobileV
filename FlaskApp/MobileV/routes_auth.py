@@ -40,8 +40,8 @@ def forgot_password():
     return render_template('forgot-password.html')
 
 
-@auth_bp.route('/reset-password/<token>', methods=["GET"])
-def reset_password(token):
+@auth_bp.route('/reset-password/<type>/<token>', methods=["GET"])
+def reset_password(type, token):
 
     # Redirect if already logged in
     if current_user.is_authenticated:
@@ -50,7 +50,10 @@ def reset_password(token):
         elif current_user.get_role() == 'SRO':
             return redirect(url_for('portal_SRO_bp.SRO_dashboard'))
 
-    user = SRO.verify_jwt_token(token)
+    if type == 'SRO':
+        user = SRO.verify_jwt_token(token)
+    elif type == 'app':
+        user = AppUser.verify_jwt_token(token)
 
     if user is not None:
         return render_template('reset-password.html')
@@ -101,15 +104,18 @@ def logout():
 
 # Change password 
 @auth_bp.route("/change-password", methods=["POST"])
-@auth_bp.route("/change-password/<token>", methods=["POST"])
-def change_password(token=None):
+@auth_bp.route("/change-password/<type>/<token>", methods=["POST"])
+def change_password(type=None, token=None):
 
     new_password = request.get_json()["new_password"]
 
-    user = SRO.verify_jwt_token(token)
+    if type == 'SRO':
+        user = SRO.verify_jwt_token(token)
+    else:
+        user = AppUser.verify_jwt_token(token)
 
-    # Reset password (not logged in, authenticated with jwt)
-    if token is not None and user is not None:
+    # Reset password (shared between SRO and app user)
+    if type is not None and user is not None:
         if new_password == '':
             return 'new_password_invalid'
         else:
@@ -117,7 +123,7 @@ def change_password(token=None):
             return 'successful'
 
     # Change password (logged in)
-    elif token is None:
+    elif type is None:
 
         old_password = request.get_json()["old_password"]
 
@@ -139,31 +145,35 @@ def change_password(token=None):
     return 'unsuccessful'
 
 
-# Reset password request 
-@auth_bp.route("/reset-password-request", methods=["POST"])
-def reset_password_request():
+# Reset password request (both SRO and app user)
+@auth_bp.route("/reset-password-request/<type>", methods=["POST"])
+def reset_password_request(type):
 
     email = request.get_json()["email"]
-    user = SRO.query.filter_by(email=email).first()
+
+    if type == 'SRO':
+        user = SRO.query.filter_by(email=email).first()
+    elif type == 'app':
+        user = AppUser.query.filter_by(email=email).first()
 
     if user is not None:
 
-            token = user.get_jwt_token()
-            link = url_for('auth_bp.reset_password', token=token, _external=True)
+        token = user.get_jwt_token()
+        link = url_for('auth_bp.reset_password', type=type, token=token, _external=True)
 
-            msg = Message("MobileV - Password reset request", recipients=[email])
-            msg.html = """
-               <h2>Mobile<span style="font-weight: normal">V</span></h2>
-               <img src='https://drive.google.com/uc?id=1jSc-lucH1scGpChQnvfJUUcMsoRo179i' width='100' height='82'>
-               <p>Dear {},</p>
-               <p>Please click on the link below to reset your password:</p>
-               >> <a href="{}">Link</a>
-               <p>Please note that the link will expire 30 minutes from now.</p>
-               <p>Best wishes,</p>
-               <p>The <b>Mobile</b>V team
-               """.format(user.firstName, link)
+        msg = Message("MobileV - Password reset request", recipients=[email])
+        msg.html = """
+            <h2>Mobile<span style="font-weight: normal">V</span></h2>
+            <img src='https://drive.google.com/uc?id=1rMbHcxETdn7hkPwKgi2SKy-IiN1g04Ma' width='100' height='82'>
+            <p>Dear {},</p>
+            <p>Please click on the link below to reset your password:</p>
+            >> <a href="{}">Link</a>
+            <p>Please note that the link will expire 30 minutes from now.</p>
+            <p>Best wishes,</p>
+            <p>The <b>Mobile</b>V team
+            """.format(user.firstName, link)
 
-            mail.send(msg)
+        mail.send(msg)
 
     return "successful"
 

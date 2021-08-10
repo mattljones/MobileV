@@ -11,7 +11,7 @@ $(function() {
       
     // Submit login request
     var resetLinkRequest = $.ajax({type: "POST",
-                                   url: "/reset-password-request",
+                                   url: "/reset-password-request/SRO",
                                    data: JSON.stringify({'email': $("#email").val()}),
                                    contentType: 'application/json;charset=UTF-8'});
 

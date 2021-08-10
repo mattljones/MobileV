@@ -72,18 +72,19 @@ $(function() {
 
       e.preventDefault();
 
-      var token = window.location.pathname.substring(16);
+      var type = window.location.pathname.substring(16, 19);
+      var token = window.location.pathname.substring(20);
         
       // Submit login request
       var resetPassRequest = $.ajax({type: "POST",
-                                     url: `/change-password/${token}`,
+                                     url: `/change-password/${type}/${token}`,
                                      data: JSON.stringify({'new_password': $("#new-password").val()}),
                                      contentType: 'application/json;charset=UTF-8'});
   
       // On completion of request
       resetPassRequest.done(function(response) {
   
-        if (response == "successful") {
+        if (response == "successful" && type == 'SRO') {
           $("#reset-password-form").html(`<div class="text-success text-center mb-3">
                                             <i class="fas fa-check-square mr-2"></i>
                                             Your password has been reset.
@@ -94,6 +95,15 @@ $(function() {
           setTimeout(function () {
             window.location.href = "/login";
           }, 4000);
+        }
+
+        else if (response == "successful" && type == 'app') {
+          $("#reset-password-form").html(`<div class="text-success text-center mb-3">
+                                            <i class="fas fa-check-square mr-2"></i>
+                                            Your password has been reset.
+                                            <br><br>
+                                            <em class="text-secondary">Please sign in to the app with your new password.</em>
+                                          </div>`);
         }
   
         else {
