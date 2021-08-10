@@ -44,4 +44,32 @@ class NetworkService {
       return false;
     }
   }
+
+  // GET: User's name and SRO name
+  static Future<dynamic> getNames() async {
+    try {
+      final response = await http.get(Uri.parse(baseURL + '/get-names'));
+      if (response.statusCode == 200) {
+        return (jsonDecode(response.body));
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // GET: User's currently allocated scores
+  static Future<dynamic> getScores() async {
+    try {
+      final response = await http.get(Uri.parse(baseURL + '/get-scores'));
+      if (response.statusCode == 200) {
+        return (jsonDecode(response.body));
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

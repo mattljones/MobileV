@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
+import 'package:mobilev/services/network_service.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/screens/share_agreement.dart';
 import 'package:mobilev/screens/weekly_reminders.dart';
@@ -19,6 +20,8 @@ class ProfileBody extends StatefulWidget {
 }
 
 class _ProfileBodyState extends State<ProfileBody> {
+  bool namesLoading = true;
+  dynamic names;
   bool sharePreferenceLoading = true;
   UserData? sharePreference;
   String shareString = '';
@@ -29,8 +32,18 @@ class _ProfileBodyState extends State<ProfileBody> {
   @override
   void initState() {
     super.initState();
+    getNames();
     getSharePreference();
     getRemindersPreference();
+  }
+
+  void getNames() {
+    NetworkService.getNames().then((data) {
+      setState(() {
+        names = data;
+        namesLoading = false;
+      });
+    });
   }
 
   void getSharePreference() {
@@ -59,7 +72,7 @@ class _ProfileBodyState extends State<ProfileBody> {
       padding: EdgeInsets.all(35.0),
       child:
           // Show hourglass whilst asynchronous data is loading
-          (sharePreferenceLoading || remindersPreferenceLoading)
+          (namesLoading || sharePreferenceLoading || remindersPreferenceLoading)
               ? SpinKitPouringHourglass(
                   color: kSecondaryTextColour,
                 )
@@ -76,7 +89,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                         shrinkWrap: true,
                         children: [
                           Text(
-                            'Welcome, Matt!',
+                            names != false
+                                ? 'Welcome, ${names['firstName']}!'
+                                : 'Welcome!',
                             style: TextStyle(
                               color: Colors.black,
                               fontFamily: 'PTSans',
@@ -86,7 +101,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                           ),
                           SizedBox(height: 15.0),
                           Text(
-                            'Your SRO is Joseph Connor',
+                            names != false ? 'Your SRO is ${names['SRO']}' : '',
                             style: TextStyle(
                               color: kSecondaryTextColour,
                               fontFamily: 'PTSans',
