@@ -64,7 +64,7 @@ class Admin(db.Model, UserMixin):
     def get_role(self):
         return 'Admin'
 
-    def check_password(self, username, password):
+    def check_password(self, password):
         if check_password_hash(self.password, password):
             return True
         return False
@@ -93,7 +93,7 @@ class SRO(db.Model, UserMixin):
     def get_role(self):
         return 'SRO'
 
-    def check_password(self, username, password):
+    def check_password(self, password):
         if check_password_hash(self.password, password):
             return True
         return False
@@ -130,6 +130,17 @@ class AppUser(db.Model):
     shares = db.relationship("Share", passive_deletes="all")
     scores = db.relationship("Score", passive_deletes="all")
     pendingTranscripts = db.relationship("PendingTranscript", passive_deletes="all")
+
+    def get_id(self):
+        return self.userID
+
+    def get_role(self):
+        return 'App'
+
+    def check_password(self, password):
+        if check_password_hash(self.password, password):
+            return True
+        return False
 
     def change_password(self, new_password):
         self.password = generate_password_hash(new_password)

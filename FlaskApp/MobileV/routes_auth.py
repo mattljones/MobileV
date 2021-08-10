@@ -1,6 +1,6 @@
 ### ROUTES RELATED TO AUTHENTICATION
 # - Rendering templates
-# - AJAX requests
+# - HTTP requests
 
 from flask import Blueprint, render_template, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -77,7 +77,7 @@ def login():
     elif user_type == "SRO":
         user = SRO.query.filter_by(username=username).first()
 
-    if user is not None and user.check_password(username, password):
+    if user is not None and user.check_password(password):
         login_user(user, remember=remember_me)
         next_page = request.get_json()["next_page"]
         if user_type == "Admin":
@@ -102,7 +102,7 @@ def logout():
     return redirect(url_for('auth_bp.login_portal'))
 
 
-# Change password 
+# Change password (password reset (app & portal) and portal logged-in)
 @auth_bp.route("/change-password", methods=["POST"])
 @auth_bp.route("/change-password/<type>/<token>", methods=["POST"])
 def change_password(type=None, token=None):
@@ -132,7 +132,7 @@ def change_password(type=None, token=None):
         elif current_user.get_role() == "SRO":
             user = SRO.query.filter_by(username=current_user.username).first()
 
-        if not user.check_password(user.username, old_password):
+        if not user.check_password(old_password):
             return 'wrong_password'
 
         if new_password == '':
@@ -143,6 +143,23 @@ def change_password(type=None, token=None):
         return 'successful'
 
     return 'unsuccessful'
+
+
+# Change password (app logged-in)
+@auth_bp.route("/change-password/app", methods=["POST"])
+def change_password_app():
+
+    old_password = request.get_json()["old_password"]
+    new_password = request.get_json()["new_password"]
+
+    user = AppUser.query.filter_by(username='MobileVUser1').first()
+
+    if not user.check_password(old_password):
+        return 'wrong_password' 
+
+    user.change_password(new_password)
+
+    return 'successful'
 
 
 # Reset password request (both SRO and app user)
