@@ -8,12 +8,16 @@ import 'package:mobilev/services/notification_service.dart';
 import 'package:mobilev/config/routes.dart';
 import 'package:mobilev/config/theme.dart';
 
+// Determines if the app is seeded with example data on installation
+bool seedDatabase = true;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // await databaseService.init(); // Without dummy data
-  await databaseService.initSeed(); // With dummy data
   await NotificationService().init();
+  seedDatabase
+      ? await databaseService.initSeed()
+      : await databaseService.init();
   runApp(MobileVApp());
 }
 

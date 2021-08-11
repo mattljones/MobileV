@@ -62,6 +62,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   final Map scores;
   final String? wordCloudPath;
   final String? transcript;
+  final formKey = GlobalKey<FormState>();
   List scoreControllers = [];
 
   _ViewRecordingScreenState(
@@ -100,11 +101,15 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
             '_$type' +
             '_${duration}s';
 
+    // Include WPM if available
+    newFileName += wpm != null ? '_WPM_$wpm' : '';
+
     for (var i = 0; i < scores.keys.length; i++) {
       newFileName +=
           '_${scores.values.toList()[i][0]}_' + scoreControllers[i].text;
     }
 
+    // Add appropriate file extension
     newFileName += fileType == 'Audio' ? '.m4a' : '.jpg';
 
     return newFileName;
@@ -146,106 +151,123 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   SingleChildScrollView buildScoresTab(BuildContext context) =>
       SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(45.0, 0.0, 45.0, 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AudioPlayer(
-              source: ap.AudioSource.uri(Uri.parse(audioPath)),
-              hasDelete: false,
-              onDelete: () {},
-            ),
-            SizedBox(height: 30.0),
-            RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontFamily: 'Roboto',
-                  color: Colors.black,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'WPM: ',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AudioPlayer(
+                source: ap.AudioSource.uri(Uri.parse(audioPath)),
+                hasDelete: false,
+                onDelete: () {},
+              ),
+              SizedBox(height: 30.0),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontFamily: 'Roboto',
+                    color: Colors.black,
                   ),
-                  TextSpan(
-                    text: (wpm ?? 'N/A').toString(),
-                    style: TextStyle(fontWeight: FontWeight.w300),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 30.0),
-            for (var i = 0; i < scores.keys.length; i++)
-              Padding(
-                padding: EdgeInsets.only(bottom: 30.0),
-                child: FormInputNumber(
-                  controller: scoreControllers[i],
-                  label: scores.values.toList()[i][0],
-                ),
-              ),
-            // Only show save/update buttons if there is at least one score field
-            if (scores.keys.length > 0)
-              Row(
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: FormButton(
-                      text: 'Save',
-                      buttonColour: kSecondaryTextColour,
-                      textColour: Colors.white,
-                      onPressed: () {
-                        updateRecording();
-                        Navigator.pop(context, 1);
-                      },
+                  children: [
+                    TextSpan(
+                      text: 'WPM: ',
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
+                    TextSpan(
+                      text: (wpm ?? 'N/A').toString(),
+                      style: TextStyle(fontWeight: FontWeight.w300),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 30.0),
+              for (var i = 0; i < scores.keys.length; i++)
+                Padding(
+                  padding: EdgeInsets.only(bottom: 30.0),
+                  child: FormInputNumber(
+                    controller: scoreControllers[i],
+                    label: scores.values.toList()[i][0],
+                    validator: (value) {
+                      if (value!.length == 0) {
+                        return 'Please provide this score';
+                      }
+                      return null;
+                    },
                   ),
-                  SizedBox(width: 10.0),
-                  Flexible(
-                    flex: 3,
-                    child: FormButton(
-                      text: 'Save & Share',
-                      buttonColour: kPrimaryColour,
-                      textColour: Colors.white,
-                      onPressed: () async {
-                        // Check if user has accepted the sharing agreement
-                        UserData sharePreference =
-                            await UserData.selectUserData('sharePreference');
-                        if (sharePreference.field1 == '0' &&
-                            sharePreference.field2 == '0') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return ShareAgreementScreen(
-                                  firstLogin: false,
-                                  sharePreference: sharePreference,
-                                  shareRecording: false,
-                                  shareWordCloud: false,
-                                );
-                              },
-                            ),
-                          ).then((value) {
-                            // Notify user if they accepted the agreement
-                            if (value != null && value == true) {
-                              final snackBar = SnackBar(
-                                backgroundColor: kSecondaryTextColour,
-                                content: Text('Share agreement accepted'),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+                ),
+              // Only show save/update buttons if there is at least one score field
+              if (scores.keys.length > 0)
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: FormButton(
+                        text: 'Save',
+                        buttonColour: kSecondaryTextColour,
+                        textColour: Colors.white,
+                        onPressed: () {
+                          // Check all fields complete
+                          if (formKey.currentState!.validate()) {
+                            updateRecording();
+                            Navigator.pop(context, 1);
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 10.0),
+                    Flexible(
+                      flex: 3,
+                      child: FormButton(
+                        text: 'Save & Share',
+                        buttonColour: kPrimaryColour,
+                        textColour: Colors.white,
+                        onPressed: () async {
+                          // Check all fields complete
+                          if (formKey.currentState!.validate()) {
+                            // Check if user has accepted the sharing agreement
+                            UserData sharePreference =
+                                await UserData.selectUserData(
+                                    'sharePreference');
+                            // If they haven't, make them accept it first
+                            if (sharePreference.field1 == '0' &&
+                                sharePreference.field2 == '0') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ShareAgreementScreen(
+                                      firstLogin: false,
+                                      sharePreference: sharePreference,
+                                      shareRecording: false,
+                                      shareWordCloud: false,
+                                    );
+                                  },
+                                ),
+                              ).then((value) {
+                                // Notify user if they accepted the agreement
+                                if (value != null && value == true) {
+                                  final snackBar = SnackBar(
+                                    backgroundColor: kSecondaryTextColour,
+                                    content: Text('Share agreement accepted'),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                              });
+                            } else {
+                              updateRecording();
+                              Navigator.pop(context, 2);
                             }
-                          });
-                        } else {
-                          updateRecording();
-                          Navigator.pop(context, 2);
-                        }
-                      },
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-          ],
+                  ],
+                ),
+            ],
+          ),
         ),
       );
 
@@ -309,7 +331,9 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                   children: [
                     SimpleDialogOption(
                       child: Text(
-                          'You can also share your recordings and/or word clouds directly (e.g. via WhatsApp)'),
+                        'You can also share your recordings and/or word clouds directly (e.g. via WhatsApp)',
+                        style: TextStyle(height: 1.3),
+                      ),
                     ),
                     SizedBox(height: 10.0),
                     SimpleDialogOption(

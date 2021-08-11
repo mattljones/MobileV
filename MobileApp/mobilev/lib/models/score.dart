@@ -64,7 +64,7 @@ class Score {
     );
   }
 
-  // Update scores saved in the database
+  // Update scores saved in the database based on those retrieved from back-end
   static Future<void> updateActiveScores(Map latestScores) async {
     final db = databaseService.db;
 

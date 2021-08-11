@@ -69,8 +69,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       else {
         setState(() {
           latestScores = data;
-          scoresLoading = false;
           scoresLoaded = true;
+          scoresLoading = false;
           // Initialise only the controllers that are needed (expensive)
           for (var i = 0; i < latestScores!.keys.length; i++) {
             scoreControllers.add(TextEditingController());
@@ -267,7 +267,10 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                   padding: EdgeInsets.only(bottom: 30.0),
                   child: Text(
                     'Unable to download the latest scoring domains. Most recently loaded scores can be used instead:',
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(
+                      color: Colors.red,
+                      height: 1.3,
+                    ),
                   ),
                 ),
               // If still loading, show nothing
