@@ -1,7 +1,7 @@
 ### ROUTES RELATED TO THE MOBILE APP
 
 from MobileV.models import *
-from flask import Blueprint, json, request, Response, jsonify, copy_current_request_context
+from flask import Blueprint, request, Response, jsonify, copy_current_request_context
 from threading import Thread
 import MobileV.ibm_stt as ibm_stt
 import io, gc

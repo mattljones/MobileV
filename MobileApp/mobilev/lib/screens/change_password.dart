@@ -21,8 +21,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  bool wrongPassword = false;
   bool isLoading = false;
+  bool wrongPassword = false;
 
   @override
   void dispose() {

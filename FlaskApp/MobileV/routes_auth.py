@@ -61,7 +61,7 @@ def reset_password(type, token):
     return render_template('login.html')
 
 
-## AJAX REQUESTS --------------------------------------------------------------
+## HTTP REQUESTS --------------------------------------------------------------
 
 # Flask-Login start session and return URL
 @auth_bp.route('/login/portal', methods=["POST"])
@@ -122,7 +122,7 @@ def change_password(type=None, token=None):
             user.change_password(new_password)
             return 'successful'
 
-    # Change password (logged in)
+    # Change password (portal, logged in)
     elif type is None:
 
         old_password = request.get_json()["old_password"]
@@ -145,7 +145,7 @@ def change_password(type=None, token=None):
     return 'unsuccessful'
 
 
-# Change password (app logged-in)
+# Change password (app, logged-in)
 @auth_bp.route("/change-password/app", methods=["POST"])
 def change_password_app():
 
