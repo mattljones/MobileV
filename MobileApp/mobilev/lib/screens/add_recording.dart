@@ -121,7 +121,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   }
 
   // Helper function for saving a new recording
-  void saveRecording() async {
+  Future<List<String>> saveRecording() async {
     String timeNow = DateTime.now().toString().substring(0, 19);
     // Rename saved audio file to uniquely identify it
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
@@ -157,6 +157,54 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       analysisStatus: 'unavailable',
     );
     await Recording.insertRecording(newRecording);
+    return [timeNow, newFileName];
+  }
+
+  // Helper function for sharing a new recording
+  Future<bool> shareRecording(
+      String dateRecorded, String audioPath, UserData sharePreference) async {
+    // Construct relevant recording metadata
+    Map<String, dynamic> recordingData = {
+      'dateRecorded': dateRecorded,
+      'type': typeSet,
+      'duration': durationSet,
+      'score1_name': latestScores!.values.length > 0
+          ? latestScores!.values.toList()[0]
+          : null,
+      'score1_value': latestScores!.values.length > 0
+          ? int.parse(scoreControllers[0].text)
+          : null,
+      'score2_name': latestScores!.values.length > 1
+          ? latestScores!.values.toList()[1]
+          : null,
+      'score2_value': latestScores!.values.length > 1
+          ? int.parse(scoreControllers[1].text)
+          : null,
+      'score3_name': latestScores!.values.length > 2
+          ? latestScores!.values.toList()[2]
+          : null,
+      'score3_value': latestScores!.values.length > 2
+          ? int.parse(scoreControllers[2].text)
+          : null,
+    };
+
+    // Construct absolute file path
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    String absPath = path.join(directoryPath, audioPath);
+
+    // Translate sharePreference object to string
+    String? shareType;
+    if (sharePreference.field1 == '1' && sharePreference.field2 == '0') {
+      shareType = 'audio';
+    } else if (sharePreference.field1 == '0' && sharePreference.field2 == '1') {
+      shareType = 'wordCloud';
+    } else {
+      shareType = 'both';
+    }
+
+    final result =
+        await NetworkService.uploadRecording(recordingData, absPath, shareType);
+    return result;
   }
 
   Column buildRecordTab(BuildContext context) => Column(
@@ -317,6 +365,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                     // Check if user has accepted the sharing agreement
                     UserData sharePreference =
                         await UserData.selectUserData('sharePreference');
+                    // If they haven't, push the share agreement screen
                     if (sharePreference.field1 == '0' &&
                         sharePreference.field2 == '0') {
                       Navigator.push(
@@ -341,9 +390,14 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         }
                       });
-                    } else {
-                      saveRecording();
-                      Navigator.pop(this.context, true);
+                    }
+                    // Otherwise, save and then try to share
+                    else {
+                      var recordingData = await saveRecording();
+                      final response = await shareRecording(
+                          recordingData[0], recordingData[1], sharePreference);
+                      print(response);
+                      // Navigator.pop(this.context, true);
                     }
                   }
                 },

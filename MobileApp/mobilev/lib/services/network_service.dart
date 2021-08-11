@@ -1,4 +1,5 @@
 // Dart & Flutter imports
+import 'dart:io';
 import 'dart:convert';
 
 // Package imports
@@ -38,6 +39,38 @@ class NetworkService {
   }
 
   // POST requests --------------------------------------------------------------
+
+  // Uploading recording and associated metadata
+  static Future<bool> uploadRecording(Map<String, dynamic> recordingData,
+      String audioPath, String shareType) async {
+    try {
+      List<int> rawBytes = File(audioPath).readAsBytesSync();
+      String base64Audio = base64.encode(rawBytes);
+      final response = await http.post(
+        Uri.parse(baseURL + '/transcribe'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'dateRecorded': recordingData['dateRecorded'],
+          'type': recordingData['type'],
+          'duration': recordingData['duration'].toString(),
+          'score1_name': recordingData['score1_name'],
+          'score1_value': recordingData['score1_value'].toString(),
+          'score2_name': recordingData['score2_name'],
+          'score2_value': recordingData['score2_value'].toString(),
+          'score3_name': recordingData['score3_name'],
+          'score3_value': recordingData['score3_value'].toString(),
+          'shareType': shareType,
+          'audioFile': base64Audio,
+        }),
+      );
+      return (response.body == 'successful') ? true : false;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 
   // Change password
   static Future<String> changePassword(

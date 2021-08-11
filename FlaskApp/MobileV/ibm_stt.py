@@ -11,11 +11,18 @@ import io
 
 class MyRecognizeCallback(RecognizeCallback):
 
-    def __init__(self):
+    def __init__(self, transcript=''):
         RecognizeCallback.__init__(self)
+        self.transcript = transcript
 
     def on_data(self, data):
-        print(data["results"][0]["alternatives"][0]["transcript"])
+        transcript = ''
+        for result in data['results']:
+            segment = result['alternatives'][0]['transcript']
+            new_segment = segment.replace('%HESITATION ', '')
+            transcript += new_segment
+
+        self.transcript = transcript
 
     def on_error(self, error):
         print('Error received: {}'.format(error))
@@ -44,6 +51,8 @@ def get_transcript(temp_file, apiKey, serviceURL):
             model='en-GB_NarrowbandModel')
 
     speech_to_text.delete_user_data('customer')
+
+    return myRecognizeCallback.transcript
 
 
 def convert_to_mp3(temp_file):
