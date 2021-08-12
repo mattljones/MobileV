@@ -67,7 +67,6 @@ class NetworkService {
       );
       return (response.body == 'successful') ? true : false;
     } catch (e) {
-      print(e);
       return false;
     }
   }

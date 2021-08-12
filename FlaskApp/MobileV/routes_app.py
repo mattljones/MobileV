@@ -3,14 +3,14 @@
 from MobileV.models import *
 from flask import Blueprint, request, jsonify, copy_current_request_context
 from threading import Thread
-import MobileV.ibm_stt as ibm_stt
+import MobileV.stt as stt
 import io, gc, base64
 
 # Create blueprint for these routes
 app_bp = Blueprint('app_bp', __name__)
 
 
-# Main transcription route
+# Main speech-to-text route
 @app_bp.route('/transcribe', methods=["POST"])
 def transcribe():
 
@@ -30,15 +30,21 @@ def transcribe():
 
         # Convert base64-encoded audio to a file, then convert to mp3
         temp_file = io.BytesIO(base64.b64decode(base64audio))
-        converted_file = ibm_stt.convert_to_mp3(temp_file)
+        converted_file = stt.convert_to_mp3(temp_file)
 
         # Get transcript
         ibm_creds = IBMCred.query.first()
-        transcript = ibm_stt.get_transcript(converted_file, ibm_creds.apiKey, ibm_creds.serviceURL)
+        transcript = stt.get_transcript(converted_file, ibm_creds.apiKey, ibm_creds.serviceURL)
+        print(transcript)
 
         # Calculate WPM (Text & Numeric)
+        noWords = len(transcript.split())
+        minutes = int(duration) / 60
+        wpm = round(noWords/minutes)
 
         # Create word cloud (Text only)
+        if (type == 'Text'):
+            pass
 
         # Save to disk
 

@@ -170,22 +170,22 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       'duration': durationSet,
       'score1_name': latestScores!.values.length > 0
           ? latestScores!.values.toList()[0]
-          : null,
+          : '',
       'score1_value': latestScores!.values.length > 0
           ? int.parse(scoreControllers[0].text)
-          : null,
+          : '',
       'score2_name': latestScores!.values.length > 1
           ? latestScores!.values.toList()[1]
-          : null,
+          : '',
       'score2_value': latestScores!.values.length > 1
           ? int.parse(scoreControllers[1].text)
-          : null,
+          : '',
       'score3_name': latestScores!.values.length > 2
           ? latestScores!.values.toList()[2]
-          : null,
+          : '',
       'score3_value': latestScores!.values.length > 2
           ? int.parse(scoreControllers[2].text)
-          : null,
+          : '',
     };
 
     // Construct absolute file path
@@ -396,7 +396,6 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                       var recordingData = await saveRecording();
                       final response = await shareRecording(
                           recordingData[0], recordingData[1], sharePreference);
-                      print(response);
                       // Navigator.pop(this.context, true);
                     }
                   }

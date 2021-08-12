@@ -21,3 +21,4 @@ pyjwt
 ibm-watson
 ffmpeg
 pydub
+wordcloud

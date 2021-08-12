@@ -9,6 +9,18 @@ from pydub import AudioSegment
 import io
    
 
+## CONVERSION TO MP3 ----------------------------------------------------------
+
+def convert_to_mp3(temp_file):
+
+    converted_file = io.BytesIO()
+    AudioSegment.from_file(temp_file).export(converted_file, format="mp3")
+
+    return converted_file
+
+
+## IBM STT TRANSCRIPTION-------------------------------------------------------
+
 class MyRecognizeCallback(RecognizeCallback):
 
     def __init__(self, transcript=''):
@@ -55,10 +67,4 @@ def get_transcript(temp_file, apiKey, serviceURL):
     return myRecognizeCallback.transcript
 
 
-def convert_to_mp3(temp_file):
-
-    converted_file = io.BytesIO()
-    AudioSegment.from_file(temp_file).export(converted_file, format="mp3")
-
-    return converted_file
-
+## GENERATE WORDCLOUD ---------------------------------------------------------
