@@ -23,11 +23,11 @@ class UserData {
     if (field1 == '0' && field2 == '0') {
       return 'Declined';
     } else if (field1 == '1' && field2 == '0') {
-      return 'Recordings\nonly';
+      return 'Audio\nonly';
     } else if (field1 == '0' && field2 == '1') {
       return 'Word clouds\nonly';
     } else {
-      return 'Recordings,\nWord clouds';
+      return 'Audio,\nWord clouds';
     }
   }
 

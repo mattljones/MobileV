@@ -74,7 +74,7 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Share recordings',
+                  'Share audio',
                   style: TextStyle(
                     fontSize: 17.0,
                   ),
