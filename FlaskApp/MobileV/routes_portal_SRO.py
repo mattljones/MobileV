@@ -199,7 +199,7 @@ def download_app_user_share(shareID):
     if os.path.exists(share.filePath):
 
         # Open and decrypt file; store in local variable
-        file_bytes = io.BytesIO(decrypt(share.filePath))
+        file_bytes = io.BytesIO(decrypt_and_load(share.filePath))
 
         # Construct download name, accounting for nulls
         name_pt1 = "{}_{}_{}_{}s_WPM_{}".format(share.dateRecorded.date(),

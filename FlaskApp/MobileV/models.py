@@ -209,17 +209,14 @@ class PendingTranscript(db.Model):
 
 ## ENCRYPTION & DECRYPTION HELPER FUNCTIONS------------------------------------
 
-# TODO: Change to encrypting file stream and returning this/saving to disk + updating DB
-def encrypt(filePath):
+def encrypt_and_save(fileBytes, filePath):
     f = Fernet(environ.get("FERNET_ENCRYPTION_KEY"))
-    with open(filePath, "rb") as file:
-        file_data = file.read()
-    encrypted_data = f.encrypt(file_data)
+    encrypted_data = f.encrypt(fileBytes)
     with open(filePath, "wb") as file:
         file.write(encrypted_data)
 
 
-def decrypt(filePath):
+def decrypt_and_load(filePath):
     f = Fernet(environ.get("FERNET_ENCRYPTION_KEY"))
     with open(filePath, "rb") as file:
         encrypted_data = file.read()

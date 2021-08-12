@@ -28,6 +28,9 @@ def transcribe():
         shareType = request.get_json()['shareType']
         base64audio = request.get_json()['audioFile']
 
+        # Generate unique & valid filename for storing audio/wordclouds
+        fileName = '1_' + dateRecorded.replace(' ', '_').replace(':','-')
+
         # Convert base64-encoded audio to a file, then convert to mp3
         temp_file = io.BytesIO(base64.b64decode(base64audio))
         converted_file = stt.convert_to_mp3(temp_file)
@@ -43,8 +46,8 @@ def transcribe():
         wpm = round(noWords/minutes)
 
         # Create word cloud (Text only)
-        if (type == 'Text'):
-            pass
+        if (type == 'Text' and noWords != 0):
+            stt.generate_save_wordcloud(transcript, fileName)
 
         # Save to disk
 
