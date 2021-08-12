@@ -129,7 +129,7 @@ class AppUser(db.Model):
     sroID = db.Column(db.Integer, db.ForeignKey("SRO.sroID", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False)
     shares = db.relationship("Share", passive_deletes="all")
     scores = db.relationship("Score", passive_deletes="all")
-    pendingTranscripts = db.relationship("PendingTranscript", passive_deletes="all")
+    pendingDownloads = db.relationship("PendingDownload", passive_deletes="all")
 
     def get_id(self):
         return self.userID
@@ -174,7 +174,7 @@ class Share(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     shareID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    dateRecorded = db.Column(db.TIMESTAMP, unique=True, nullable=False)
+    dateRecorded = db.Column(db.TIMESTAMP, nullable=False)
     type = db.Column(db.String(10), nullable=True)
     duration = db.Column(db.SmallInteger, nullable=True)
     WPM = db.Column(db.SmallInteger, nullable=False)
@@ -198,13 +198,16 @@ class Score(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
 
 
-class PendingTranscript(db.Model):
-    __tablename__ = "PendingTranscript"
+class PendingDownload(db.Model):
+    __tablename__ = "PendingDownload"
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     dateRecorded = db.Column(db.TIMESTAMP, primary_key=True)
-    transcript = db.Column(EncryptedType(db.Text, key, AesEngine, 'pkcs5'), nullable=False)
+    WPM = db.Column(db.SmallInteger, nullable=True)
+    transcript = db.Column(EncryptedType(db.Text, key, AesEngine, 'pkcs5'), nullable=True)
+    wordCloudPath = db.Column(db.String(50), nullable=True)
+    status = db.Column(db.String(10), nullable=False)
 
 
 ## ENCRYPTION & DECRYPTION HELPER FUNCTIONS------------------------------------

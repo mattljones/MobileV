@@ -4,7 +4,7 @@ from MobileV.models import *
 from flask import Blueprint, request, jsonify, copy_current_request_context
 from threading import Thread
 import MobileV.stt as stt
-import io, gc, base64
+import io, gc, base64, copy
 
 # Create blueprint for these routes
 app_bp = Blueprint('app_bp', __name__)
@@ -16,47 +16,121 @@ def transcribe():
 
     @copy_current_request_context
     def handover():
+
+        # Loading request data, accounting for missing data
         dateRecorded = request.get_json()['dateRecorded']
         type = request.get_json()['type']
         duration = request.get_json()['duration']
         score1_name = request.get_json()['score1_name']
+        score1_name = score1_name if score1_name != '' else None
         score1_value = request.get_json()['score1_value']
+        score1_value = score1_value if score1_value != '' else None
         score2_name = request.get_json()['score2_name']
+        score2_name = score2_name if score2_name != '' else None
         score2_value = request.get_json()['score2_value']
+        score2_value = score2_value if score2_value != '' else None
         score3_name = request.get_json()['score3_name']
+        score3_name = score3_name if score3_name != '' else None
         score3_value = request.get_json()['score3_value']
+        score3_value = score3_value if score3_value != '' else None
         shareType = request.get_json()['shareType']
         base64audio = request.get_json()['audioFile']
 
         # Generate unique & valid filename for storing audio/wordclouds
         fileName = '1_' + dateRecorded.replace(' ', '_').replace(':','-')
+        audioPath = 'MobileV/shares/{}.mp3'.format(fileName)
+        wordCloudPath = 'MobileV/shares/{}.png'.format(fileName)
 
         # Convert base64-encoded audio to a file, then convert to mp3
-        temp_file = io.BytesIO(base64.b64decode(base64audio))
-        converted_file = stt.convert_to_mp3(temp_file)
+        temp_audio = io.BytesIO(base64.b64decode(base64audio))
+        converted_audio = stt.convert_to_mp3(temp_audio)
+        converted_audio_ibm = copy.copy(converted_audio) # get_transcript closes file once complete
 
         # Get transcript
         ibm_creds = IBMCred.query.first()
-        transcript = stt.get_transcript(converted_file, ibm_creds.apiKey, ibm_creds.serviceURL)
-        print(transcript)
+        
+        # Try to use the IBM STT API for transcription
+        try: 
+            transcript = stt.get_transcript(converted_audio_ibm, ibm_creds.apiKey, ibm_creds.serviceURL)
 
-        # Calculate WPM (Text & Numeric)
-        noWords = len(transcript.split())
-        minutes = int(duration) / 60
-        wpm = round(noWords/minutes)
+        # In the case of an error, signal this to the app in the database (so it doesn't poll indefinitely)
+        except:
+            pendingDownloadError = PendingDownload(
+                userID=1,
+                dateRecorded=dateRecorded,
+                WPM=None,
+                transcript=None,
+                wordCloudPath=None,
+                status='error'
+            )
+            db.session.add(pendingDownloadError)
 
-        # Create word cloud (Text only)
-        if (type == 'Text' and noWords != 0):
-            stt.generate_save_wordcloud(transcript, fileName)
+        # Otherwise, analyse the transcript and save/share based on user share preferences
+        else:
+            # Calculate WPM (Text & Numeric)
+            noWords = len(transcript.split())
+            minutes = int(duration) / 60
+            WPM = round(noWords/minutes)
 
-        # Save to disk
+            # Create and save word cloud (Text only)
+            if type == 'Text' and noWords != 0:
+                stt.generate_save_wordcloud(transcript, wordCloudPath)
 
-        # Save to database
+            # Insert new PendingDownload
+            transcript = transcript if noWords != 0 else None
+            wordCloudPath = wordCloudPath if noWords != 0 else None
+            pendingDownload = PendingDownload(
+                userID=1,
+                dateRecorded=dateRecorded,
+                WPM=WPM,
+                transcript=transcript,
+                wordCloudPath=wordCloudPath,
+                status='success'
+            )
+            db.session.add(pendingDownload)
 
-        # Force clean-up of audio files from memory
-        del temp_file
-        del converted_file
-        gc.collect()
+            # Insert new Share(s)
+            if (shareType == 'wordCloud' or shareType == 'both') and type == 'Text' and noWords != 0:
+                wordCloudShare = Share(
+                    dateRecorded=dateRecorded,
+                    type=type,
+                    duration=int(duration),
+                    WPM=WPM,
+                    score1_name=score1_name,
+                    score1_value=score1_value,
+                    score2_name=score2_name,
+                    score2_value=score2_value,
+                    score3_name=score3_name,
+                    score3_value=score3_value,
+                    fileType='Word Cloud',
+                    filePath=wordCloudPath,
+                    userID=1
+                )
+                db.session.add(wordCloudShare)
+
+            if shareType == 'audio' or shareType == 'both':
+                audioShare = Share(
+                    dateRecorded=dateRecorded,
+                    type=type,
+                    duration=int(duration),
+                    WPM=WPM,
+                    score1_name=score1_name,
+                    score1_value=score1_value,
+                    score2_name=score2_name,
+                    score2_value=score2_value,
+                    score3_name=score3_name,
+                    score3_value=score3_value,
+                    fileType='Audio',
+                    filePath=audioPath,
+                    userID=1
+                )
+                db.session.add(audioShare)
+                # Save (and encrypt) audio buffer if shared
+                encrypt_and_save(converted_audio.getvalue(), audioPath)
+
+        # Commit everything to the database
+        finally:
+            db.session.commit()
 
 
     Thread(target=handover).start()

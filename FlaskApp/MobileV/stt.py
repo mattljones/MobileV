@@ -72,7 +72,7 @@ def get_transcript(temp_file, apiKey, serviceURL):
 
 ## GENERATE WORDCLOUD ---------------------------------------------------------
 
-def generate_save_wordcloud(transcript, fileName):
+def generate_save_wordcloud(transcript, wordCloudPath):
 
     cloud = WordCloud(font_path='MobileV/static/fonts/Roboto-Regular.ttf', 
                       background_color='white', 
@@ -85,5 +85,5 @@ def generate_save_wordcloud(transcript, fileName):
     cloud_image.save(cloud_bytes, format='PNG')
 
     # Encrypt and save to disk
-    encrypt_and_save(cloud_bytes.getvalue(), 'MobileV/shares/{}.png'.format(fileName))
+    encrypt_and_save(cloud_bytes.getvalue(), wordCloudPath)
 
