@@ -94,11 +94,15 @@ class _RecordingCardState extends State<RecordingCard> {
     ).then((value) {
       // Refresh data on main page if an update was made
       if (value != null && value == 1) {
-        widget.updateRecordingsScreen(1); // Saved
+        widget.updateRecordingsScreen(1); // Updated
       } else if (value != null && value == 2) {
-        widget.updateRecordingsScreen(2); // Saved & shared
+        widget.updateRecordingsScreen(2); // Updated & shared
       } else if (value != null && value == 3) {
-        widget.updateRecordingsScreen(3); // Deleted
+        widget.updateRecordingsScreen(3); // Unable to share
+      } else if (value != null && value == 4) {
+        widget.updateRecordingsScreen(4); // Wait until analysis received
+      } else if (value != null && value == 5) {
+        widget.updateRecordingsScreen(5); // Deleted
       }
     });
   }

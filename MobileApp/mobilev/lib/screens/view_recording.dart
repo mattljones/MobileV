@@ -367,14 +367,8 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                   setState(() {
                                     isUploading = false;
                                   });
-                                  // Explain in snack bar that an error occurred when sharing
-                                  final snackBar = SnackBar(
-                                    backgroundColor: kSecondaryTextColour,
-                                    content: Text(
-                                        'Unable to share recording. Please try again.'),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  // Show error message
+                                  Navigator.pop(this.context, 3);
                                 }
                               }
                               // Otherwise, consider different possibilities
@@ -396,30 +390,19 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                     setState(() {
                                       isUploading = false;
                                     });
-                                    // Explain in snack bar that an error occurred when sharing
-                                    final snackBar = SnackBar(
-                                      backgroundColor: kSecondaryTextColour,
-                                      content: Text(
-                                          'Unable to share recording. Please try again.'),
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    // Show error message
+                                    Navigator.pop(this.context, 3);
                                   }
                                 }
                                 // Prevent sharing the update
                                 else if (analysisStatus ==
                                     AnalysisStatus.pending) {
-                                  final snackBar = SnackBar(
-                                    backgroundColor: kSecondaryTextColour,
-                                    content: Text(
-                                        'Please wait to receive analysis before sharing an update'),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  // Ask user to wait to receive analysis first before updating
+                                  Navigator.pop(this.context, 4);
                                 }
-                                // Finally, if none of the above, return to main page
+                                // Finally, if none of the above, pop to main page
                                 else {
-                                  Navigator.pop(context, 2);
+                                  Navigator.pop(context);
                                 }
                               }
                             }
@@ -578,7 +561,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                       onPressed: () async {
                         await Recording.deleteRecording(dateRecorded);
                         Navigator.pop(context);
-                        Navigator.pop(context, 3);
+                        Navigator.pop(context, 5);
                       },
                     ),
                   ],

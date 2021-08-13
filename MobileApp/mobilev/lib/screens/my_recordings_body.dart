@@ -98,6 +98,19 @@ class _RecordingsBodyState extends State<RecordingsBody>
     } else if (type == 3) {
       final snackBar = SnackBar(
         backgroundColor: kSecondaryTextColour,
+        content: Text('Unable to share recording. Please try again.'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else if (type == 4) {
+      final snackBar = SnackBar(
+        backgroundColor: kSecondaryTextColour,
+        content:
+            Text('Please wait to receive analysis before sharing an update'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else if (type == 5) {
+      final snackBar = SnackBar(
+        backgroundColor: kSecondaryTextColour,
         content: Text('Recording deleted'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
