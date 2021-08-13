@@ -11,6 +11,7 @@ import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
 import 'package:mobilev/services/network_service.dart';
@@ -50,6 +51,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   bool scoresLoaded = false;
   Map? latestScores;
   List scoreControllers = [];
+  bool isUploading = false;
 
   void getScores() {
     NetworkService.getScores().then((data) async {
@@ -350,15 +352,21 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                   // Check all fields complete
                   if (formKey.currentState!.validate()) {
                     saveRecording();
-                    Navigator.pop(this.context, false);
+                    Navigator.pop(this.context, 0);
                   }
                 },
               ),
               SizedBox(height: 15.0),
               FormButton(
-                text: 'Save & Share',
+                text: isUploading ? '' : 'Save & Share',
                 buttonColour: kPrimaryColour,
                 textColour: Colors.white,
+                icon: isUploading
+                    ? SpinKitPouringHourglass(
+                        color: Colors.white,
+                        size: 40.0,
+                      )
+                    : null,
                 onPressed: () async {
                   // Check all fields complete
                   if (formKey.currentState!.validate()) {
@@ -367,7 +375,9 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                         await UserData.selectUserData('sharePreference');
                     // If they haven't, push the share agreement screen
                     if (sharePreference.field1 == '0' &&
-                        sharePreference.field2 == '0') {
+                        (sharePreference.field2 == '0' ||
+                            typeSet == 'Numeric')) {
+                      FocusScope.of(context).unfocus();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -375,8 +385,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                             return ShareAgreementScreen(
                               firstLogin: false,
                               sharePreference: sharePreference,
-                              shareRecording: false,
-                              shareWordCloud: false,
+                              shareRecording: sharePreference.field1 == '1',
+                              shareWordCloud: sharePreference.field2 == '1',
                             );
                           },
                         ),
@@ -394,9 +404,31 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                     // Otherwise, save and then try to share
                     else {
                       var recordingData = await saveRecording();
-                      final response = await shareRecording(
+                      setState(() {
+                        isUploading = true;
+                      });
+                      final isShared = await shareRecording(
                           recordingData[0], recordingData[1], sharePreference);
-                      // Navigator.pop(this.context, true);
+                      if (isShared) {
+                        // Update saved recording to show that it's been shared
+                        Recording.updateRecording(
+                          dateRecorded: recordingData[0],
+                          newFields: {
+                            'isShared': 1,
+                            'analysisStatus': 'pending',
+                          },
+                        );
+                        setState(() {
+                          isUploading = false;
+                        });
+                        Navigator.pop(this.context, 1);
+                      } else {
+                        setState(() {
+                          isUploading = false;
+                        });
+                        // Explain in snack bar that an error occurred when sharing
+                        Navigator.pop(this.context, 2);
+                      }
                     }
                   }
                 },

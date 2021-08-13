@@ -76,16 +76,23 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(context, '/add-recording').then((value) {
                   // Refresh data if save was pressed (i.e. a new recording was added)
-                  if (value != null && value == false) {
+                  if (value != null && value == 0) {
                     final snackBar = SnackBar(
                       backgroundColor: kSecondaryTextColour,
                       content: Text('Recording saved'),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  } else if (value != null && value == true) {
+                  } else if (value != null && value == 1) {
                     final snackBar = SnackBar(
                       backgroundColor: kSecondaryTextColour,
                       content: Text('Recording saved & shared'),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } else if (value != null && value == 2) {
+                    final snackBar = SnackBar(
+                      backgroundColor: kSecondaryTextColour,
+                      content:
+                          Text('Unable to share recording. Please try again.'),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }

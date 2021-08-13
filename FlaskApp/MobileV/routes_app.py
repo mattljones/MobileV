@@ -1,18 +1,18 @@
 ### ROUTES RELATED TO THE MOBILE APP
 
-from MobileV.models import *
 from flask import Blueprint, request, jsonify, copy_current_request_context
 from threading import Thread
+from MobileV.models import *
 import MobileV.stt as stt
-import io, gc, base64, copy
+import io, base64, copy
 
 # Create blueprint for these routes
 app_bp = Blueprint('app_bp', __name__)
 
 
 # Main speech-to-text route
-@app_bp.route('/transcribe', methods=["POST"])
-def transcribe():
+@app_bp.route('/transcribe-analyse', methods=["POST"])
+def transcribe_analyse():
 
     @copy_current_request_context
     def handover():
@@ -44,7 +44,7 @@ def transcribe():
         # Convert base64-encoded audio to a file, then convert to mp3
         temp_audio = io.BytesIO(base64.b64decode(base64audio))
         converted_audio = stt.convert_to_mp3(temp_audio)
-        converted_audio_ibm = copy.copy(converted_audio) # get_transcript closes file once complete
+        converted_audio_ibm = copy.copy(converted_audio) # stt.get_transcript() closes file once complete
 
         # Get transcript
         ibm_creds = IBMCred.query.first()
@@ -77,8 +77,8 @@ def transcribe():
                 stt.generate_save_wordcloud(transcript, wordCloudPath)
 
             # Insert new PendingDownload
-            transcript = transcript if noWords != 0 else None
-            wordCloudPath = wordCloudPath if noWords != 0 else None
+            transcript = transcript if type == 'Text' and noWords != 0 else None
+            wordCloudPath = wordCloudPath if type == 'Text' and noWords != 0 else None
             pendingDownload = PendingDownload(
                 userID=1,
                 dateRecorded=dateRecorded,

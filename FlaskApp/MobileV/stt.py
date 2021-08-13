@@ -1,12 +1,13 @@
 ### FUNCTIONS RELATED TO HANDLING THE IBM SPEECH-TO-TEXT WEBSOCKET
-# - Calling API to get transcript
 # - Converting audio file to .mp3 format
+# - Calling API to get transcript
+# - Generating and saving (encrypted) word cloud
 
 from ibm_watson import SpeechToTextV1
 from ibm_watson.websocket import RecognizeCallback, AudioSource
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from pydub import AudioSegment
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
 from MobileV.models import *
 import io
    
@@ -30,6 +31,8 @@ class MyRecognizeCallback(RecognizeCallback):
         self.transcript = transcript
 
     def on_data(self, data):
+        
+        # Construct transcript from transcript segments
         transcript = ''
         for result in data['results']:
             segment = result['alternatives'][0]['transcript']

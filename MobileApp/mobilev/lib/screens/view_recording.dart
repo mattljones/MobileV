@@ -277,7 +277,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20.0),
+            SizedBox(height: 10.0),
             Material(
               child: InteractiveViewer(
                 child: Image.file(
@@ -453,7 +453,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     },
                     tabs: [
                       Tab(text: 'SCORES'),
-                      Tab(text: 'ANALYSIS'),
+                      Tab(text: 'TRANSCRIPT'),
                     ],
                   ),
                 ),

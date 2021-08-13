@@ -47,7 +47,7 @@ class NetworkService {
       List<int> rawBytes = File(audioPath).readAsBytesSync();
       String base64Audio = base64.encode(rawBytes);
       final response = await http.post(
-        Uri.parse(baseURL + '/transcribe'),
+        Uri.parse(baseURL + '/transcribe-analyse'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
