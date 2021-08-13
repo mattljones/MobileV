@@ -89,7 +89,7 @@ def transcribe_analyse():
             )
             db.session.add(pendingDownload)
 
-            # Insert new Share(s)
+            # Insert new word cloud share if appropriate
             if (shareType == 'wordCloud' or shareType == 'both') and type == 'Text' and noWords != 0:
                 wordCloudShare = Share(
                     dateRecorded=dateRecorded,
@@ -108,6 +108,7 @@ def transcribe_analyse():
                 )
                 db.session.add(wordCloudShare)
 
+            # Insert new audio share if appropriate
             if shareType == 'audio' or shareType == 'both':
                 audioShare = Share(
                     dateRecorded=dateRecorded,
