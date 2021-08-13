@@ -8,8 +8,10 @@ import 'package:just_audio/just_audio.dart' as ap;
 import 'package:share_plus/share_plus.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 // Module imports
+import 'package:mobilev/services/network_service.dart';
 import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/models/user_data.dart';
 import 'package:mobilev/screens/share_agreement.dart';
@@ -28,17 +30,20 @@ class ViewRecordingScreen extends StatefulWidget {
   final Map scores;
   final String? wordCloudPath;
   final String? transcript;
+  final bool isShared;
+  final AnalysisStatus analysisStatus;
 
-  ViewRecordingScreen({
-    required this.dateRecorded,
-    required this.type,
-    required this.duration,
-    required this.audioPath,
-    required this.wpm,
-    required this.scores,
-    required this.wordCloudPath,
-    required this.transcript,
-  });
+  ViewRecordingScreen(
+      {required this.dateRecorded,
+      required this.type,
+      required this.duration,
+      required this.audioPath,
+      required this.wpm,
+      required this.scores,
+      required this.wordCloudPath,
+      required this.transcript,
+      required this.isShared,
+      required this.analysisStatus});
 
   @override
   _ViewRecordingScreenState createState() => _ViewRecordingScreenState(
@@ -50,6 +55,8 @@ class ViewRecordingScreen extends StatefulWidget {
         this.scores,
         this.wordCloudPath,
         this.transcript,
+        this.isShared,
+        this.analysisStatus,
       );
 }
 
@@ -62,18 +69,24 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   final Map scores;
   final String? wordCloudPath;
   final String? transcript;
+  final bool isShared;
+  final AnalysisStatus analysisStatus;
   final formKey = GlobalKey<FormState>();
   List scoreControllers = [];
+  bool isUploading = false;
 
   _ViewRecordingScreenState(
-      this.dateRecorded,
-      this.type,
-      this.duration,
-      this.audioPath,
-      this.wpm,
-      this.scores,
-      this.wordCloudPath,
-      this.transcript);
+    this.dateRecorded,
+    this.type,
+    this.duration,
+    this.audioPath,
+    this.wpm,
+    this.scores,
+    this.wordCloudPath,
+    this.transcript,
+    this.isShared,
+    this.analysisStatus,
+  );
 
   @override
   void initState() {
@@ -116,7 +129,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   }
 
   // Helper function to update a recording
-  void updateRecording() async {
+  Future<bool> updateRecording() async {
     Map<String, dynamic> newFields = {};
     for (var i = 0; i < scores.keys.length; i++) {
       int current = int.parse(scoreControllers[i].text);
@@ -145,7 +158,67 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
         dateRecorded: dateRecorded,
         newFields: newFields,
       );
+
+      return true; // Signifies changes were made
     }
+
+    return false; // Signifies no changes were made (no new fields)
+  }
+
+  // Helper function for sharing a recording that wasn't originally shared
+  Future<bool> shareRecording(UserData sharePreference) async {
+    // Construct relevant recording metadata
+    Map<String, dynamic> recordingData = {
+      'dateRecorded': dateRecorded,
+      'type': type,
+      'duration': duration,
+      'score1_name':
+          scores.values.length > 0 ? scores.values.toList()[0][0] : '',
+      'score1_value':
+          scores.values.length > 0 ? int.parse(scoreControllers[0].text) : '',
+      'score2_name':
+          scores.values.length > 1 ? scores.values.toList()[1][0] : '',
+      'score2_value':
+          scores.values.length > 1 ? int.parse(scoreControllers[1].text) : '',
+      'score3_name':
+          scores.values.length > 2 ? scores.values.toList()[2][0] : '',
+      'score3_value':
+          scores.values.length > 2 ? int.parse(scoreControllers[2].text) : '',
+    };
+
+    // Construct absolute file path
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    String absPath = path.join(directoryPath, audioPath);
+
+    // Translate sharePreference object to string
+    String? shareType;
+    if (sharePreference.field1 == '1' && sharePreference.field2 == '0') {
+      shareType = 'audio';
+    } else if (sharePreference.field1 == '0' && sharePreference.field2 == '1') {
+      shareType = 'wordCloud';
+    } else {
+      shareType = 'both';
+    }
+
+    final result =
+        await NetworkService.uploadRecording(recordingData, absPath, shareType);
+
+    return result;
+  }
+
+  // Helper function to update scores on the server
+  Future<bool> shareUpdatedScores() async {
+    String newScore1Value =
+        scores.values.length > 0 ? scoreControllers[0].text : '';
+    String newScore2Value =
+        scores.values.length > 1 ? scoreControllers[1].text : '';
+    String newScore3Value =
+        scores.values.length > 2 ? scoreControllers[2].text : '';
+
+    final result = await NetworkService.updateScores(
+        dateRecorded, newScore1Value, newScore2Value, newScore3Value);
+
+    return result;
   }
 
   SingleChildScrollView buildScoresTab(BuildContext context) =>
@@ -220,9 +293,15 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     Flexible(
                       flex: 3,
                       child: FormButton(
-                        text: 'Save & Share',
+                        text: isUploading ? '' : 'Save & Share',
                         buttonColour: kPrimaryColour,
                         textColour: Colors.white,
+                        icon: isUploading
+                            ? SpinKitPouringHourglass(
+                                color: Colors.white,
+                                size: 40.0,
+                              )
+                            : null,
                         onPressed: () async {
                           // Check all fields complete
                           if (formKey.currentState!.validate()) {
@@ -232,7 +311,9 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                     'sharePreference');
                             // If they haven't, make them accept it first
                             if (sharePreference.field1 == '0' &&
-                                sharePreference.field2 == '0') {
+                                (sharePreference.field2 == '0' ||
+                                    type == 'Numeric')) {
+                              FocusScope.of(context).unfocus();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -240,8 +321,10 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                     return ShareAgreementScreen(
                                       firstLogin: false,
                                       sharePreference: sharePreference,
-                                      shareRecording: false,
-                                      shareWordCloud: false,
+                                      shareRecording:
+                                          sharePreference.field1 == '1',
+                                      shareWordCloud:
+                                          sharePreference.field2 == '1',
                                     );
                                   },
                                 ),
@@ -256,9 +339,89 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                       .showSnackBar(snackBar);
                                 }
                               });
-                            } else {
-                              updateRecording();
-                              Navigator.pop(context, 2);
+                            }
+                            // Otherwise, update recording then try to share update
+                            else {
+                              bool changesMade = await updateRecording();
+                              // If not yet shared, attempt to share
+                              if (!isShared) {
+                                setState(() {
+                                  isUploading = true;
+                                });
+                                final successfulShare =
+                                    await shareRecording(sharePreference);
+                                if (successfulShare) {
+                                  // Update recording to show that it's been shared
+                                  Recording.updateRecording(
+                                    dateRecorded: dateRecorded,
+                                    newFields: {
+                                      'isShared': 1,
+                                      'analysisStatus': 'pending',
+                                    },
+                                  );
+                                  setState(() {
+                                    isUploading = false;
+                                  });
+                                  Navigator.pop(this.context, 2);
+                                } else {
+                                  setState(() {
+                                    isUploading = false;
+                                  });
+                                  // Explain in snack bar that an error occurred when sharing
+                                  final snackBar = SnackBar(
+                                    backgroundColor: kSecondaryTextColour,
+                                    content: Text(
+                                        'Unable to share recording. Please try again.'),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                              }
+                              // Otherwise, consider different possibilities
+                              else {
+                                // Update scores on the server
+                                if (changesMade &&
+                                    analysisStatus == AnalysisStatus.received) {
+                                  setState(() {
+                                    isUploading = true;
+                                  });
+                                  final successfulUpdate =
+                                      await shareUpdatedScores();
+                                  if (successfulUpdate) {
+                                    setState(() {
+                                      isUploading = false;
+                                    });
+                                    Navigator.pop(this.context, 2);
+                                  } else {
+                                    setState(() {
+                                      isUploading = false;
+                                    });
+                                    // Explain in snack bar that an error occurred when sharing
+                                    final snackBar = SnackBar(
+                                      backgroundColor: kSecondaryTextColour,
+                                      content: Text(
+                                          'Unable to share recording. Please try again.'),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                }
+                                // Prevent sharing the update
+                                else if (analysisStatus ==
+                                    AnalysisStatus.pending) {
+                                  final snackBar = SnackBar(
+                                    backgroundColor: kSecondaryTextColour,
+                                    content: Text(
+                                        'Please wait to receive analysis before sharing an update'),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                                // Finally, if none of the above, return to main page
+                                else {
+                                  Navigator.pop(context, 2);
+                                }
+                              }
                             }
                           }
                         },

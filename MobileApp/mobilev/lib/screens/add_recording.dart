@@ -206,6 +206,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
 
     final result =
         await NetworkService.uploadRecording(recordingData, absPath, shareType);
+
     return result;
   }
 

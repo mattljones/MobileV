@@ -80,15 +80,16 @@ class _RecordingCardState extends State<RecordingCard> {
       context,
       MaterialPageRoute(builder: (context) {
         return ViewRecordingScreen(
-          dateRecorded: widget.dateRecorded,
-          type: widget.type,
-          duration: widget.duration,
-          audioPath: audioAbsPath,
-          wpm: widget.wpm,
-          scores: widget.scores,
-          wordCloudPath: cloudAbsPath,
-          transcript: widget.transcript,
-        );
+            dateRecorded: widget.dateRecorded,
+            type: widget.type,
+            duration: widget.duration,
+            audioPath: audioAbsPath,
+            wpm: widget.wpm,
+            scores: widget.scores,
+            wordCloudPath: cloudAbsPath,
+            transcript: widget.transcript,
+            isShared: widget.isShared,
+            analysisStatus: widget.analysisStatus);
       }),
     ).then((value) {
       // Refresh data on main page if an update was made

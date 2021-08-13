@@ -71,6 +71,28 @@ class NetworkService {
     }
   }
 
+  // Update scores
+  static Future<bool> updateScores(String dateRecorded, String newScore1Value,
+      String newScore2Value, String newScore3Value) async {
+    try {
+      final response = await http.post(
+        Uri.parse(baseURL + '/update-recording-scores'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'dateRecorded': dateRecorded,
+          'new_score1_value': newScore1Value,
+          'new_score2_value': newScore2Value,
+          'new_score3_value': newScore3Value,
+        }),
+      );
+      return (response.body == 'successful') ? true : false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Change password
   static Future<String> changePassword(
       String oldPassword, String newPassword) async {

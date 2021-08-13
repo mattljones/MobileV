@@ -9,7 +9,7 @@ import 'package:mobilev/config/routes.dart';
 import 'package:mobilev/config/theme.dart';
 
 // Determines if the app is seeded with example data on installation
-bool seedDatabase = false;
+bool seedDatabase = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

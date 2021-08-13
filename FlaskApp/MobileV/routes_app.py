@@ -139,6 +139,33 @@ def transcribe_analyse():
     return 'successful'
 
 
+# Update a recording's scores
+@app_bp.route('/update-recording-scores', methods=["POST"])
+def update_recording_scores():
+
+    dateRecorded = request.get_json()['dateRecorded']
+    new_score1_value = request.get_json()['new_score1_value']
+    new_score1_value = new_score1_value if new_score1_value != '' else None
+    new_score2_value = request.get_json()['new_score2_value']
+    new_score2_value = new_score2_value if new_score2_value != '' else None
+    new_score3_value = request.get_json()['new_score3_value']
+    new_score3_value = new_score3_value if new_score3_value != '' else None
+
+    shares = Share.query\
+                  .filter(Share.dateRecorded == dateRecorded)\
+                  .filter(Share.userID == 1)\
+                  .all()
+
+    for share in shares:
+        share.score1_value = new_score1_value
+        share.score2_value = new_score2_value
+        share.score3_value = new_score3_value
+
+    db.session.commit()
+
+    return 'successful'
+
+
 # Get the user's first name and current SRO name
 @app_bp.route('/get-names', methods=["GET"])
 def get_names():
