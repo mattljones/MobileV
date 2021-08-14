@@ -425,9 +425,12 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
           children: [
             SizedBox(height: 10.0),
             Material(
-              child: InteractiveViewer(
-                child: Image.file(
-                  File(wordCloudPath!),
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: InteractiveViewer(
+                  child: Image.file(
+                    File(wordCloudPath!),
+                  ),
                 ),
               ),
               elevation: 10.0,

@@ -124,6 +124,19 @@ class Recording {
     );
   }
 
+  // Select pending recordings
+  static Future<List<Map<String, dynamic>>> selectPending() async {
+    final db = databaseService.db;
+    final List<Map<String, dynamic>> list = await db!.query(
+      'Recording',
+      where: 'analysisStatus = ?',
+      whereArgs: ['pending'],
+      orderBy: 'dateRecorded ASC',
+    );
+
+    return list;
+  }
+
   // Select most recent recordings
   static Future<List<dynamic>> selectMostRecent() async {
     final db = databaseService.db;

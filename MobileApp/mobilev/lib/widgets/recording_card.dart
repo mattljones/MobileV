@@ -221,7 +221,7 @@ class _RecordingCardState extends State<RecordingCard> {
                       colour: Colors.red,
                       label: 'Analysis failed',
                       icon: Icon(
-                        Icons.error_outline,
+                        Icons.report_gmailerrorred_outlined,
                         color: Colors.white,
                       ),
                       iconFirst: false,

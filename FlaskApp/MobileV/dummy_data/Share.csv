@@ -1,3 +1,0 @@
-shareID,dateRecorded,type,duration,WPM,score1_name,score1_value,score2_name,score2_value,score3_name,score3_value,fileType,filePath,userID
-1,2021-03-24 12:05:01,Text,90,60,Score1,10,Score2,11,Score3,22,Word Cloud,MobileV/shares/test.png,1
-2,2021-03-20 11:35:02,Numeric,60,50,Score1,12,Score2,9,Score3,30,Audio,MobileV/shares/test2.mp3,1

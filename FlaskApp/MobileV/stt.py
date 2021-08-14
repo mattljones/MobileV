@@ -80,7 +80,7 @@ def generate_save_wordcloud(transcript, wordCloudPath):
     cloud = WordCloud(font_path='MobileV/static/fonts/Roboto-Regular.ttf', 
                       background_color='white', 
                       width=400, 
-                      height=400).generate(transcript)
+                      height=300).generate(transcript)
 
     # Save wordcloud into a BytesIO object
     cloud_image = cloud.to_image()

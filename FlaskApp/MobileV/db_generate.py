@@ -41,7 +41,7 @@ if __name__ == "__main__":
         elif choice == 'seed':
             
             # Dummy data only provided for these four tables
-            tables = ["Admin", "SRO", "AppUser", "Score", "Share"]
+            tables = ["Admin", "SRO", "AppUser", "Score"]
 
             for table in tables:
 
