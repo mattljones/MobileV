@@ -139,6 +139,47 @@ def transcribe_analyse():
     return 'successful'
 
 
+# Get recording analysis once it's ready
+@app_bp.route('/get-analysis', methods=["POST"])
+def get_names():
+
+    dateRecorded = request.get_json()['dateRecorded']
+
+    analysis = PendingDownload.query\
+                              .filter(PendingDownload.dateRecorded == dateRecorded)\
+                              .filter(PendingDownload.userID == 1)\
+                              .first()
+
+    # If not ready, notify app    
+    if analysis == None:
+        dict = {
+            'status': 'incomplete'
+        }
+
+    # Otherwise, return analysis
+    else:
+
+        # Construct transcript string
+        transcript = analysis.transcript if analysis.transcript != None else ''
+        
+        # Convert word cloud to a base 64-encoded string
+        if analysis.wordCloudPath == None: 
+            base64_string = ''
+        else:
+            cloud_bytes = io.BytesIO(decrypt_and_load(analysis.wordCloudPath))
+            base64_bytes = base64.b64encode(cloud_bytes.getvalue())
+            base64_string = base64_bytes.decode('utf-8')
+
+        dict = {
+            'status': 'complete',
+            'WPM': str(analysis.WPM),
+            'transcript': transcript,
+            'wordCloud': base64_string,
+        }
+
+    return jsonify(dict)
+
+
 # Update a recording's scores
 @app_bp.route('/update-recording-scores', methods=["POST"])
 def update_recording_scores():

@@ -71,6 +71,28 @@ class NetworkService {
     }
   }
 
+  // Try to download recording analysis
+  static Future<dynamic> downloadAnalysis(String dateRecorded) async {
+    try {
+      final response = await http.post(
+        Uri.parse(baseURL + '/get-analysis'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'dateRecorded': dateRecorded,
+        }),
+      );
+      if (response.statusCode == 200) {
+        return (jsonDecode(response.body));
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Update scores
   static Future<bool> updateScores(String dateRecorded, String newScore1Value,
       String newScore2Value, String newScore3Value) async {
