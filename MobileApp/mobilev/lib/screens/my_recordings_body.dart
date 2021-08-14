@@ -26,6 +26,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
   Map? monthlyData;
   bool monthsLoading = true;
   Map<String, String>? months;
+  bool isPolling = false;
 
   @override
   void initState() {
@@ -81,6 +82,22 @@ class _RecordingsBodyState extends State<RecordingsBody>
     });
   }
 
+  void pollForAnalysis() async {
+    // setState(() {
+    //   isPolling = true;
+    // });
+    print('started polling');
+    while (true) {
+      await Future.delayed(Duration(seconds: 5)).then((value) {
+        print('received');
+      });
+    }
+    print('stopped polling');
+    setState(() {
+      isPolling = false;
+    });
+  }
+
   // Helper callback function for updating the screen after a recording is edited or deleted
   void updateRecordingsScreen(int type) {
     if (type == 1) {
@@ -95,6 +112,9 @@ class _RecordingsBodyState extends State<RecordingsBody>
         content: Text('Recording updated & shared'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (isPolling == false) {
+        pollForAnalysis();
+      }
     } else if (type == 3) {
       final snackBar = SnackBar(
         backgroundColor: kSecondaryTextColour,
