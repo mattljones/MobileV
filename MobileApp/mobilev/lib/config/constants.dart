@@ -66,6 +66,3 @@ const fullMonths = {
   'Nov': 'November',
   'Dec': 'December',
 };
-
-final String testTranscript =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec mi metus. Donec tristique odio vitae purus eleifend venenatis. Morbi ut eros in sapien dapibus tempor rhoncus at risus. Etiam scelerisque turpis eros, vitae tincidunt enim posuere vel. Nullam at enim sed erat cursus rutrum eu et mauris. Maecenas blandit ullamcorper egestas. Morbi a felis pulvinar, sagittis lacus, consequat dui. Aenean eget lectus ultricies, gravida quam at, lacinia sapien.';
