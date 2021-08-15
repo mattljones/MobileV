@@ -133,9 +133,9 @@ VALUES ('remindersPreference', null, null);
  */
 
 List<String> sqlSeeds = [
-  '''INSERT INTO UserData (domain, field1, field2) VALUES ('username', 'test', null);''',
-  '''INSERT INTO UserData (domain, field1, field2) VALUES ('sharePreference', '0', '1');''',
-  '''INSERT INTO UserData (domain, field1, field2) VALUES ('remindersPreference', '4', '19:00');''',
+  '''INSERT INTO UserData (domain, field1, field2) VALUES ('username', null, null);''',
+  '''INSERT INTO UserData (domain, field1, field2) VALUES ('sharePreference', '0', '0');''',
+  '''INSERT INTO UserData (domain, field1, field2) VALUES ('remindersPreference', null, null);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (1, 'Wellbeing', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (2, 'GAD7', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (3, 'Steps', 1);''',
