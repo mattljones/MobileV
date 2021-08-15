@@ -103,7 +103,7 @@ def login_app():
     password = request.get_json()["password"]
     user = AppUser.query.filter_by(username=username).first()
 
-    if user is None or not user.check_password(username, password):
+    if user is None or not user.check_password(password):
         dict = {
             'authenticated': 'False'
         }
@@ -114,7 +114,7 @@ def login_app():
         dict = {
             'authenticated': 'True',
             'accessToken': access_token,
-            'resfreshToken': refresh_token
+            'refreshToken': refresh_token
         }
 
     return jsonify(dict)
