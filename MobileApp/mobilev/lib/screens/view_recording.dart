@@ -417,43 +417,50 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
         ),
       );
 
-  SingleChildScrollView buildAnalysisTab() => SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10.0),
-            Material(
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: InteractiveViewer(
-                  child: Image.file(
-                    File(wordCloudPath!),
+  NotificationListener buildAnalysisTab() =>
+      NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overscroll) {
+          overscroll.disallowGlow();
+          return true;
+        },
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10.0),
+              Material(
+                child: Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: InteractiveViewer(
+                    child: Image.file(
+                      File(wordCloudPath!),
+                    ),
                   ),
                 ),
+                elevation: 10.0,
               ),
-              elevation: 10.0,
-            ),
-            SizedBox(height: 30.0),
-            Text(
-              'Transcript',
-              style: TextStyle(
-                fontFamily: 'PTSans',
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
+              SizedBox(height: 30.0),
+              Text(
+                'Transcript',
+                style: TextStyle(
+                  fontFamily: 'PTSans',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              transcript!,
-              style: TextStyle(
-                fontSize: 17.0,
-                height: 1.4,
+              SizedBox(height: 10.0),
+              Text(
+                transcript!,
+                style: TextStyle(
+                  fontSize: 17.0,
+                  height: 1.4,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 

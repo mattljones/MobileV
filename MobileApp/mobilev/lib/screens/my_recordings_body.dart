@@ -130,9 +130,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
 
   // Helper function to poll the API for pending analysis
   void pollForAnalysis() async {
-    setState(() {
-      isPolling = true;
-    });
+    setState(() => isPolling = true);
     // Load a list of recordings pending analysis (oldest at beginning of list)
     var pendingRecordings = await Recording.selectPending();
 
@@ -150,7 +148,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
           }
           // Otherwise, examine the JSON response
           else {
-            // Try again if analysis incomplete
+            // Try again if analysis not yet ready
             if (response['status'] == 'incomplete') {
               complete = false;
             }
@@ -216,9 +214,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
         });
       }
     }
-    setState(() {
-      isPolling = false;
-    });
+    setState(() => isPolling = false);
   }
 
   // Helper callback function for updating the screen after a recording is edited or deleted
