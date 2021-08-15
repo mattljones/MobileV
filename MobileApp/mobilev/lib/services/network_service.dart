@@ -4,18 +4,53 @@ import 'dart:convert';
 
 // Package imports
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class NetworkService {
   static const baseURL = 'http://10.0.2.2:5000';
+  static final storage = FlutterSecureStorage();
+
+  // JWT helper functions ------------------------------------------------------
+
+  // Insert or update access and refresh tokens
+  static Future<void> insertTokens(
+      String accessToken, String refreshToken) async {
+    await storage.deleteAll();
+    await storage.write(key: 'accessToken', value: accessToken);
+    await storage.write(key: 'refreshToken', value: refreshToken);
+  }
+
+  // Retrieve access token
+  static Future<String> getAccessToken() async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    return accessToken!;
+  }
+
+  // Retrieve refresh token
+  static Future<String> getRefreshToken() async {
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    return refreshToken!;
+  }
 
   // GET requests --------------------------------------------------------------
 
   // My profile body names
-  static Future<dynamic> getNames() async {
+  static Future<dynamic> getNames({bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
-      final response = await http.get(Uri.parse(baseURL + '/get-names'));
+      final response = await http.get(
+        Uri.parse(baseURL + '/get-names'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
+      } else if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.getNames(refreshedToken: true)
+            : false;
       } else {
         return false;
       }
@@ -25,11 +60,22 @@ class NetworkService {
   }
 
   // User's currently allocated scores
-  static Future<dynamic> getScores() async {
+  static Future<dynamic> getScores({bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
-      final response = await http.get(Uri.parse(baseURL + '/get-scores'));
+      final response = await http.get(
+        Uri.parse(baseURL + '/get-scores'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
+      } else if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.getScores(refreshedToken: true)
+            : false;
       } else {
         return false;
       }
@@ -38,17 +84,44 @@ class NetworkService {
     }
   }
 
-  // POST requests --------------------------------------------------------------
+  // POST requests -------------------------------------------------------------
+
+  // Refresh access token
+  static Future<bool> refreshToken() async {
+    String token = await NetworkService.getRefreshToken();
+    try {
+      final response = await http.post(
+        Uri.parse(baseURL + '/update-recording-scores'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        final newTokens = jsonDecode(response.body);
+        await NetworkService.insertTokens(
+            newTokens['accessToken'], newTokens['refreshToken']);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 
   // Uploading recording and associated metadata
-  static Future<bool> uploadRecording(Map<String, dynamic> recordingData,
-      String audioPath, String shareType) async {
+  static Future<dynamic> uploadRecording(
+      Map<String, dynamic> recordingData, String audioPath, String shareType,
+      {bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
       List<int> rawBytes = File(audioPath).readAsBytesSync();
       String base64Audio = base64.encode(rawBytes);
       final response = await http.post(
         Uri.parse(baseURL + '/transcribe-analyse'),
         headers: <String, String>{
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
@@ -65,6 +138,14 @@ class NetworkService {
           'audioFile': base64Audio,
         }),
       );
+      if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.uploadRecording(
+                recordingData, audioPath, shareType,
+                refreshedToken: true)
+            : false;
+      }
       return (response.body == 'successful') ? true : false;
     } catch (e) {
       return false;
@@ -72,11 +153,14 @@ class NetworkService {
   }
 
   // Try to download recording analysis
-  static Future<dynamic> downloadAnalysis(String dateRecorded) async {
+  static Future<dynamic> downloadAnalysis(String dateRecorded,
+      {bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
       final response = await http.post(
         Uri.parse(baseURL + '/get-analysis'),
         headers: <String, String>{
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
@@ -85,6 +169,12 @@ class NetworkService {
       );
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
+      } else if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.downloadAnalysis(dateRecorded,
+                refreshedToken: true)
+            : false;
       } else {
         return false;
       }
@@ -94,12 +184,15 @@ class NetworkService {
   }
 
   // Update scores
-  static Future<bool> updateScores(String dateRecorded, String newScore1Value,
-      String newScore2Value, String newScore3Value) async {
+  static Future<dynamic> updateScores(String dateRecorded,
+      String newScore1Value, String newScore2Value, String newScore3Value,
+      {bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
       final response = await http.post(
         Uri.parse(baseURL + '/update-recording-scores'),
         headers: <String, String>{
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
@@ -109,6 +202,14 @@ class NetworkService {
           'new_score3_value': newScore3Value,
         }),
       );
+      if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.updateScores(
+                dateRecorded, newScore1Value, newScore2Value, newScore3Value,
+                refreshedToken: true)
+            : false;
+      }
       return (response.body == 'successful') ? true : false;
     } catch (e) {
       return false;
@@ -116,12 +217,14 @@ class NetworkService {
   }
 
   // Change password
-  static Future<String> changePassword(
-      String oldPassword, String newPassword) async {
+  static Future<dynamic> changePassword(String oldPassword, String newPassword,
+      {bool refreshedToken = false}) async {
+    String token = await NetworkService.getAccessToken();
     try {
       final response = await http.post(
         Uri.parse(baseURL + '/change-password/app'),
         headers: <String, String>{
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
@@ -129,6 +232,13 @@ class NetworkService {
           'new_password': newPassword,
         }),
       );
+      if (response.statusCode == 401 && !refreshedToken) {
+        bool refreshedToken = await NetworkService.refreshToken();
+        return refreshedToken
+            ? NetworkService.changePassword(oldPassword, newPassword,
+                refreshedToken: true)
+            : 'error';
+      }
       return response.body;
     } catch (e) {
       return 'error';
