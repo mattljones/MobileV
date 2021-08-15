@@ -7,6 +7,7 @@
 
 from os import environ, path 
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load .env into environment variables
 basedir = path.abspath(path.dirname(__file__))
@@ -21,6 +22,8 @@ class Config:
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
