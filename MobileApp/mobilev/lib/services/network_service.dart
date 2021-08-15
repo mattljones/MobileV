@@ -87,13 +87,19 @@ class NetworkService {
   // POST requests -------------------------------------------------------------
 
   // Sign in
-  static Future<dynamic> login() async {
+  static Future<dynamic> login(String username, String password) async {
     try {
       final response = await http.post(
         Uri.parse(baseURL + '/login/app'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
+        body: jsonEncode(
+          <String, String>{
+            'username': username,
+            'password': password,
+          },
+        ),
       );
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
