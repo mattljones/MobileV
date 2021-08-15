@@ -5,12 +5,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 
 # Create instances in global scope for use throughout the app
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = "/login"
+jwt = JWTManager()
 mail = Mail()
 
 
@@ -36,6 +38,7 @@ def create_app(env):
         # Register instances created earlier with the app
         db.init_app(app)
         login_manager.init_app(app)
+        jwt.init_app(app)
         mail.init_app(app)
 
         with app.app_context():

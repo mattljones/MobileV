@@ -1,6 +1,7 @@
 ### ROUTES RELATED TO THE MOBILE APP
 
 from flask import Blueprint, request, jsonify, copy_current_request_context
+from flask_jwt_extended import jwt_required, current_user as current_user_jwt
 from threading import Thread
 from MobileV.models import *
 import MobileV.stt as stt
@@ -12,6 +13,7 @@ app_bp = Blueprint('app_bp', __name__)
 
 # Main speech-to-text route
 @app_bp.route('/transcribe-analyse', methods=["POST"])
+@jwt_required()
 def transcribe_analyse():
 
     @copy_current_request_context
@@ -36,8 +38,10 @@ def transcribe_analyse():
         shareType = request.get_json()['shareType']
         base64audio = request.get_json()['audioFile']
 
+        userID = current_user_jwt.userID
+
         # Generate unique & valid filename for storing audio/wordclouds
-        fileName = '1_' + dateRecorded.replace(' ', '_').replace(':','-')
+        fileName = '{}_'.format(userID) + dateRecorded.replace(' ', '_').replace(':','-')
         audioPath = 'MobileV/shares/{}.mp3'.format(fileName)
         wordCloudPath = 'MobileV/shares/{}.png'.format(fileName)
 
@@ -56,7 +60,7 @@ def transcribe_analyse():
         # In the case of an error, signal this to the app in the database (so it doesn't poll indefinitely)
         except:
             pendingDownloadError = PendingDownload(
-                userID=1,
+                userID=userID,
                 dateRecorded=dateRecorded,
                 WPM=None,
                 transcript=None,
@@ -80,7 +84,7 @@ def transcribe_analyse():
             transcript = transcript if type == 'Text' and noWords != 0 else None
             wordCloudPath = wordCloudPath if type == 'Text' and noWords != 0 else None
             pendingDownload = PendingDownload(
-                userID=1,
+                userID=userID,
                 dateRecorded=dateRecorded,
                 WPM=WPM,
                 transcript=transcript,
@@ -104,7 +108,7 @@ def transcribe_analyse():
                     score3_value=score3_value,
                     fileType='Word Cloud',
                     filePath=wordCloudPath,
-                    userID=1
+                    userID=userID
                 )
                 db.session.add(wordCloudShare)
 
@@ -123,7 +127,7 @@ def transcribe_analyse():
                     score3_value=score3_value,
                     fileType='Audio',
                     filePath=audioPath,
-                    userID=1
+                    userID=userID
                 )
                 db.session.add(audioShare)
                 # Save (and encrypt) audio buffer if shared
@@ -141,13 +145,15 @@ def transcribe_analyse():
 
 # Get recording analysis once it's ready
 @app_bp.route('/get-analysis', methods=["POST"])
+@jwt_required()
 def get_analysis():
 
     dateRecorded = request.get_json()['dateRecorded']
+    userID = current_user_jwt.userID
 
     analysis = PendingDownload.query\
                               .filter(PendingDownload.dateRecorded == dateRecorded)\
-                              .filter(PendingDownload.userID == 1)\
+                              .filter(PendingDownload.userID == userID)\
                               .first()
 
     # If not ready, notify app    
@@ -194,6 +200,7 @@ def get_analysis():
 
 # Update a recording's scores
 @app_bp.route('/update-recording-scores', methods=["POST"])
+@jwt_required()
 def update_recording_scores():
 
     dateRecorded = request.get_json()['dateRecorded']
@@ -204,9 +211,11 @@ def update_recording_scores():
     new_score3_value = request.get_json()['new_score3_value']
     new_score3_value = new_score3_value if new_score3_value != '' else None
 
+    userID = current_user_jwt.userID
+
     shares = Share.query\
                   .filter(Share.dateRecorded == dateRecorded)\
-                  .filter(Share.userID == 1)\
+                  .filter(Share.userID == userID)\
                   .all()
 
     for share in shares:
@@ -221,8 +230,9 @@ def update_recording_scores():
 
 # Get the user's first name and current SRO name
 @app_bp.route('/get-names', methods=["GET"])
+@jwt_required()
 def get_names():
-    user = AppUser.query.filter_by(username='MobileVUser1').first()
+    user = current_user_jwt
     sro = SRO.query.get(user.sroID)
 
     dict = {
@@ -235,8 +245,9 @@ def get_names():
 
 # Get the user's currently allocated scores
 @app_bp.route('/get-scores', methods=["GET"])
+@jwt_required()
 def get_scores():
-    user = AppUser.query.filter_by(username='MobileVUser1').first()
+    user = current_user_jwt
     scores = {}
     for score in user.scores:
         dict = score.__dict__

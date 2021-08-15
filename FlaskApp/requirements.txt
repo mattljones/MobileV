@@ -16,6 +16,7 @@ mysqlclient
 sqlalchemy-utils
 cryptography
 pyjwt
+flask_jwt_extended
 
 # STT dependencies
 ibm-watson

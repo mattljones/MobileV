@@ -2,8 +2,9 @@
 # - Rendering templates
 # - HTTP requests
 
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_jwt_extended import create_access_token, jwt_required, current_user as current_user_jwt, get_jwt_identity, create_refresh_token
 from flask_mail import Message
 from MobileV.models import *
 from MobileV import mail
@@ -94,6 +95,49 @@ def login():
     return "unsuccessful"
 
 
+# App user JWT authentication
+@auth_bp.route('/login/app', methods=["POST"])
+def login_app():
+
+    username = request.get_json()["username"]
+    password = request.get_json()["password"]
+    user = AppUser.query.filter_by(username=username).first()
+
+    if user is None or not user.check_password(username, password):
+        dict = {
+            'authenticated': 'False'
+        }
+
+    else:
+        access_token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
+        dict = {
+            'authenticated': 'True',
+            'accessToken': access_token,
+            'resfreshToken': refresh_token
+        }
+
+    return jsonify(dict)
+
+
+# Refresh JWT token
+@auth_bp.route("/refresh-jwt", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh_jwt():
+
+    user = current_user_jwt
+    access_token = create_access_token(user)
+    refresh_token = create_refresh_token(user)
+
+    dict = {
+        'authenticated': 'True',
+        'accessToken': access_token,
+        'refreshToken': refresh_token
+    }
+
+    return jsonify(dict)
+
+
 # Flask-Login end session and redirect
 @auth_bp.route("/logout", methods=["GET"])
 @login_required
@@ -147,12 +191,13 @@ def change_password(type=None, token=None):
 
 # Change password (app, logged-in)
 @auth_bp.route("/change-password/app", methods=["POST"])
+@jwt_required()
 def change_password_app():
 
     old_password = request.get_json()["old_password"]
     new_password = request.get_json()["new_password"]
 
-    user = AppUser.query.filter_by(username='MobileVUser1').first()
+    user = AppUser.query.filter_by(userID=current_user.userID).first()
 
     if not user.check_password(old_password):
         return 'wrong_password' 

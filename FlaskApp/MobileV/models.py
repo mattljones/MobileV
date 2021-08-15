@@ -4,7 +4,7 @@
 # - ORM models
 # - Encryption & decryption helper functions
 
-from MobileV import db, login_manager
+from MobileV import db, login_manager, jwt
 from flask_login import UserMixin
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
@@ -12,7 +12,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from cryptography.fernet import Fernet
 from os import environ, path
 from time import time
-import jwt
+import jwt as pyjwt
 
 
 ## ENCRYPTION KEY RETRIEVAL ---------------------------------------------------
@@ -45,6 +45,19 @@ def load_user(userID):
         else:
             return SRO.query.get(userID)
     return None
+
+
+# JWT authentication user identity loader
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user.userID
+
+
+# JWT authentication user loader
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return AppUser.query.filter_by(userID=identity).one_or_none()
 
 
 ## ORM MODELS -----------------------------------------------------------------
@@ -103,14 +116,14 @@ class SRO(db.Model, UserMixin):
         db.session.commit()
 
     def get_jwt_token(self, expires_in=1800):
-        return jwt.encode(
+        return pyjwt.encode(
             {'sroID': self.sroID, 'exp': time() + expires_in},
             environ.get("SECRET_KEY"), algorithm="HS256")
 
     @staticmethod
     def verify_jwt_token(token):
         try:
-            sroID = jwt.decode(token, environ.get("SECRET_KEY"), algorithms=['HS256'])['sroID']
+            sroID = pyjwt.decode(token, environ.get("SECRET_KEY"), algorithms=['HS256'])['sroID']
         except:
             return None
         return SRO.query.get(sroID)
@@ -147,14 +160,14 @@ class AppUser(db.Model):
         db.session.commit()
 
     def get_jwt_token(self, expires_in=1800):
-        return jwt.encode(
+        return pyjwt.encode(
             {'userID': self.userID, 'exp': time() + expires_in},
             environ.get("SECRET_KEY"), algorithm="HS256")
 
     @staticmethod
     def verify_jwt_token(token):
         try:
-            userID = jwt.decode(token, environ.get("SECRET_KEY"), algorithms=['HS256'])['userID']
+            userID = pyjwt.decode(token, environ.get("SECRET_KEY"), algorithms=['HS256'])['userID']
         except:
             return None
         return AppUser.query.get(userID)
