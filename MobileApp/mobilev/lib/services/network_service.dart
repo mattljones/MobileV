@@ -13,7 +13,7 @@ class NetworkService {
   // JWT helper functions ------------------------------------------------------
 
   // Insert or update access and refresh tokens
-  static Future<void> insertTokens(
+  static Future<void> updateTokens(
       String accessToken, String refreshToken) async {
     await storage.deleteAll();
     await storage.write(key: 'accessToken', value: accessToken);
@@ -86,6 +86,35 @@ class NetworkService {
 
   // POST requests -------------------------------------------------------------
 
+  // Sign in
+  static Future<dynamic> login() async {
+    try {
+      final response = await http.post(
+        Uri.parse(baseURL + '/login/app'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        // Incorrect credentials
+        if (json['authenticated'] == 'False') {
+          return 'wrong_credentials';
+        }
+        // Correct credentials
+        else {
+          await NetworkService.updateTokens(
+              json['accessToken'], json['refreshToken']);
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Refresh access token
   static Future<bool> refreshToken() async {
     String token = await NetworkService.getRefreshToken();
@@ -99,7 +128,7 @@ class NetworkService {
       );
       if (response.statusCode == 200) {
         final newTokens = jsonDecode(response.body);
-        await NetworkService.insertTokens(
+        await NetworkService.updateTokens(
             newTokens['accessToken'], newTokens['refreshToken']);
         return true;
       } else {
