@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 // Module imports
+import 'package:mobilev/models/recording.dart';
 import 'package:mobilev/config/constants.dart';
 
 class UsageChart extends StatelessWidget {
@@ -40,10 +41,11 @@ class UsageChart extends StatelessWidget {
         colorFn: (MonthlyUsage usage, _) =>
             charts.ColorUtil.fromDartColor(kLightAccentColour),
         domainFn: (MonthlyUsage usage, _) => usage.month,
-        measureFn: (MonthlyUsage usage, _) => usage.amount,
+        measureFn: (MonthlyUsage usage, _) =>
+            double.parse(Recording.roundMinutes(usage.amount)),
         data: minutesData,
         labelAccessorFn: (MonthlyUsage usage, _) =>
-            '${usage.amount.toString()}',
+            Recording.roundMinutes(usage.amount),
       )
     ];
   }

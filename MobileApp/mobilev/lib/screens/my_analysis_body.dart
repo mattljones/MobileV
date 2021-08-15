@@ -119,7 +119,8 @@ class _AnalysisBodyState extends State<AnalysisBody>
                       padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: StatusCard(
                         colour: kPrimaryColour,
-                        label: '$noRecordings recordings',
+                        label:
+                            '$noRecordings recording${noRecordings == 1 ? '' : 's'}',
                         icon: Icon(
                           Icons.mic,
                           color: Colors.white,
@@ -133,7 +134,8 @@ class _AnalysisBodyState extends State<AnalysisBody>
                       padding: EdgeInsets.symmetric(horizontal: 5.0),
                       child: StatusCard(
                         colour: kDarkAccentColour,
-                        label: '$noMinutes minutes',
+                        label:
+                            '$noMinutes minute${noMinutes == '1' ? '' : 's'}',
                         icon: Icon(
                           Icons.timer,
                           color: Colors.white,

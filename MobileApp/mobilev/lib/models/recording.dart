@@ -253,9 +253,7 @@ class Recording {
       return {
         'month': months[list[i]['month']],
         'noRecordings': list[i]['noRecordings'],
-        'noMinutes': noSeconds != null
-            ? int.parse((noSeconds / 60).toStringAsFixed(0))
-            : 0,
+        'noMinutes': noSeconds != null ? noSeconds : 0,
       };
     });
   }
