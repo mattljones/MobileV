@@ -130,7 +130,6 @@ def refresh_jwt():
     refresh_token = create_refresh_token(user)
 
     dict = {
-        'authenticated': 'True',
         'accessToken': access_token,
         'refreshToken': refresh_token
     }
