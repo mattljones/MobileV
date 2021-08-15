@@ -17,7 +17,7 @@ app_bp = Blueprint('app_bp', __name__)
 def transcribe_analyse():
 
     @copy_current_request_context
-    def handover():
+    def handover(userID):
 
         # Loading request data, accounting for missing data
         dateRecorded = request.get_json()['dateRecorded']
@@ -37,8 +37,6 @@ def transcribe_analyse():
         score3_value = score3_value if score3_value != '' else None
         shareType = request.get_json()['shareType']
         base64audio = request.get_json()['audioFile']
-
-        userID = current_user_jwt.userID
 
         # Generate unique & valid filename for storing audio/wordclouds
         fileName = '{}_'.format(userID) + dateRecorded.replace(' ', '_').replace(':','-')
@@ -138,7 +136,10 @@ def transcribe_analyse():
             db.session.commit()
 
 
-    Thread(target=handover).start()
+    user = current_user_jwt
+    userID = user.userID
+
+    Thread(target=handover, args=(userID,)).start()
 
     return 'successful'
 
@@ -149,11 +150,11 @@ def transcribe_analyse():
 def get_analysis():
 
     dateRecorded = request.get_json()['dateRecorded']
-    userID = current_user_jwt.userID
+    user = current_user_jwt
 
     analysis = PendingDownload.query\
                               .filter(PendingDownload.dateRecorded == dateRecorded)\
-                              .filter(PendingDownload.userID == userID)\
+                              .filter(PendingDownload.userID == user.userID)\
                               .first()
 
     # If not ready, notify app    
@@ -211,11 +212,11 @@ def update_recording_scores():
     new_score3_value = request.get_json()['new_score3_value']
     new_score3_value = new_score3_value if new_score3_value != '' else None
 
-    userID = current_user_jwt.userID
+    user = current_user_jwt
 
     shares = Share.query\
                   .filter(Share.dateRecorded == dateRecorded)\
-                  .filter(Share.userID == userID)\
+                  .filter(Share.userID == user.userID)\
                   .all()
 
     for share in shares:

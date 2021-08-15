@@ -196,7 +196,9 @@ def change_password_app():
     old_password = request.get_json()["old_password"]
     new_password = request.get_json()["new_password"]
 
-    user = AppUser.query.filter_by(userID=current_user.userID).first()
+    user = current_user_jwt
+
+    user = AppUser.query.filter_by(userID=user.userID).first()
 
     if not user.check_password(old_password):
         return 'wrong_password' 
