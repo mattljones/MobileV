@@ -2,7 +2,7 @@
 SRO APP USER SHARES DATATABLE
 */
 
-// Function for generating datatable - used on page load & after changes made
+// Function for generating datatable - used on modal load & after changes made
 function createSROSharesDataTable(userID) {
 
   $.getJSON(`/get-app-user-shares/${userID}`, function(data) {
