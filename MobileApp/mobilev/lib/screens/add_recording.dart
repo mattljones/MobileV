@@ -54,7 +54,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   bool isUploading = false;
 
   void getScores() {
-    NetworkService.getScores().then((data) async {
+    NetworkService.getScores(context).then((data) async {
       // If data couldn't be loaded, use latest 'current' scores stored on device
       if (data == false) {
         var localScores = await Score.selectActiveScores();
@@ -204,8 +204,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       shareType = 'both';
     }
 
-    final result =
-        await NetworkService.uploadRecording(recordingData, absPath, shareType);
+    final result = await NetworkService.uploadRecording(
+        context, recordingData, absPath, shareType);
 
     return result;
   }

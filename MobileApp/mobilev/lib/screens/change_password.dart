@@ -112,7 +112,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       String newPassword = newPasswordController.text;
                       String passwordChanged =
                           await NetworkService.changePassword(
-                              oldPassword, newPassword);
+                              context, oldPassword, newPassword);
                       // Successful password change
                       if (passwordChanged == 'successful') {
                         Navigator.pop(context, true);

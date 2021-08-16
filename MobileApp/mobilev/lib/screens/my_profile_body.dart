@@ -38,7 +38,7 @@ class _ProfileBodyState extends State<ProfileBody> {
   }
 
   void getNames() {
-    NetworkService.getNames().then((data) {
+    NetworkService.getNames(context).then((data) {
       setState(() {
         names = data;
         namesLoading = false;

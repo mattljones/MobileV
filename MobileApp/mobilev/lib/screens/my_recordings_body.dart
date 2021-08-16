@@ -141,7 +141,8 @@ class _RecordingsBodyState extends State<RecordingsBody>
       // Continue polling for the given recording until its status is resolved
       while (complete == false) {
         await Future.delayed(Duration(seconds: 5)).then((value) async {
-          var response = await NetworkService.downloadAnalysis(dateRecorded);
+          var response =
+              await NetworkService.downloadAnalysis(context, dateRecorded);
           // In case of an error connecting with the API, try again
           if (response == false) {
             complete = false;

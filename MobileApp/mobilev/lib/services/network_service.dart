@@ -1,10 +1,14 @@
 // Dart & Flutter imports
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 
 // Package imports
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+// Module imports
+import 'package:mobilev/config/constants.dart';
 
 class NetworkService {
   static const baseURL = 'http://10.0.2.2:5000';
@@ -35,7 +39,8 @@ class NetworkService {
   // GET requests --------------------------------------------------------------
 
   // My profile body names
-  static Future<dynamic> getNames({bool refreshedToken = false}) async {
+  static Future<dynamic> getNames(BuildContext context,
+      {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
     try {
       final response = await http.get(
@@ -47,9 +52,9 @@ class NetworkService {
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
       } else if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
-            ? NetworkService.getNames(refreshedToken: true)
+            ? NetworkService.getNames(context, refreshedToken: true)
             : false;
       } else {
         return false;
@@ -60,7 +65,8 @@ class NetworkService {
   }
 
   // User's currently allocated scores
-  static Future<dynamic> getScores({bool refreshedToken = false}) async {
+  static Future<dynamic> getScores(BuildContext context,
+      {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
     try {
       final response = await http.get(
@@ -72,9 +78,9 @@ class NetworkService {
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
       } else if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
-            ? NetworkService.getScores(refreshedToken: true)
+            ? NetworkService.getScores(context, refreshedToken: true)
             : false;
       } else {
         return false;
@@ -122,7 +128,7 @@ class NetworkService {
   }
 
   // Refresh access token
-  static Future<bool> refreshToken() async {
+  static Future<bool> refreshToken(BuildContext context) async {
     String token = await NetworkService.getRefreshToken();
     try {
       final response = await http.post(
@@ -137,6 +143,15 @@ class NetworkService {
         await NetworkService.updateTokens(
             newTokens['accessToken'], newTokens['refreshToken']);
         return true;
+      } else if (response.statusCode == 401) {
+        Navigator.popAndPushNamed(context, '/login').then((value) {
+          final snackBar = SnackBar(
+            backgroundColor: kSecondaryTextColour,
+            content: Text('Your session has expired. Please sign in again.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+        return false;
       } else {
         return false;
       }
@@ -146,7 +161,7 @@ class NetworkService {
   }
 
   // Uploading recording and associated metadata
-  static Future<dynamic> uploadRecording(
+  static Future<dynamic> uploadRecording(BuildContext context,
       Map<String, dynamic> recordingData, String audioPath, String shareType,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
@@ -174,10 +189,10 @@ class NetworkService {
         }),
       );
       if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
             ? NetworkService.uploadRecording(
-                recordingData, audioPath, shareType,
+                context, recordingData, audioPath, shareType,
                 refreshedToken: true)
             : false;
       }
@@ -188,7 +203,8 @@ class NetworkService {
   }
 
   // Try to download recording analysis
-  static Future<dynamic> downloadAnalysis(String dateRecorded,
+  static Future<dynamic> downloadAnalysis(
+      BuildContext context, String dateRecorded,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
     try {
@@ -205,9 +221,9 @@ class NetworkService {
       if (response.statusCode == 200) {
         return (jsonDecode(response.body));
       } else if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
-            ? NetworkService.downloadAnalysis(dateRecorded,
+            ? NetworkService.downloadAnalysis(context, dateRecorded,
                 refreshedToken: true)
             : false;
       } else {
@@ -219,7 +235,7 @@ class NetworkService {
   }
 
   // Update scores
-  static Future<dynamic> updateScores(String dateRecorded,
+  static Future<dynamic> updateScores(BuildContext context, String dateRecorded,
       String newScore1Value, String newScore2Value, String newScore3Value,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
@@ -238,10 +254,10 @@ class NetworkService {
         }),
       );
       if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
-            ? NetworkService.updateScores(
-                dateRecorded, newScore1Value, newScore2Value, newScore3Value,
+            ? NetworkService.updateScores(context, dateRecorded, newScore1Value,
+                newScore2Value, newScore3Value,
                 refreshedToken: true)
             : false;
       }
@@ -252,7 +268,8 @@ class NetworkService {
   }
 
   // Change password
-  static Future<dynamic> changePassword(String oldPassword, String newPassword,
+  static Future<dynamic> changePassword(
+      BuildContext context, String oldPassword, String newPassword,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
     try {
@@ -268,9 +285,9 @@ class NetworkService {
         }),
       );
       if (response.statusCode == 401 && !refreshedToken) {
-        bool refreshedToken = await NetworkService.refreshToken();
+        bool refreshedToken = await NetworkService.refreshToken(context);
         return refreshedToken
-            ? NetworkService.changePassword(oldPassword, newPassword,
+            ? NetworkService.changePassword(context, oldPassword, newPassword,
                 refreshedToken: true)
             : 'error';
       }

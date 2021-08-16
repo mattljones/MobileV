@@ -200,8 +200,8 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
       shareType = 'both';
     }
 
-    final result =
-        await NetworkService.uploadRecording(recordingData, absPath, shareType);
+    final result = await NetworkService.uploadRecording(
+        context, recordingData, absPath, shareType);
 
     return result;
   }
@@ -216,7 +216,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
         scores.values.length > 2 ? scoreControllers[2].text : '';
 
     final result = await NetworkService.updateScores(
-        dateRecorded, newScore1Value, newScore2Value, newScore3Value);
+        context, dateRecorded, newScore1Value, newScore2Value, newScore3Value);
 
     return result;
   }
