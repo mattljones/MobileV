@@ -60,7 +60,7 @@ class Recording {
     };
   }
 
-  // Useful for development
+  // Useful for development and debugging
   @override
   String toString() {
     return '''
@@ -83,6 +83,7 @@ class Recording {
       )''';
   }
 
+  // Returns a string rounded as appropriate (max 1dp.)
   static String roundMinutes(int seconds) {
     var remainder = seconds.remainder(60);
     return remainder == 0

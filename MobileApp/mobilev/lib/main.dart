@@ -8,7 +8,7 @@ import 'package:mobilev/services/notification_service.dart';
 import 'package:mobilev/config/routes.dart';
 import 'package:mobilev/config/theme.dart';
 
-// Determines if the app is seeded with example data on installation
+// Set to 'true' to seed phone's database with dummy data on installation
 bool seedDatabase = false;
 
 void main() async {

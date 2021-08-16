@@ -127,7 +127,7 @@ class NetworkService {
     }
   }
 
-  // Refresh access token
+  // Refresh access token (called on a 401 response when logged in)
   static Future<bool> refreshToken(BuildContext context) async {
     String token = await NetworkService.getRefreshToken();
     try {

@@ -19,6 +19,7 @@ class UserData {
     };
   }
 
+  // String representation of share preferences for 'My profile' screen
   String toShareString() {
     if (field1 == '0' && field2 == '0') {
       return 'Declined';
@@ -31,6 +32,7 @@ class UserData {
     }
   }
 
+  // String representation of reminders preferences for 'My profile' screen
   String toRemindersString() {
     if (field1 == null && field2 == null) {
       return 'Off';
@@ -39,7 +41,7 @@ class UserData {
     }
   }
 
-  // Useful for development
+  // Useful for development and debugging
   @override
   String toString() {
     return 'UserData{domain: $domain, field1: $field1, field2: $field2}';

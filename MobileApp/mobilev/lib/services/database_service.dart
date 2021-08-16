@@ -26,7 +26,7 @@ class DatabaseService {
     );
   }
 
-  // Seeded database initialisation (for development)
+  // Seeded database initialisation (for development and demonstration purposes)
   Future<void> initSeed() async {
     db = await openDatabase(
       join(await getDatabasesPath(), 'database.db'),
@@ -43,19 +43,21 @@ class DatabaseService {
     );
   }
 
+  // Creates empty tables with correct constraints
   Future<void> createTables(Database db) async {
     await db.execute(sqlCreateScore);
     await db.execute(sqlCreateUserData);
     await db.execute(sqlCreateRecording);
   }
 
-  // Inserts default UserData records
+  // Inserts default (minimally sufficient) UserData records
   Future<void> insertUserData(Database db) async {
     await db.execute(sqlInsertUsername);
     await db.execute(sqlInsertSharePreference);
     await db.execute(sqlInsertRemindersPreference);
   }
 
+  // Copies example assets to documents directory
   Future<void> copyExampleAssets() async {
     List<String> files = ['test1.jpg', 'test2.jpg', 'test1.m4a', 'test2.m4a'];
     for (var file in files) {

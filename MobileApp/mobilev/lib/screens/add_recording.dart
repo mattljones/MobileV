@@ -26,7 +26,7 @@ import 'package:mobilev/widgets/form_button.dart';
 import 'package:mobilev/widgets/form_input_number.dart';
 
 /*
- * ADD RECORDING LAYOUT & LOGIC ------------------------------------------------
+ * ADD RECORDING SCREEN --------------------------------------------------------
  */
 
 class AddRecordingScreen extends StatefulWidget {
@@ -53,6 +53,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
   List scoreControllers = [];
   bool isUploading = false;
 
+  // Load scores from the server that the user is supposed to assess themself against
   void getScores() {
     NetworkService.getScores(context).then((data) async {
       // If data couldn't be loaded, use latest 'current' scores stored on device

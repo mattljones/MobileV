@@ -19,6 +19,7 @@ const kCardColour = Color(0xFFDEDEDE);
 // Enumerated types
 enum AnalysisStatus { unavailable, pending, received, failed }
 
+// Helper maps
 const analysisStatus = {
   'unavailable': AnalysisStatus.unavailable,
   'pending': AnalysisStatus.pending,
@@ -26,7 +27,6 @@ const analysisStatus = {
   'failed': AnalysisStatus.failed,
 };
 
-// Other
 const days = {
   '1': 'Mondays',
   '2': 'Tuesdays',

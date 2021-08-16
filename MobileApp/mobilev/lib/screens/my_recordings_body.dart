@@ -143,9 +143,10 @@ class _RecordingsBodyState extends State<RecordingsBody>
         await Future.delayed(Duration(seconds: 5)).then((value) async {
           var response =
               await NetworkService.downloadAnalysis(context, dateRecorded);
-          // In case of an error connecting with the API, try again
+          // In case of an error connecting to the API, continue to next pending recording
+          // (To avoid indefinite background polling in case of an unexpected issue or error)
           if (response == false) {
-            complete = false;
+            complete = true;
           }
           // Otherwise, examine the JSON response
           else {
@@ -163,7 +164,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                 dateRecorded: dateRecorded,
                 newFields: newFields,
               );
-              // Continue to next recording & update page
+              // Continue to next pending recording & update page
               complete = true;
               getMostRecentData();
               getMonthlyData();
@@ -205,7 +206,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                   newFields: newFields,
                 );
               }
-              // Continue to next recording & update page
+              // Continue to next pending recording & update page
               complete = true;
               getMostRecentData();
               getMonthlyData();

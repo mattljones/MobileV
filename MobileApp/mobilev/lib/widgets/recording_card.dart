@@ -69,7 +69,9 @@ class _RecordingCardState extends State<RecordingCard> {
     return list;
   }
 
-  // Function to pass data to/load the view recording screen on tap
+  // Function to pass data to/load the view recording screen on tap, including...
+  // ... the callback in turn passed to it by my_recordings_body.dart (for refreshing
+  // ... the timeline if a change was made).
   void loadViewRecordingScreen(BuildContext context) async {
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
     String audioAbsPath = join(directoryPath, widget.audioFilePath);
