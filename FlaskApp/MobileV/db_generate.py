@@ -40,8 +40,8 @@ if __name__ == "__main__":
         # SEED the database with dummy data
         elif choice == 'seed':
             
-            # Dummy data only provided for these four tables
-            tables = ["Admin", "SRO", "AppUser", "Score"]
+            # Dummy data only provided for these five tables
+            tables = ["Admin", "SRO", "AppUser", "Score", "Share"]
 
             for table in tables:
 
