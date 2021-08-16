@@ -1,10 +1,10 @@
 ### ROUTES RELATED TO AUTHENTICATION
 # - Rendering templates
-# - HTTP requests
+# - Asynchronous HTTP requests
 
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
-from flask_jwt_extended import create_access_token, jwt_required, current_user as current_user_jwt, get_jwt_identity, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user as current_user_jwt
 from flask_mail import Message
 from MobileV.models import *
 from MobileV import mail

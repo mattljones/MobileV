@@ -13,6 +13,8 @@ from datetime import timedelta
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 
+# Base server IP address (for DevConfig below)
+baseIP = '139.162.211.13'
 
 # Base configuration
 class Config:
@@ -43,5 +45,5 @@ class ProdConfig(Config):
 class DevConfig(Config):
     ENV = "development"
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@178.79.148.137/MobileV".format(environ.get("DB_DEV_USERNAME"), environ.get("DB_DEV_PASSWORD"))
+    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@{}/MobileV".format(environ.get("DB_DEV_USERNAME"), environ.get("DB_DEV_PASSWORD"), baseIP)
 

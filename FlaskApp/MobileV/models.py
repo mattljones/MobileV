@@ -20,6 +20,8 @@ import jwt as pyjwt
 environ_key = environ.get("SQL_ENCRYPTION_KEY")
 
 
+# Needed for when using db_generate.py to create/seed the database since the server...
+# ... isn't running at that time. 
 def get_encryption_key():
 
     from pathlib import Path

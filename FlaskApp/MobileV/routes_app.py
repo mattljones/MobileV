@@ -135,10 +135,12 @@ def transcribe_analyse():
         finally:
             db.session.commit()
 
-
+    # Pass user ID from JWT to the new thread (not copied in copy_current_request_context)
     user = current_user_jwt
     userID = user.userID
 
+    # Start new thread to handle the transcription, word cloud creation and encryption...
+    # ... so users can receive instant feedback that their upload was successful
     Thread(target=handover, args=(userID,)).start()
 
     return 'successful'
@@ -170,7 +172,7 @@ def get_analysis():
         WPM = str(analysis.WPM) if analysis.WPM != None else ''
         transcript = analysis.transcript if analysis.transcript != None else ''
         
-        # Convert word cloud to a base 64-encoded string
+        # No word cloud created (Numeric recording, or an unexpected error)
         if analysis.wordCloudPath == None: 
             dict = {
                 'status': analysis.status,
@@ -179,6 +181,7 @@ def get_analysis():
                 'wordCloud': '',
             }
 
+        # Load word cloud and convert to base 64-encoded string
         else:
             try: 
                 cloud_bytes = io.BytesIO(decrypt_and_load(analysis.wordCloudPath))
