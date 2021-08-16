@@ -126,7 +126,7 @@ class NetworkService {
     String token = await NetworkService.getRefreshToken();
     try {
       final response = await http.post(
-        Uri.parse(baseURL + '/update-recording-scores'),
+        Uri.parse(baseURL + '/refresh-jwt'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
