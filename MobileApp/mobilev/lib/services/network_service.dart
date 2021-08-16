@@ -144,13 +144,12 @@ class NetworkService {
             newTokens['accessToken'], newTokens['refreshToken']);
         return true;
       } else if (response.statusCode == 401) {
-        Navigator.popAndPushNamed(context, '/login').then((value) {
-          final snackBar = SnackBar(
-            backgroundColor: kSecondaryTextColour,
-            content: Text('Your session has expired. Please sign in again.'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        });
+        Navigator.popAndPushNamed(context, '/login');
+        final snackBar = SnackBar(
+          backgroundColor: kSecondaryTextColour,
+          content: Text('Your session has expired. Please sign in again.'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return false;
       } else {
         return false;
