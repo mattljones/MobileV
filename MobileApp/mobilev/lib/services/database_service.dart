@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 // Package imports
-import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:sqflite_sqlcipher/sqlite_api.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 

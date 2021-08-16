@@ -1,6 +1,6 @@
 // Module imports
 import 'package:mobilev/services/database_service.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Score {
   final int scoreID;
