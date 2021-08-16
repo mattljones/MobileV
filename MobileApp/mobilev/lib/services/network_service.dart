@@ -11,7 +11,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobilev/config/constants.dart';
 
 class NetworkService {
-  static const baseURL = 'http://10.0.2.2:5000';
+  static const baseURL = 'http://139.162.211.13';
   static final storage = FlutterSecureStorage();
 
   // JWT helper functions ------------------------------------------------------
