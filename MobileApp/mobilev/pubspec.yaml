@@ -20,7 +20,7 @@ dependencies:
   share_plus: ^2.1.4
   flutter_local_notifications: ^8.0.0
   flutter_native_timezone: ^2.0.0
-  sqflite: ^2.0.0+3
+  sqflite_sqlcipher: ^2.0.0
   http: ^0.13.3
   email_validator: ^2.0.1
   connectivity_plus: ^1.0.6
