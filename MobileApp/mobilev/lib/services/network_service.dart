@@ -144,7 +144,8 @@ class NetworkService {
             newTokens['accessToken'], newTokens['refreshToken']);
         return true;
       } else if (response.statusCode == 401) {
-        Navigator.popAndPushNamed(context, '/login');
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
         final snackBar = SnackBar(
           backgroundColor: kSecondaryTextColour,
           content: Text('Your session has expired. Please sign in again.'),
