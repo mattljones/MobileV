@@ -21,5 +21,6 @@ flask_jwt_extended
 # STT dependencies
 ibm-watson
 ffmpeg
+ffprobe
 pydub
 wordcloud

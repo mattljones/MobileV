@@ -38,12 +38,15 @@ class Config:
 # Production environment-specific configuration
 class ProdConfig(Config):
     ENV = "production"
-    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@localhost/MobileV".format(environ.get("DB_PROD_USERNAME"), environ.get("DB_PROD_PASSWORD"))
+    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@localhost/MobileV".format(environ.get("DB_PROD_USERNAME"), 
+                                                                       environ.get("DB_PROD_PASSWORD"))
 
 
 # Development environment-specific configuration
 class DevConfig(Config):
     ENV = "development"
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@{}/MobileV".format(environ.get("DB_DEV_USERNAME"), environ.get("DB_DEV_PASSWORD"), baseIP)
+    SQLALCHEMY_DATABASE_URI = "mysql://{}:{}@{}/MobileV".format(environ.get("DB_DEV_USERNAME"), 
+                                                                environ.get("DB_DEV_PASSWORD"), 
+                                                                baseIP)
 

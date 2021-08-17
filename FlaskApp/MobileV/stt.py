@@ -9,10 +9,15 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from pydub import AudioSegment
 from wordcloud import WordCloud
 from MobileV.models import *
-import io
+import os, io
    
 
 ## CONVERSION TO MP3 ----------------------------------------------------------
+
+# Add FFmpeg & FFprobe binaries to path
+bin_path = '/usr/bin'
+os.environ['PATH'] += os.pathsep + bin_path
+
 
 def convert_to_mp3(temp_file):
 
