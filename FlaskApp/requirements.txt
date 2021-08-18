@@ -27,3 +27,4 @@ wordcloud
 
 # Testing
 pytest
+pytest-cov
