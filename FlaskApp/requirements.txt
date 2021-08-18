@@ -24,3 +24,6 @@ ffmpeg
 ffprobe
 pydub
 wordcloud
+
+# Testing
+pytest

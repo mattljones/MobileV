@@ -6,7 +6,7 @@
 
 from MobileV import db, login_manager, jwt
 from flask_login import UserMixin
-from sqlalchemy_utils import EncryptedType
+from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 from werkzeug.security import check_password_hash, generate_password_hash
 from cryptography.fernet import Fernet
@@ -70,7 +70,7 @@ class Admin(db.Model, UserMixin):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     adminID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(EncryptedType(db.String(30), key, AesEngine, 'pkcs5'), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
     password = db.Column(db.String(128), nullable=False)
 
     def get_id(self):
@@ -92,14 +92,14 @@ class Admin(db.Model, UserMixin):
 class SRO(db.Model, UserMixin):
     __tablename__ = "SRO"
     __table_args__ = {'mysql_engine': 'InnoDB',
-                      'mysql_auto_increment':'4'}
+                      'mysql_auto_increment': '4'}
 
     sroID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(EncryptedType(db.String(30), key, AesEngine, 'pkcs5'), nullable=False)
-    email = db.Column(EncryptedType(db.String(254), key, AesEngine, 'pkcs5'), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
+    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), nullable=False)
     password = db.Column(db.String(128), nullable=False)
-    firstName = db.Column(EncryptedType(db.String(35), key, AesEngine, 'pkcs5'), nullable=False)
-    lastName = db.Column(EncryptedType(db.String(35), key, AesEngine, 'pkcs5'), nullable=False)
+    firstName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
+    lastName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
     appUsers = db.relationship("AppUser", passive_deletes="all")
 
     def get_id(self):
@@ -136,11 +136,11 @@ class AppUser(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(EncryptedType(db.String(30), key, AesEngine, 'pkcs5'), nullable=False)
-    email = db.Column(EncryptedType(db.String(254), key, AesEngine, 'pkcs5'), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
+    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), nullable=False)
     password = db.Column(db.String(128), nullable=False)
-    firstName = db.Column(EncryptedType(db.String(35), key, AesEngine, 'pkcs5'), nullable=False)
-    lastName = db.Column(EncryptedType(db.String(35), key, AesEngine, 'pkcs5'), nullable=False)
+    firstName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
+    lastName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
     sroID = db.Column(db.Integer, db.ForeignKey("SRO.sroID", onupdate="CASCADE", ondelete="RESTRICT"), nullable=False)
     shares = db.relationship("Share", passive_deletes="all")
     scores = db.relationship("Score", passive_deletes="all")
@@ -180,8 +180,8 @@ class IBMCred(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     credID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    apiKey = db.Column(EncryptedType(db.String(200), key, AesEngine, 'pkcs5'), nullable=False)
-    serviceURL = db.Column(EncryptedType(db.String(200), key, AesEngine, 'pkcs5'), nullable=False)
+    apiKey = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), nullable=False)
+    serviceURL = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), nullable=False)
 
 
 class Share(db.Model):
@@ -220,7 +220,7 @@ class PendingDownload(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     dateRecorded = db.Column(db.TIMESTAMP, primary_key=True)
     WPM = db.Column(db.SmallInteger, nullable=True)
-    transcript = db.Column(EncryptedType(db.Text, key, AesEngine, 'pkcs5'), nullable=True)
+    transcript = db.Column(StringEncryptedType(db.Text, key, AesEngine, 'pkcs5', length=4000), nullable=True)
     wordCloudPath = db.Column(db.String(50), nullable=True)
     status = db.Column(db.String(10), nullable=False)
 

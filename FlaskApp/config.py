@@ -14,7 +14,8 @@ basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 
 # Base server IP address (for DevConfig below)
-baseIP = '139.162.211.13'
+# baseIP = '139.162.211.13'
+baseIP = '178.79.148.137'
 
 # Base configuration
 class Config:
