@@ -1,4 +1,4 @@
-### models.py
+### Unit tests for models.py
 
 from MobileV.models import *
 

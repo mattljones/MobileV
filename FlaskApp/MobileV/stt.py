@@ -46,12 +46,6 @@ class MyRecognizeCallback(RecognizeCallback):
 
         self.transcript = transcript
 
-    def on_error(self, error):
-        print('Error received: {}'.format(error))
-
-    def on_inactivity_timeout(self, error):
-        print('Inactivity timeout: {}'.format(error))
-
 
 def get_transcript(temp_file, apiKey, serviceURL):
 
