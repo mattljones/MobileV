@@ -29,6 +29,7 @@ $(function() {
     var queryString = window.location.search;
     var urlParams = new URLSearchParams(queryString);
     var nextPage = urlParams.get("next");
+    console.log(nextPage);
       
     // Submit login request
     var loginRequest = $.ajax({type: "POST",
@@ -44,7 +45,7 @@ $(function() {
     loginRequest.done(function(response) {
       // Redirect to appropriate page for user type if successful
       if (response != "unsuccessful") {
-        window.location = response;
+        // window.location = response;
       } 
       // Otherwise show/flash error message
       else {

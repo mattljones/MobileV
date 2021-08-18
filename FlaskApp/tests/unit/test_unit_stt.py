@@ -46,3 +46,4 @@ def test_wordcloud_generation():
         success = True
 
     assert success == True
+    

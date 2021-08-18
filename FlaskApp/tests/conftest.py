@@ -7,8 +7,27 @@ root_path = Path(__file__).parents[1]
 sys.path.insert(0, str(root_path))
 
 # Imports
+from MobileV import create_app
 from MobileV.models import *
+from MobileV.db_generate import seed_all
 import pytest
+
+
+## TESTING CLIENT FIXTURE -----------------------------------------------------
+
+@pytest.fixture(scope='module')
+def client():
+    app = create_app('test')
+
+    with app.test_client() as client:
+        with app.app_context():
+
+            # Create database for use in testing from dummy data
+            db.drop_all()
+            db.create_all()
+            seed_all(test=True)
+
+            yield client
 
 
 ## MODEL FIXTURES -------------------------------------------------------------
@@ -86,3 +105,38 @@ def new_pending_download():
 
     return pending
 
+
+## LOGIN/LOGOUT HELPERS--------------------------------------------------------
+
+def login_portal_as_admin(client):
+
+    # Load dummy account details from .env
+    from dotenv import load_dotenv
+    load_dotenv('.env')
+
+    return client.post('/login/portal', json={
+        'user_type': 'Admin',
+        'username': environ.get('TEST_ADMIN_USERNAME'),
+        'password': environ.get('TEST_ADMIN_PASSWORD'),
+        'remember_me': '0',
+        'next_page': ''
+    }, follow_redirects=True)
+
+
+def login_portal_as_SRO(client):
+
+    # Load dummy account details from .env
+    from dotenv import load_dotenv
+    load_dotenv('.env')
+
+    return client.post('/login/portal', json={
+        'user_type': 'SRO',
+        'username': environ.get('TEST_SRO_USERNAME'),
+        'password': environ.get('TEST_SRO_PASSWORD'),
+        'remember_me': '0',
+        'next_page': ''
+    }, follow_redirects=True)
+
+
+def logout_portal(client):
+    return client.get('/logout', follow_redirects=True)

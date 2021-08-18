@@ -27,11 +27,13 @@ def create_app(env):
             app.config.from_object('config.ProdConfig')
         elif env == 'dev':
             app.config.from_object('config.DevConfig')
+        elif env == 'test':
+            app.config.from_object('config.TestConfig')
         else:
             raise Exception
 
     except Exception as e:
-        print("Please enter 'prod' or 'dev'.", e) 
+        print("Please enter 'prod', 'dev' or 'test'.", e) 
 
     else:
 

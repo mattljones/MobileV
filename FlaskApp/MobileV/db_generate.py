@@ -16,6 +16,32 @@ from MobileV import create_app
 from MobileV.models import *
 
 
+# Database seeding function
+def seed_all(test=False):
+
+    if test == True:
+        basedir = 'MobileV/'
+        tables = ["Admin", "SRO", "AppUser", "Score"]
+    else: 
+        basedir = ''
+        tables = ["Admin", "SRO", "AppUser", "Score", "Share"]
+
+    for table in tables:
+
+        with open('{}dummy_data/{}.csv'.format(basedir, table), newline="") as csv_file:
+
+            csv_reader = csv.reader(csv_file, delimiter=",")
+            headers = next(csv_reader)
+            objects = []
+
+            for row in csv_reader:
+                kwargs = str(dict(zip(headers, row)))
+                objects.append(eval(table + "(**" + kwargs + ")"))
+
+            db.session.bulk_save_objects(objects)
+            db.session.commit()
+
+
 if __name__ == "__main__":
 
     try: 
@@ -39,25 +65,7 @@ if __name__ == "__main__":
 
         # SEED the database with dummy data
         elif choice == 'seed':
-            
-            # Dummy data only provided for these five tables
-            tables = ["Admin", "SRO", "AppUser", "Score", "Share"]
-
-            for table in tables:
-
-                with open('dummy_data/{}.csv'.format(table), newline="") as csv_file:
-
-                    csv_reader = csv.reader(csv_file, delimiter=",")
-                    headers = next(csv_reader)
-                    objects = []
-
-                    for row in csv_reader:
-                        kwargs = str(dict(zip(headers, row)))
-                        objects.append(eval(table + "(**" + kwargs + ")"))
-
-                    db.session.bulk_save_objects(objects)
-                    db.session.commit()
-
+            seed_all()
             print("Database seeded with dummy data successfully!")
 
         else: 
@@ -65,4 +73,3 @@ if __name__ == "__main__":
 
     except Exception as e: 
         print(e)
-

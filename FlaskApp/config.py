@@ -50,3 +50,10 @@ class DevConfig(Config):
                                                                 environ.get("DB_DEV_PASSWORD"), 
                                                                 baseIP)
 
+
+# Test environment-specific configuration
+class TestConfig(Config):
+    ENV = "development"
+    TESTING = True
+    LOGIN_DISABLED = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///{}".format(path.join(basedir, 'tests', 'test.db'))
