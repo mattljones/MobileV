@@ -1,5 +1,6 @@
 ### ROUTES RELATED TO THE MOBILE APP
 
+from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app as app
 from flask_jwt_extended import jwt_required, current_user as current_user_jwt
 from MobileV import create_app
@@ -17,15 +18,23 @@ app_bp = Blueprint('app_bp', __name__)
 @jwt_required()
 def transcribe_analyse():
 
+    # Pass recording data to new thread
+    recording_data = request.get_json()
+
     # Pass environment type to new thread (so correct app can be pushed in new thread)
-    env = 'prod' if app.config['ENV'] == 'production' else 'dev'
+    if app.config['ENV'] == 'production':
+        env = 'prod'
+    else:
+        if app.config['TESTING'] == True:
+            env = 'test'
+            # Convert datetime to object if testing (SQLite only accepts datetime objects)
+            recording_data['dateRecorded'] = datetime.strptime(recording_data['dateRecorded'], '%Y-%m-%d %H:%M:%S')
+        else:
+            env = 'dev'
 
     # Pass userID to new thread
     user = current_user_jwt
     userID = user.userID
-
-    # Pass recording data to new thread
-    recording_data = request.get_json()
 
     # Start new thread to handle the transcription, word cloud creation and encryption...
     # ... so users can receive instant (async) feedback that their upload was successful
@@ -55,7 +64,11 @@ def handover(env, userID, recording_data):
     base64audio = recording_data['audioFile']
 
     # Generate unique & valid filename for storing audio/wordclouds
-    fileName = '{}_'.format(userID) + dateRecorded.replace(' ', '_').replace(':','-')
+    if env != 'test':
+        fileName = '{}_'.format(userID) + dateRecorded.replace(' ', '_').replace(':','-')
+    else:
+        fileName = 'testPath'
+        
     audioPath = 'MobileV/shares/{}.mp3'.format(fileName)
     wordCloudPath = 'MobileV/shares/{}.png'.format(fileName)
 

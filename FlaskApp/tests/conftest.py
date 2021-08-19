@@ -2,6 +2,7 @@
 
 # Add project root to path
 from pathlib import Path
+from os import environ
 import sys
 root_path = Path(__file__).parents[1]
 sys.path.insert(0, str(root_path))
@@ -10,6 +11,7 @@ sys.path.insert(0, str(root_path))
 from MobileV import create_app
 from MobileV.models import *
 from MobileV.db_generate import seed_all
+from datetime import datetime
 import pytest
 
 
@@ -26,6 +28,7 @@ def client():
             db.drop_all()
             db.create_all()
             seed_all(test=True)
+            seed_extra()
 
             yield client
 
@@ -108,35 +111,78 @@ def new_pending_download():
 
 ## LOGIN/LOGOUT HELPERS--------------------------------------------------------
 
-def login_portal_as_admin(client):
+def login_portal_as_admin(client, fail=False):
 
     # Load dummy account details from .env
     from dotenv import load_dotenv
     load_dotenv('.env')
 
+    username = environ.get('TEST_ADMIN_USERNAME') if fail == False else 'incorrectUsername'
+
     return client.post('/login/portal', json={
         'user_type': 'Admin',
-        'username': environ.get('TEST_ADMIN_USERNAME'),
+        'username': username,
         'password': environ.get('TEST_ADMIN_PASSWORD'),
         'remember_me': '0',
         'next_page': ''
     }, follow_redirects=True)
 
 
-def login_portal_as_SRO(client):
+def login_portal_as_SRO(client, fail=False):
 
     # Load dummy account details from .env
     from dotenv import load_dotenv
     load_dotenv('.env')
 
+    username = environ.get('TEST_SRO_USERNAME') if fail == False else 'incorrectUsername'
+
     return client.post('/login/portal', json={
         'user_type': 'SRO',
-        'username': environ.get('TEST_SRO_USERNAME'),
+        'username': username,
         'password': environ.get('TEST_SRO_PASSWORD'),
         'remember_me': '0',
         'next_page': ''
     }, follow_redirects=True)
 
 
+def login_app(client, fail=False):
+
+    # Load dummy account details from .env
+    from dotenv import load_dotenv
+    load_dotenv('.env')
+
+    username = environ.get('TEST_APP_USERNAME') if fail == False else 'incorrectUsername'
+
+    return client.post('/login/app', json={
+        'username': username,
+        'password': environ.get('TEST_APP_PASSWORD')
+    }, follow_redirects=True)
+
+
 def logout_portal(client):
     return client.get('/logout', follow_redirects=True)
+
+
+## EXTRA HELPERS --------------------------------------------------------------
+
+# SQLite only accepts python datetime objects so seed these manually
+def seed_extra():
+
+    pending_noCloud = PendingDownload(userID=1, 
+                                      dateRecorded=datetime.strptime('2021-08-11 12:00:00', '%Y-%m-%d %H:%M:%S'),
+                                      WPM=100,
+                                      transcript=None,
+                                      wordCloudPath=None,
+                                      status='success')
+
+    pending_Cloud = PendingDownload(userID=1,
+                                    dateRecorded=datetime.strptime('2021-08-12 12:00:00', '%Y-%m-%d %H:%M:%S'),
+                                    WPM=100,
+                                    transcript='dummyTranscript',
+                                    wordCloudPath='incorrectPath',
+                                    status='success')
+
+    db.session.add(pending_noCloud)
+    db.session.add(pending_Cloud)
+    db.session.commit()
+    
