@@ -386,7 +386,7 @@ def delete_app_account():
 
     # Delete any shared files from storage
     shares = Share.query\
-                  .filter(Share.userID == 1)\
+                  .filter(Share.userID == userID)\
                   .with_entities(Share.filePath)\
                   .all()
 

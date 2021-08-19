@@ -182,7 +182,26 @@ def seed_extra():
                                     wordCloudPath='incorrectPath',
                                     status='success')
 
+    share_real = Share(dateRecorded=datetime.strptime('2021-08-12 12:00:00', '%Y-%m-%d %H:%M:%S'),
+                       type='Numeric',
+                       duration=30,
+                       WPM=100,
+                       fileType='Audio',
+                       filePath='MobileV/shares/dummy_data/test.mp3',
+                       userID=1)
+
+    share_fake = Share(dateRecorded=datetime.strptime('2021-08-12 12:00:00', '%Y-%m-%d %H:%M:%S'),
+                       type='Numeric',
+                       duration=30,
+                       WPM=100,
+                       fileType='Audio',
+                       filePath='MobileV/shares/dummy_data/fake.mp3',
+                       userID=1)
+
     db.session.add(pending_noCloud)
     db.session.add(pending_Cloud)
+    db.session.add(share_real)
+    db.session.add(share_fake)
     db.session.commit()
+
     

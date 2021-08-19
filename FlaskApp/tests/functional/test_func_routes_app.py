@@ -73,10 +73,10 @@ def test_update_recording_scores(client):
 
     headers = {'Authorization': 'Bearer {}'.format(access_token)}
     response = client.post('/update-recording-scores', headers=headers, json={
-        'dateRecorded': '2021-08-12 12:00:00',
-        'new_score1_value': '1',
-        'new_score2_value': '2',
-        'new_score3_value': '3'
+        'dateRecorded': '2021-08-12 12:00:00.000000',
+        'new_score1_value': 1,
+        'new_score2_value': 2,
+        'new_score3_value': 3
     })
     assert b'successful' in response.data
 

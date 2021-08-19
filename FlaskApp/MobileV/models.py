@@ -190,8 +190,8 @@ class Share(db.Model):
 
     shareID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     dateRecorded = db.Column(db.TIMESTAMP, nullable=False)
-    type = db.Column(db.String(10), nullable=True)
-    duration = db.Column(db.SmallInteger, nullable=True)
+    type = db.Column(db.String(10), nullable=False)
+    duration = db.Column(db.SmallInteger, nullable=False)
     WPM = db.Column(db.SmallInteger, nullable=False)
     score1_name = db.Column(db.String(15), nullable=True)
     score1_value = db.Column(db.SmallInteger, nullable=True)

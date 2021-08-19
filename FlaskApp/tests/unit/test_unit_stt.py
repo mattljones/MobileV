@@ -14,22 +14,22 @@ def test_conversion():
     assert audio_bytes_io != converted_bytes
 
 
-# # Test IBM STT transcription runs
-# def test_transcription():
+# Test IBM STT transcription runs
+def test_transcription():
 
-#     # Load IBM STT test account details from .env
-#     from dotenv import load_dotenv
-#     load_dotenv('.env')
-#     apiKey = environ.get('TEST_API_KEY')
-#     serviceURL = environ.get('TEST_SERVICE_URL')
+    # Load IBM STT test account details from .env
+    from dotenv import load_dotenv
+    load_dotenv('.env')
+    apiKey = environ.get('TEST_API_KEY')
+    serviceURL = environ.get('TEST_SERVICE_URL')
 
-#     audio_bytes = io.FileIO(test_audio_filePath)
-#     audio_bytes_io = io.BytesIO(audio_bytes.read())
-#     converted_bytes = convert_to_mp3(audio_bytes_io)
+    audio_bytes = io.FileIO(test_audio_filePath)
+    audio_bytes_io = io.BytesIO(audio_bytes.read())
+    converted_bytes = convert_to_mp3(audio_bytes_io)
 
-#     transcript = get_transcript(converted_bytes, apiKey, serviceURL)
+    transcript = get_transcript(converted_bytes, apiKey, serviceURL)
 
-#     assert transcript not in ['', None]
+    assert transcript not in ['', None]
 
 
 # Test word cloud generated successfully
