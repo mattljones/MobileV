@@ -1,7 +1,6 @@
 ### Functional tests for routes_app.py
 
 from MobileV.stt import decrypt_and_load
-from datetime import datetime
 from flask import json
 from conftest import login_app
 import io, base64

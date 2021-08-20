@@ -22,3 +22,4 @@ def test_get_new_password():
     assert contains_lowercase
     assert contains_number
     assert len(strong_password) >= 6
+    
