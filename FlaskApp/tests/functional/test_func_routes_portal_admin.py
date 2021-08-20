@@ -151,9 +151,10 @@ def test_check_details_unique(client):
     # SRO, email
     response = client.post('/check-details-unique/SRO/email', json={
         'userID': 4,
-        'currentInput': 'testInput'
+        'currentInput': 'alan.turing@enigma.com'
     })
     assert response.status_code == 200
+    assert b'not_unique' in response.data
 
     # SRO, username
     response = client.post('/check-details-unique/SRO/username', json={
@@ -161,6 +162,7 @@ def test_check_details_unique(client):
         'currentInput': 'testInput'
     })
     assert response.status_code == 200
+    assert b'unique' in response.data
 
     logout_portal(client)
 
@@ -181,6 +183,9 @@ def test_add_app_account(client):
         'sroID': 4
     })
     assert response.status_code == 200
+    user = AppUser.query.filter(AppUser.username == 'username').first()
+    assert user is not None
+
     logout_portal(client)
 
 
@@ -199,6 +204,9 @@ def test_add_SRO_account(client):
         'username': 'username'
     })
     assert response.status_code == 200
+    sro = SRO.query.filter(SRO.username == 'username').first()
+    assert sro is not None
+
     logout_portal(client)
 
 
@@ -217,6 +225,12 @@ def test_update_app_account(client):
         'sroID': 4
     })
     assert response.status_code == 200
+    user = AppUser.query.get(1)
+    assert user.firstName == 'firstName'
+    assert user.lastName == 'lastName'
+    assert user.email == 'email'
+    assert user.sroID == 4
+
     logout_portal(client)
 
 
@@ -235,6 +249,12 @@ def test_update_SRO_account(client):
         'username': 'username'
     })
     assert response.status_code == 200
+    sro = SRO.query.get(5)
+    assert sro.firstName == 'firstName'
+    assert sro.lastName == 'lastName'
+    assert sro.email == 'email'
+    assert sro.username == 'username'
+
     logout_portal(client)
 
 
@@ -250,6 +270,9 @@ def test_delete_app_account(client):
         'userID': 2
     })
     assert response.status_code == 200
+    user = AppUser.query.get(2)
+    assert user is None
+
     logout_portal(client)
 
 
@@ -265,6 +288,9 @@ def test_delete_SRO_account(client):
         'sroID': 6
     })
     assert response.status_code == 200
+    sro = SRO.query.get(6)
+    assert sro is None
+
     logout_portal(client)
 
 
@@ -288,6 +314,9 @@ def test_change_IBM_credentials(client):
         'new_serviceURL': 'newURL'
     })
     assert response.status_code == 200
+    creds = IBMCred.query.first()
+    assert creds.apiKey == 'newKey'
+    assert creds.serviceURL == 'newURL'
 
     logout_portal(client)
 

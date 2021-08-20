@@ -2,6 +2,7 @@
 
 from flask import json
 from conftest import login_portal_as_admin, login_portal_as_SRO, login_app, logout_portal
+from MobileV.models import *
 from os import environ
 
 
@@ -136,15 +137,6 @@ def test_change_password(client):
     })
     assert b'unsuccessful' in response.data  
 
-    # Admin, correct old password
-    login_portal_as_admin(client)
-    response = client.post('/change-password', json={
-        'old_password': environ.get('TEST_ADMIN_PASSWORD'),
-        'new_password': environ.get('TEST_ADMIN_PASSWORD')
-    })
-    assert b'successful' in response.data
-    logout_portal(client)
-
     # Admin, invalid new password
     login_portal_as_admin(client)
     response = client.post('/change-password', json={
@@ -163,6 +155,19 @@ def test_change_password(client):
     assert b'wrong_password' in response.data
     logout_portal(client)
 
+    # Admin, correct old password
+    login_portal_as_admin(client)
+    response = client.post('/change-password', json={
+        'old_password': environ.get('TEST_ADMIN_PASSWORD'),
+        'new_password': 'newPassword'
+    })
+    assert b'successful' in response.data
+    admin = Admin.query.filter(Admin.username == environ.get('TEST_ADMIN_USERNAME')).first()
+    assert admin.check_password('newPassword') == True
+    admin.change_password(environ.get('TEST_ADMIN_PASSWORD'))  # Revert password
+
+    logout_portal(client)
+
 
 def test_change_password_app(client):
 
@@ -171,14 +176,6 @@ def test_change_password_app(client):
     data = json.loads(response.data)
     access_token = data['accessToken']
 
-    # Correct old password
-    headers = {'Authorization': 'Bearer {}'.format(access_token)}
-    response = client.post('/change-password/app', headers=headers, json={
-        'old_password': environ.get('TEST_APP_PASSWORD'),
-        'new_password': environ.get('TEST_APP_PASSWORD')
-    })
-    assert b'successful' in response.data
-
     # Incorrect old password
     headers = {'Authorization': 'Bearer {}'.format(access_token)}
     response = client.post('/change-password/app', headers=headers, json={
@@ -186,6 +183,17 @@ def test_change_password_app(client):
         'new_password': environ.get('TEST_APP_PASSWORD')
     })
     assert b'wrong_password' in response.data
+
+    # Correct old password
+    headers = {'Authorization': 'Bearer {}'.format(access_token)}
+    response = client.post('/change-password/app', headers=headers, json={
+        'old_password': environ.get('TEST_APP_PASSWORD'),
+        'new_password': 'newPassword'
+    })
+    assert b'successful' in response.data
+    user = AppUser.query.filter(AppUser.username == environ.get('TEST_APP_USERNAME')).first()
+    assert user.check_password('newPassword') == True
+    user.change_password(environ.get('TEST_APP_PASSWORD'))  # Revert password
 
 
 def test_reset_password_request(client):

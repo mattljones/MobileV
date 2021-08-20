@@ -130,5 +130,6 @@ def test_delete_app_user_share(client):
         'shareID': 2
     })
     assert response.status_code == 200
+
     logout_portal(client)
 

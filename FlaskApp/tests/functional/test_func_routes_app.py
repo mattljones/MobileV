@@ -1,5 +1,6 @@
 ### Functional tests for routes_app.py
 
+from MobileV.models import *
 from MobileV.stt import decrypt_and_load
 from flask import json
 from conftest import login_app
@@ -70,14 +71,24 @@ def test_update_recording_scores(client):
     data = json.loads(response.data)
     access_token = data['accessToken']
 
+    dummyDate = '2021-08-12 12:00:00.000000'
+
     headers = {'Authorization': 'Bearer {}'.format(access_token)}
     response = client.post('/update-recording-scores', headers=headers, json={
-        'dateRecorded': '2021-08-12 12:00:00.000000',
+        'dateRecorded': dummyDate,
         'new_score1_value': 1,
         'new_score2_value': 2,
         'new_score3_value': 3
     })
+
     assert b'successful' in response.data
+
+    # Check database updated correctly
+    shares = Share.query.filter(Share.dateRecorded == dummyDate).all()
+    for share in shares:
+        assert share.score1_value == 1
+        assert share.score2_value == 2
+        assert share.score3_value == 3
 
 
 def test_get_names(client):
