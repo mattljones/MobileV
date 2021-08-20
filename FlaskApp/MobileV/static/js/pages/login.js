@@ -29,7 +29,6 @@ $(function() {
     var queryString = window.location.search;
     var urlParams = new URLSearchParams(queryString);
     var nextPage = urlParams.get("next");
-    console.log(nextPage);
       
     // Submit login request
     var loginRequest = $.ajax({type: "POST",
