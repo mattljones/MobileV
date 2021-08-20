@@ -50,10 +50,10 @@ function createAdminAppDataTable() {
         {title: "Modify"}
       ],
       language: {"lengthMenu": "Show _MENU_ accounts",
-                "info": "Showing _START_ to _END_ of _TOTAL_ app user accounts",
-                "infoEmpty": "Showing 0 to 0 of 0 app user accounts",
-                "infoFiltered": "(filtered from _MAX_ total)",
-                "zeroRecords": "No matching app user accounts found"},
+                 "info": "Showing _START_ to _END_ of _TOTAL_ app user accounts",
+                 "infoEmpty": "Showing 0 to 0 of 0 app user accounts",
+                 "infoFiltered": "(filtered from _MAX_ total)",
+                 "zeroRecords": "No matching app user accounts found"},
       order: [[1, "asc"]],
       bDestroy: true
     });
