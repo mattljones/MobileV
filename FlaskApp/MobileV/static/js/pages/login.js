@@ -45,7 +45,7 @@ $(function() {
     loginRequest.done(function(response) {
       // Redirect to appropriate page for user type if successful
       if (response != "unsuccessful") {
-        // window.location = response;
+        window.location = response;
       } 
       // Otherwise show/flash error message
       else {
