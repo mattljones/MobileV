@@ -13,6 +13,7 @@ from selenium.webdriver.chrome.options import Options
 from MobileV import create_app
 from MobileV.models import *
 from MobileV.db_generate import seed_all
+from tests.portal_functional.pages import LoginPage
 from datetime import datetime
 import pytest
 
@@ -21,6 +22,7 @@ import pytest
 
 @pytest.fixture(scope='module')
 def client():
+
     app = create_app('test')
 
     with app.test_client() as client:
@@ -38,6 +40,15 @@ def client():
 
 @pytest.fixture
 def browser():
+
+    # Re-initialise database
+    app = create_app('test')
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        seed_all(test=True)
+        seed_extra()
+
     # Set Chrome to run in headless mode without logging
     options = Options()
     options.add_argument("--headless")
@@ -46,6 +57,7 @@ def browser():
 
     driver = Chrome(options=options)
     driver.implicitly_wait(10)
+
     yield driver
 
     driver.quit()
@@ -127,9 +139,9 @@ def new_pending_download():
     return pending
 
 
-## LOGIN/LOGOUT HELPERS--------------------------------------------------------
+## CLIENT LOGIN/LOGOUT HELPERS ------------------------------------------------
 
-def login_portal_as_admin(client, fail=False):
+def login_as_admin_client(client, fail=False):
 
     # Load dummy account details from .env
     from dotenv import load_dotenv
@@ -146,7 +158,7 @@ def login_portal_as_admin(client, fail=False):
     }, follow_redirects=True)
 
 
-def login_portal_as_SRO(client, fail=False):
+def login_as_SRO_client(client, fail=False):
 
     # Load dummy account details from .env
     from dotenv import load_dotenv
@@ -181,7 +193,21 @@ def logout_portal(client):
     return client.get('/logout', follow_redirects=True)
 
 
-## EXTRA HELPERS --------------------------------------------------------------
+## BROWSER LOGIN HELPERS ------------------------------------------------------
+
+def login_as_admin_browser(browser):
+    login_page = LoginPage(browser)
+    login_page.load()
+    login_page.login_admin()
+
+
+def login_as_SRO_browser(browser):
+    login_page = LoginPage(browser)
+    login_page.load()
+    login_page.login_SRO()
+
+
+## DB HELPERS -----------------------------------------------------------------
 
 # SQLite only accepts python datetime objects so seed these manually
 def seed_extra():

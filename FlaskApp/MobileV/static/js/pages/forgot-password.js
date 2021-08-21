@@ -19,7 +19,7 @@ $(function() {
     resetLinkRequest.done(function(response) {
 
       if (response == "successful") {
-        $("#forgot-password-form").html(`<div class="text-success text-center mb-3">
+        $("#forgot-password-form").html(`<div class="text-success text-center mb-3" id="success-message">
                                            <i class="fas fa-check-square mr-2"></i>
                                              If that email is valid, a link has been sent.
                                          </div>`);

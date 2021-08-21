@@ -1,7 +1,7 @@
 ### Functional tests for routes_auth.py
 
 from flask import json
-from conftest import login_portal_as_admin, login_portal_as_SRO, login_app, logout_portal
+from conftest import login_as_admin_client, login_as_SRO_client, login_app, logout_portal
 from MobileV.models import *
 from os import environ
 
@@ -15,13 +15,13 @@ def test_login_page(client):
     assert response.status_code == 200
 
     # Logged in as Admin
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/login')
     assert response.status_code == 302
     logout_portal(client)
 
     # Logged in as SRO
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/login')
     assert response.status_code == 302
     logout_portal(client)
@@ -34,13 +34,13 @@ def test_forgot_password_page(client):
     assert response.status_code == 200
 
     # Logged in as Admin
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/forgot-password')
     assert response.status_code == 302
     logout_portal(client)
 
     # Logged in as SRO
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/forgot-password')
     assert response.status_code == 302
     logout_portal(client)
@@ -49,13 +49,13 @@ def test_forgot_password_page(client):
 def test_reset_password_page(client):
 
     # Logged in as Admin
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/reset-password/Admin/1')
     assert response.status_code == 302
     logout_portal(client)
 
     # Logged in as SRO
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/reset-password/SRO/1')
     assert response.status_code == 302
     logout_portal(client)
@@ -72,16 +72,16 @@ def test_reset_password_page(client):
 ## TESTING HTTP REQUESTS-------------------------------------------------------
 
 def test_login_portal(client):
-    response = login_portal_as_admin(client)
+    response = login_as_admin_client(client)
     assert b'unsuccessful' not in response.data
 
-    response = login_portal_as_admin(client, fail=True)
+    response = login_as_admin_client(client, fail=True)
     assert b'unsuccessful' in response.data
 
-    response = login_portal_as_SRO(client)
+    response = login_as_SRO_client(client)
     assert b'unsuccessful' not in response.data
 
-    response = login_portal_as_SRO(client, fail=True)
+    response = login_as_SRO_client(client, fail=True)
     assert b'unsuccessful' in response.data
 
 
@@ -113,7 +113,7 @@ def test_refresh_jwt(client):
 
 
 def test_logout_portal(client):
-    response =  login_portal_as_admin(client)
+    response =  login_as_admin_client(client)
     assert response.status_code == 200
 
 
@@ -138,7 +138,7 @@ def test_change_password(client):
     assert b'unsuccessful' in response.data  
 
     # Admin, invalid new password
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/change-password', json={
         'old_password': environ.get('TEST_ADMIN_PASSWORD'),
         'new_password': ''
@@ -147,7 +147,7 @@ def test_change_password(client):
     logout_portal(client)
 
     # SRO, incorrect old password
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/change-password', json={
         'old_password': 'incorrectPassword',
         'new_password': environ.get('TEST_SRO_PASSWORD')
@@ -156,7 +156,7 @@ def test_change_password(client):
     logout_portal(client)
 
     # Admin, correct old password
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/change-password', json={
         'old_password': environ.get('TEST_ADMIN_PASSWORD'),
         'new_password': 'newPassword'

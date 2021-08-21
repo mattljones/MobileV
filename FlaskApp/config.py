@@ -54,6 +54,8 @@ class DevConfig(Config):
 # Test environment-specific configuration
 class TestConfig(Config):
     ENV = "development"
+    DEBUG = True
     TESTING = True
     LOGIN_DISABLED = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///{}".format(path.join(basedir, 'tests', 'test.db'))
+

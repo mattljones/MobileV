@@ -1,6 +1,6 @@
 ### Functional tests for routes_portal_admin.py
 
-from conftest import login_portal_as_admin, login_portal_as_SRO, logout_portal
+from conftest import login_as_admin_client, login_as_SRO_client, logout_portal
 from MobileV.models import *
 
 
@@ -8,12 +8,12 @@ from MobileV.models import *
 
 def test_app_accounts_page(client):
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/admin-accounts-app')
     assert response.status_code == 200
     logout_portal(client)
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/admin-accounts-app')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
@@ -21,12 +21,12 @@ def test_app_accounts_page(client):
 
 def test_SRO_accounts_page(client):
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/admin-accounts-SRO')
     assert response.status_code == 200
     logout_portal(client)
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/admin-accounts-SRO')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
@@ -34,12 +34,12 @@ def test_SRO_accounts_page(client):
 
 def test_change_IBM_page(client):
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/admin-change-IBM')
     assert response.status_code == 200
     logout_portal(client)
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/admin-change-IBM')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
@@ -47,12 +47,12 @@ def test_change_IBM_page(client):
 
 def test_admin_change_password_page(client):
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/admin-change-password')
     assert response.status_code == 200
     logout_portal(client)
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/admin-change-password')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
@@ -62,12 +62,12 @@ def test_admin_change_password_page(client):
 
 def test_get_all_app_users(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/get-all-app-users')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/get-all-app-users')
     assert response.status_code == 200
     logout_portal(client)
@@ -75,12 +75,12 @@ def test_get_all_app_users(client):
 
 def test_get_single_app_user(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/get-app-user-details/1')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/get-app-user-details/1')
     assert response.status_code == 200
     logout_portal(client)
@@ -88,12 +88,12 @@ def test_get_single_app_user(client):
 
 def test_get_all_SROs(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/get-all-SROs')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/get-all-SROs')
     assert response.status_code == 200
     logout_portal(client)
@@ -101,12 +101,12 @@ def test_get_all_SROs(client):
 
 def test_get_single_SRO(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/get-SRO-details/1')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/get-SRO-details/1')
     assert response.status_code == 200
     logout_portal(client)
@@ -114,12 +114,12 @@ def test_get_single_SRO(client):
 
 def test_get_all_SRO_names(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.get('/get-all-SRO-names')
     assert response.status_code == 302  # Should be redirected
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.get('/get-all-SRO-names')
     assert response.status_code == 200
     logout_portal(client)
@@ -127,12 +127,12 @@ def test_get_all_SRO_names(client):
 
 def test_check_details_unique(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/check-details-unique/app/email')
     assert response.status_code == 401  
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
 
     # App, email
     response = client.post('/check-details-unique/app/email', json={
@@ -169,12 +169,12 @@ def test_check_details_unique(client):
 
 def test_add_app_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/add-app-account')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/add-app-account', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
@@ -191,12 +191,12 @@ def test_add_app_account(client):
 
 def test_add_SRO_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/add-SRO-account')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/add-SRO-account', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
@@ -212,12 +212,12 @@ def test_add_SRO_account(client):
 
 def test_update_app_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/update-app-account/1')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/update-app-account/1', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
@@ -236,12 +236,12 @@ def test_update_app_account(client):
 
 def test_update_SRO_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/update-SRO-account/4')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/update-SRO-account/5', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
@@ -260,12 +260,12 @@ def test_update_SRO_account(client):
 
 def test_delete_app_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/delete-app-account')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/delete-app-account', json={
         'userID': 2
     })
@@ -278,12 +278,12 @@ def test_delete_app_account(client):
 
 def test_delete_SRO_account(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/delete-SRO-account')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     response = client.post('/delete-SRO-account', json={
         'sroID': 6
     })
@@ -296,12 +296,12 @@ def test_delete_SRO_account(client):
 
 def test_change_IBM_credentials(client):
 
-    login_portal_as_SRO(client)
+    login_as_SRO_client(client)
     response = client.post('/change-IBM-credentials')
     assert response.status_code == 401 
     logout_portal(client)
 
-    login_portal_as_admin(client)
+    login_as_admin_client(client)
     # Insertion (first time)
     response = client.post('/change-IBM-credentials', json={
         'new_apiKey': 'newKey',
