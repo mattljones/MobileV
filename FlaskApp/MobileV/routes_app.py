@@ -85,7 +85,7 @@ def handover(env, userID, recording_data):
         transcript = stt.get_transcript(converted_audio_ibm, ibm_creds.apiKey, ibm_creds.serviceURL)
 
     # In the case of an error, signal this to the app in the database (so it doesn't poll indefinitely)
-    except:
+    except Exception:
         pendingDownloadError = PendingDownload(
             userID=userID,
             dateRecorded=dateRecorded,
