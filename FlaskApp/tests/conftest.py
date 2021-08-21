@@ -10,6 +10,8 @@ sys.path.insert(0, str(root_path))
 # Imports
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from MobileV import create_app
 from MobileV.models import *
 from MobileV.db_generate import seed_all
@@ -199,12 +201,14 @@ def login_as_admin_browser(browser):
     login_page = LoginPage(browser)
     login_page.load()
     login_page.login_admin()
+    WebDriverWait(browser, 10).until(EC.url_changes(LoginPage.URL))
 
 
 def login_as_SRO_browser(browser):
     login_page = LoginPage(browser)
     login_page.load()
     login_page.login_SRO()
+    WebDriverWait(browser, 10).until(EC.url_changes(LoginPage.URL))
 
 
 ## DB HELPERS -----------------------------------------------------------------

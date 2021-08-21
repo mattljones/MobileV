@@ -11,6 +11,8 @@ load_dotenv('.env')
 base_url = 'http://127.0.0.1:5000'
 
 
+## AUTHENTICATION PAGE CLASSES ------------------------------------------------
+
 class LoginPage:
     URL = base_url + '/login'
     USERNAME_INPUT = (By.ID, 'username')
@@ -62,6 +64,48 @@ class ForgotPasswordPage:
         email_input.send_keys('test@gmail.com' + Keys.RETURN)
 
 
+class ChangePassForm:
+    CURRENT_INPUT = (By.ID, 'current-password')
+    NEW_INPUT = (By.ID, 'new-password')
+    CONFIRM_INPUT = (By.ID, 'confirm-password')
+    ERROR_MESSAGE = (By.ID, 'error-message')
+    SUCCESS_TOAST = (By.ID, 'success-toast')
+    
+    def __init__(self, browser):
+        self.browser = browser
+
+    def load(self):
+        self.browser.get(self.URL)
+
+    def change_credentials(self, valid_credentials=True):
+        current = self.current_password if valid_credentials else 'invalid'
+        current_input = self.browser.find_element(*ChangePassForm.CURRENT_INPUT)
+        current_input.clear()
+        current_input.send_keys(current)
+        new_input = self.browser.find_element(*ChangePassForm.NEW_INPUT)
+        new_input.clear()
+        new_input.send_keys(self.current_password)
+        confirm_input = self.browser.find_element(*ChangePassForm.CONFIRM_INPUT)
+        confirm_input.clear()
+        confirm_input.send_keys(self.current_password + Keys.RETURN)
+
+    def check_password_was_invalid(self):
+        def check_for_error_message(browser):
+            if browser.find_element(*ChangePassForm.ERROR_MESSAGE).is_displayed():
+                return True
+            return False
+        return check_for_error_message
+
+    def check_password_changed(self):
+        def check_for_success_toast(browser):
+            if browser.find_element(*ChangePassForm.SUCCESS_TOAST).is_displayed():
+                return True
+            return False
+        return check_for_success_toast
+
+
+## ADMIN PAGE CLASSES ---------------------------------------------------------
+
 class AdminAppPage:
     URL = base_url + '/admin-accounts-app'
     NAVBAR_LOGOUT = (By.ID, 'navbar-logout')
@@ -72,10 +116,75 @@ class AdminAppPage:
     def load(self):
         self.browser.get(AdminAppPage.URL)
 
+    def check_for_datatable(self):
+        def check_for_tbody(browser):
+            if len(browser.find_elements(By.TAG_NAME, 'tbody')) > 0:
+                return True
+            return False
+        return check_for_tbody
+
     def logout(self):
         navbar_link = self.browser.find_element(*AdminAppPage.NAVBAR_LOGOUT)
         navbar_link.click()
 
+
+class AdminSROPage:
+    URL = base_url + '/admin-accounts-SRO'
+    
+    def __init__(self, browser):
+        self.browser = browser
+
+    def load(self):
+        self.browser.get(AdminSROPage.URL)
+
+    def check_for_datatable(self):
+        def check_for_tbody(browser):
+            if len(browser.find_elements(By.TAG_NAME, 'tbody')) > 0:
+                return True
+            return False
+        return check_for_tbody
+
+
+class ChangeIBMPage:
+    URL = base_url + '/admin-change-IBM'
+    API_KEY_TEXT = (By.ID, 'current-api-key')
+    SERVICE_URL_TEXT = (By.ID, 'current-service-url')
+    API_KEY_INPUT = (By.ID, 'new-api-key')
+    SERVICE_URL_INPUT = (By.ID, 'new-service-url')
+    TEST_API_KEY = 'test_key'
+    TEST_SERVICE_URL = 'test_url'
+    
+    def __init__(self, browser):
+        self.browser = browser
+
+    def load(self):
+        self.browser.get(ChangeIBMPage.URL)
+
+    def change_credentials(self):
+        api_key_input = self.browser.find_element(*ChangeIBMPage.API_KEY_INPUT)
+        api_key_input.send_keys(ChangeIBMPage.TEST_API_KEY)
+        service_url_input = self.browser.find_element(*ChangeIBMPage.SERVICE_URL_INPUT)
+        service_url_input.send_keys(ChangeIBMPage.TEST_SERVICE_URL + Keys.RETURN)
+
+    def check_updated(self):
+        def check_for_text(browser):
+            isApiKeyUpdated = browser.find_element(*ChangeIBMPage.API_KEY_TEXT).text == ChangeIBMPage.TEST_API_KEY
+            isServiceURLUpdated = browser.find_element(*ChangeIBMPage.SERVICE_URL_TEXT).text == ChangeIBMPage.TEST_SERVICE_URL
+            if isApiKeyUpdated and isServiceURLUpdated:
+                return True
+            return False
+        return check_for_text
+
+
+class AdminChangePassPage(ChangePassForm):
+    URL = base_url + '/admin-change-password'
+
+    def __init__(self, browser):
+        ChangePassForm.__init__(self, browser)
+        self.current_password = environ.get('TEST_ADMIN_PASSWORD')
+
+
+## SRO PAGE CLASSES -----------------------------------------------------------
 
 class SRODashboardPage:
     URL = base_url + '/SRO-dashboard'
