@@ -8,6 +8,8 @@ root_path = Path(__file__).parents[1]
 sys.path.insert(0, str(root_path))
 
 # Imports
+from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 from MobileV import create_app
 from MobileV.models import *
 from MobileV.db_generate import seed_all
@@ -15,7 +17,7 @@ from datetime import datetime
 import pytest
 
 
-## TESTING CLIENT FIXTURE -----------------------------------------------------
+## FLASK CLIENT FIXTURE -------------------------------------------------------
 
 @pytest.fixture(scope='module')
 def client():
@@ -23,7 +25,6 @@ def client():
 
     with app.test_client() as client:
         with app.app_context():
-
             # Create database for use in testing from dummy data
             db.drop_all()
             db.create_all()
@@ -31,6 +32,23 @@ def client():
             seed_extra()
 
             yield client
+
+
+## CHROME DRIVER FIXTURE ------------------------------------------------------
+
+@pytest.fixture
+def browser():
+    # Set Chrome to run in headless mode without logging
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument('--log-level=1')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+    driver = Chrome(options=options)
+    driver.implicitly_wait(10)
+    yield driver
+
+    driver.quit()
 
 
 ## MODEL FIXTURES -------------------------------------------------------------
