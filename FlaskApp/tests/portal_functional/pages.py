@@ -275,6 +275,13 @@ class AdminChangePassPage(ChangePassForm):
 class SRODashboardPage:
     URL = base_url + '/SRO-dashboard'
     NAVBAR_LOGOUT = (By.ID, 'navbar-logout')
+    EDIT_SCORES_BTN = (By.XPATH, '//button[@id="17" and contains(@class, "edit-scores-button")]')
+    VIEW_SHARES_BTN = (By.XPATH, '//button[@id="1" and contains(@class, "view-shares-button")]')
+    SCORE1_INPUT = (By.ID, 'score1')
+    SCORE2_INPUT = (By.ID, 'score2')
+    SCORE3_INPUT = (By.ID, 'score3')
+    SCORE2_RADIO = (By.ID, 'score2-radio')
+    SCORE3_RADIO = (By.ID, 'score3-radio')
 
     def __init__(self, browser):
         self.browser = browser
@@ -282,7 +289,55 @@ class SRODashboardPage:
     def load(self):
         self.browser.get(SRODashboardPage.URL)
 
+    def check_for_datatable(self):
+        def check_for_tbody(browser):
+            if len(browser.find_elements(By.TAG_NAME, 'tbody')) > 0:
+                return True
+            return False
+        return check_for_tbody
+
+    def open_scores_modal(self):
+        scores_button = self.browser.find_element(*SRODashboardPage.EDIT_SCORES_BTN)
+        scores_button.click()
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located(SRODashboardPage.SCORE1_INPUT))
+
+    def open_shares_modal(self):
+        shares_button = self.browser.find_element(*SRODashboardPage.VIEW_SHARES_BTN)
+        shares_button.click()
+
+    def submit_scores_modal(self):
+        # Edit first score
+        score1_input = self.browser.find_element(*SRODashboardPage.SCORE1_INPUT)
+        score1_input.clear()
+        score1_input.send_keys('edited')
+        # Delete second score
+        score2_radio = self.browser.find_element(*SRODashboardPage.SCORE2_RADIO)
+        score2_radio.click()
+        # Add score (in empty third field)
+        score3_radio = self.browser.find_element(*SRODashboardPage.SCORE3_RADIO)
+        score3_radio.click()
+        score3_input = self.browser.find_element(*SRODashboardPage.SCORE3_INPUT)
+        score3_input.send_keys('added' + Keys.RETURN)
+
+    def check_scores_updated(self):
+        self.open_scores_modal()
+        score1 = self.browser.find_element(*SRODashboardPage.SCORE1_INPUT).get_attribute('value')
+        score2 = self.browser.find_element(*SRODashboardPage.SCORE2_INPUT).get_attribute('value')
+        assert score1 == 'edited' and score2 == 'added'
+
+    def download_share(self):
+        download_button = self.browser.find_elements(By.XPATH, '//button[@type="submit"]')[1]
+        download_button.click()
+
     def logout(self):
         sidebar_link = self.browser.find_element(*SRODashboardPage.NAVBAR_LOGOUT)
         sidebar_link.click()
+
+
+class SROChangePassPage(ChangePassForm):
+    URL = base_url + '/SRO-change-password'
+
+    def __init__(self, browser):
+        ChangePassForm.__init__(self, browser)
+        self.current_password = environ.get('TEST_SRO_PASSWORD')
 
