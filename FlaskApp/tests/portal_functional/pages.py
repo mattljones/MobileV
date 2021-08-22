@@ -108,17 +108,12 @@ class ChangePassForm:
 
 ## ADMIN PAGE CLASSES ---------------------------------------------------------
 
-class AdminAppPage:
-    URL = base_url + '/admin-accounts-app'
-    DATATABLE_INFO = (By.ID, 'table-admin-app_info')
-    ADD_ACCOUNT_BTN = (By.ID, 'add-app-account')
+class AdminDatatablePage:
     ADD_FIRST_NAME = (By.ID, 'add-first-name')
     ADD_LAST_NAME = (By.ID, 'add-last-name')
     ADD_EMAIL = (By.ID, 'add-email')
     ADD_USERNAME = (By.ID, 'add-username')
-    EDIT_ACCOUNT_BTN = (By.XPATH, '//button[@id="1" and contains(@class, "edit-button")]')
     EDIT_EMAIL = (By.ID, 'edit-email')
-    DELETE_ACCOUNT_BTN = (By.XPATH, '//button[@id="2" and contains(@class, "delete-button")]')
     DELETE_SUBMIT_BTN = (By.ID, 'delete-submit')
     NAVBAR_LOGOUT = (By.ID, 'navbar-logout')
     
@@ -126,7 +121,7 @@ class AdminAppPage:
         self.browser = browser
 
     def load(self):
-        self.browser.get(AdminAppPage.URL)
+        self.browser.get(self.URL)
 
     def check_for_datatable(self):
         def check_for_tbody(browser):
@@ -136,42 +131,42 @@ class AdminAppPage:
         return check_for_tbody
 
     def open_add_modal(self):
-        add_button = self.browser.find_element(*AdminAppPage.ADD_ACCOUNT_BTN)
+        add_button = self.browser.find_element(*self.ADD_ACCOUNT_BTN)
         add_button.click()   
 
     def open_edit_modal(self):
-        edit_button = self.browser.find_element(*AdminAppPage.EDIT_ACCOUNT_BTN)
+        edit_button = self.browser.find_element(*self.EDIT_ACCOUNT_BTN)
         edit_button.click()  
 
     def open_delete_modal(self):
-        delete_button = self.browser.find_element(*AdminAppPage.DELETE_ACCOUNT_BTN)
+        delete_button = self.browser.find_element(*self.DELETE_ACCOUNT_BTN)
         delete_button.click()  
 
     def submit_add_modal(self):
-        first_name_input = self.browser.find_element(*AdminAppPage.ADD_FIRST_NAME)
+        first_name_input = self.browser.find_element(*AdminDatatablePage.ADD_FIRST_NAME)
         first_name_input.send_keys('test')
-        last_name_input = self.browser.find_element(*AdminAppPage.ADD_LAST_NAME)
+        last_name_input = self.browser.find_element(*AdminDatatablePage.ADD_LAST_NAME)
         last_name_input.send_keys('test')
-        email_input = self.browser.find_element(*AdminAppPage.ADD_EMAIL)
+        email_input = self.browser.find_element(*AdminDatatablePage.ADD_EMAIL)
         email_input.send_keys('test@gmail.com')
-        username_input = self.browser.find_element(*AdminAppPage.ADD_USERNAME)
+        username_input = self.browser.find_element(*AdminDatatablePage.ADD_USERNAME)
         username_input.send_keys('test' + Keys.RETURN)
 
     def submit_edit_modal(self):
-        email_input = self.browser.find_element(*AdminAppPage.EDIT_EMAIL)
+        email_input = self.browser.find_element(*AdminDatatablePage.EDIT_EMAIL)
         email_input.clear()
         email_input.send_keys('edited@gmail.com' + Keys.RETURN) 
 
     def submit_delete_modal(self):
-        delete_submit = self.browser.find_element(*AdminAppPage.DELETE_SUBMIT_BTN)
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located(AdminAppPage.DELETE_SUBMIT_BTN))
+        delete_submit = self.browser.find_element(*AdminDatatablePage.DELETE_SUBMIT_BTN)
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located(AdminDatatablePage.DELETE_SUBMIT_BTN))
         delete_submit.click()
 
     def check_account_added(self):
         def check_for_increment(browser):
             # Previously there were 20 records in the table
-            table_info = browser.find_element(*AdminAppPage.DATATABLE_INFO).text
-            if table_info.find('21') != -1:
+            table_info = browser.find_element(*self.DATATABLE_INFO).text
+            if table_info.find(str(self.initial_table_size + 1)) != -1:
                 return True
             return False
         return check_for_increment
@@ -188,32 +183,52 @@ class AdminAppPage:
     def check_account_deleted(self):
         def check_for_decrement(browser):
             # Previously there were 20 records in the table
-            table_info = browser.find_element(*AdminAppPage.DATATABLE_INFO).text
-            if table_info.find('19') != -1:
+            table_info = browser.find_element(*self.DATATABLE_INFO).text
+            if table_info.find(str(self.initial_table_size - 1)) != -1:
                 return True
             return False
         return check_for_decrement
 
     def logout(self):
-        navbar_link = self.browser.find_element(*AdminAppPage.NAVBAR_LOGOUT)
+        navbar_link = self.browser.find_element(*AdminDatatablePage.NAVBAR_LOGOUT)
         navbar_link.click()
 
 
-class AdminSROPage:
-    URL = base_url + '/admin-accounts-SRO'
-    
+class AdminAppPage(AdminDatatablePage):
+    URL = base_url + '/admin-accounts-app'
+    DATATABLE_INFO = (By.ID, 'table-admin-app_info')
+    ADD_ACCOUNT_BTN = (By.ID, 'add-app-account')
+    EDIT_ACCOUNT_BTN = (By.XPATH, '//button[@id="1" and contains(@class, "edit-button")]')
+    DELETE_ACCOUNT_BTN = (By.XPATH, '//button[@id="2" and contains(@class, "delete-button")]')
+
     def __init__(self, browser):
-        self.browser = browser
+        AdminDatatablePage.__init__(self, browser)
+        self.initial_table_size = 20
 
-    def load(self):
-        self.browser.get(AdminSROPage.URL)
 
-    def check_for_datatable(self):
-        def check_for_tbody(browser):
-            if len(browser.find_elements(By.TAG_NAME, 'tbody')) > 0:
-                return True
-            return False
-        return check_for_tbody
+class AdminSROPage(AdminDatatablePage):
+    URL = base_url + '/admin-accounts-SRO'
+    DATATABLE_INFO = (By.ID, 'table-admin-SRO_info')
+    ADD_ACCOUNT_BTN = (By.ID, 'add-SRO-account')
+    EDIT_ACCOUNT_BTN = (By.XPATH, '//button[@id="6" and contains(@class, "edit-button")]')
+    DELETE_ACCOUNT_BTN = (By.XPATH, '//button[@id="6" and contains(@class, "delete-button")]')
+
+    def __init__(self, browser):
+        AdminDatatablePage.__init__(self, browser)
+        self.initial_table_size = 3
+
+    def open_delete_modal(self):
+        # Check deleting an SRO with app users is prevented
+        table_rows = self.browser.find_elements(By.TAG_NAME, 'tr')[1:]  # Exclude header
+        for row in table_rows:
+            num_app_users = row.find_elements(By.TAG_NAME, 'td')[4].text
+            if num_app_users != '0':
+                buttons_cell = row.find_elements(By.TAG_NAME, 'td')[5]
+                delete_button = buttons_cell.find_elements(By.TAG_NAME, 'button')[1]
+                assert 'disabled' in delete_button.get_attribute('class').split()
+
+        # Confirm deletion flow functions correctly
+        AdminDatatablePage.open_delete_modal(self)
 
 
 class ChangeIBMPage:

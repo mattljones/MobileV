@@ -49,17 +49,32 @@ def test_admin_SRO_datatable(browser):
 
 # Test SRO account creation
 def test_add_SRO_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_SRO_page = AdminSROPage(browser)
+    admin_SRO_page.load()
+    admin_SRO_page.open_add_modal()
+    admin_SRO_page.submit_add_modal()
+    WebDriverWait(browser, 10).until(admin_SRO_page.check_account_added())
 
 
 # Test SRO account modification
 def test_edit_SRO_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_SRO_page = AdminSROPage(browser)
+    admin_SRO_page.load()
+    admin_SRO_page.open_edit_modal()
+    admin_SRO_page.submit_edit_modal()
+    WebDriverWait(browser, 10).until(admin_SRO_page.check_account_edited())
 
 
 # Test SRO account deletion
 def test_delete_SRO_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_SRO_page = AdminSROPage(browser)
+    admin_SRO_page.load()
+    admin_SRO_page.open_delete_modal()
+    admin_SRO_page.submit_delete_modal()
+    WebDriverWait(browser, 10).until(admin_SRO_page.check_account_deleted())
 
 
 # Test changing IBM credentials
