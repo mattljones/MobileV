@@ -7,6 +7,7 @@ from conftest import login_app
 import io, base64
 
 
+# Test that recording upload works correctly
 def test_transcribe_analyse(client):
     # Collect access token from login
     response = login_app(client)
@@ -36,6 +37,7 @@ def test_transcribe_analyse(client):
     assert b'successful' in response.data
 
 
+# Test that downloading recording analysis works correctly
 def test_get_analysis(client):
     # Collect access token from login
     response = login_app(client)
@@ -65,6 +67,7 @@ def test_get_analysis(client):
     assert data['status'] == 'failed'
 
 
+# Test that updating recording scores works correctly
 def test_update_recording_scores(client):
     # Collect access token from login
     response = login_app(client)
@@ -91,6 +94,7 @@ def test_update_recording_scores(client):
         assert share.score3_value == 3
 
 
+# Test downloading names for the app profile tab
 def test_get_names(client):
     # Collect access token from login
     response = login_app(client)
@@ -102,6 +106,7 @@ def test_get_names(client):
     assert response.status_code == 200
 
 
+# Test downloading latest scoring fields for adding a recording in the app
 def test_get_scores(client):
     # Collect access token from login
     response = login_app(client)

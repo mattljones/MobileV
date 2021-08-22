@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-# Test admin login with correct credentials
+# Test admin login with correct credentials (then logout)
 def test_login_logout_as_admin(browser):
 
     # Login
@@ -27,7 +27,7 @@ def test_login_as_admin_invalid(browser):
     WebDriverWait(browser, 10).until(EC.visibility_of_element_located(LoginPage.ERROR_MESSAGE))
 
 
-# Test SRO login with correct credentials
+# Test SRO login with correct credentials (then logout)
 def test_login_logout_as_SRO(browser):
 
     # Login
