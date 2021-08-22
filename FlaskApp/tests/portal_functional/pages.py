@@ -2,6 +2,8 @@
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from os import environ
 
 # Load dummy account details from .env
@@ -108,6 +110,16 @@ class ChangePassForm:
 
 class AdminAppPage:
     URL = base_url + '/admin-accounts-app'
+    DATATABLE_INFO = (By.ID, 'table-admin-app_info')
+    ADD_ACCOUNT_BTN = (By.ID, 'add-app-account')
+    ADD_FIRST_NAME = (By.ID, 'add-first-name')
+    ADD_LAST_NAME = (By.ID, 'add-last-name')
+    ADD_EMAIL = (By.ID, 'add-email')
+    ADD_USERNAME = (By.ID, 'add-username')
+    EDIT_ACCOUNT_BTN = (By.XPATH, '//button[@id="1" and contains(@class, "edit-button")]')
+    EDIT_EMAIL = (By.ID, 'edit-email')
+    DELETE_ACCOUNT_BTN = (By.XPATH, '//button[@id="2" and contains(@class, "delete-button")]')
+    DELETE_SUBMIT_BTN = (By.ID, 'delete-submit')
     NAVBAR_LOGOUT = (By.ID, 'navbar-logout')
     
     def __init__(self, browser):
@@ -122,6 +134,65 @@ class AdminAppPage:
                 return True
             return False
         return check_for_tbody
+
+    def open_add_modal(self):
+        add_button = self.browser.find_element(*AdminAppPage.ADD_ACCOUNT_BTN)
+        add_button.click()   
+
+    def open_edit_modal(self):
+        edit_button = self.browser.find_element(*AdminAppPage.EDIT_ACCOUNT_BTN)
+        edit_button.click()  
+
+    def open_delete_modal(self):
+        delete_button = self.browser.find_element(*AdminAppPage.DELETE_ACCOUNT_BTN)
+        delete_button.click()  
+
+    def submit_add_modal(self):
+        first_name_input = self.browser.find_element(*AdminAppPage.ADD_FIRST_NAME)
+        first_name_input.send_keys('test')
+        last_name_input = self.browser.find_element(*AdminAppPage.ADD_LAST_NAME)
+        last_name_input.send_keys('test')
+        email_input = self.browser.find_element(*AdminAppPage.ADD_EMAIL)
+        email_input.send_keys('test@gmail.com')
+        username_input = self.browser.find_element(*AdminAppPage.ADD_USERNAME)
+        username_input.send_keys('test' + Keys.RETURN)
+
+    def submit_edit_modal(self):
+        email_input = self.browser.find_element(*AdminAppPage.EDIT_EMAIL)
+        email_input.clear()
+        email_input.send_keys('edited@gmail.com' + Keys.RETURN) 
+
+    def submit_delete_modal(self):
+        delete_submit = self.browser.find_element(*AdminAppPage.DELETE_SUBMIT_BTN)
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located(AdminAppPage.DELETE_SUBMIT_BTN))
+        delete_submit.click()
+
+    def check_account_added(self):
+        def check_for_increment(browser):
+            # Previously there were 20 records in the table
+            table_info = browser.find_element(*AdminAppPage.DATATABLE_INFO).text
+            if table_info.find('21') != -1:
+                return True
+            return False
+        return check_for_increment
+
+    def check_account_edited(self):
+        def check_for_username(browser):
+            table_row = browser.find_elements(By.TAG_NAME, 'tr')[2]
+            email_cell = table_row.find_elements(By.TAG_NAME, 'td')[3]
+            if email_cell.text == 'edited@gmail.com':
+                return True
+            return False
+        return check_for_username
+
+    def check_account_deleted(self):
+        def check_for_decrement(browser):
+            # Previously there were 20 records in the table
+            table_info = browser.find_element(*AdminAppPage.DATATABLE_INFO).text
+            if table_info.find('19') != -1:
+                return True
+            return False
+        return check_for_decrement
 
     def logout(self):
         navbar_link = self.browser.find_element(*AdminAppPage.NAVBAR_LOGOUT)

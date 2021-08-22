@@ -14,17 +14,29 @@ def test_admin_app_datatable(browser):
 
 # Test app user account creation
 def test_add_app_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_app_page = AdminAppPage(browser)
+    admin_app_page.open_add_modal()
+    admin_app_page.submit_add_modal()
+    WebDriverWait(browser, 10).until(admin_app_page.check_account_added())
 
 
 # Test app user account modification
 def test_edit_app_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_app_page = AdminAppPage(browser)
+    admin_app_page.open_edit_modal()
+    admin_app_page.submit_edit_modal()
+    WebDriverWait(browser, 10).until(admin_app_page.check_account_edited())
 
 
 # Test app user account deletion
 def test_delete_app_account(browser):
-    pass
+    login_as_admin_browser(browser)
+    admin_app_page = AdminAppPage(browser)
+    admin_app_page.open_delete_modal()
+    admin_app_page.submit_delete_modal()
+    WebDriverWait(browser, 10).until(admin_app_page.check_account_deleted())
 
 
 # Test SRO datatable loaded correctly
