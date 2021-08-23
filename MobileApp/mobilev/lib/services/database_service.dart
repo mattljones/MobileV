@@ -47,7 +47,7 @@ class DatabaseService {
   }
 
   // Seeded database initialisation (for testing purposes)
-  Future<Database> initTest() async {
+  Future<void> initTest() async {
     sqfliteFfiInit();
     db = await databaseFactoryFfi
         .openDatabase(join(Directory.current.path, 'test', 'database.db'));
@@ -55,7 +55,6 @@ class DatabaseService {
     for (var insert in sqlSeeds) {
       await db!.execute(insert);
     }
-    return db!;
   }
 
   // Creates empty tables with correct constraints
@@ -159,6 +158,7 @@ List<String> sqlSeeds = [
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (1, 'Wellbeing', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (2, 'GAD7', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (3, 'Steps', 1);''',
+  '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (4, 'OldScore', 0);''',
   // August data
   '''INSERT INTO Recording (dateRecorded, type, duration, audioFilePath, score1ID, score1Value, score2ID, score2Value, score3ID, score3Value, isShared, analysisStatus, wpm, transcript, wordCloudFilePath) 
      VALUES ('2021-08-12 12:00:00', 'Text', 60, 'test2.m4a', 1, 8, 2, 7, 3, 3120, 1, 'received', 60, 'Lorem ipsum...', 'test2.jpg');''',

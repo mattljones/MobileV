@@ -2,10 +2,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
 // Module imports
-import 'package:mobilev/services/database_service.dart';
 import 'package:mobilev/models/user_data.dart';
 
-void main() {
+void userDataUnitTests() async {
   // UserData.toMap()
   test('Test converting UserData to Map', () {
     final userData = UserData(
@@ -48,7 +47,6 @@ void main() {
 
   // UserData.selectUserData()
   test('Test selecting user data', () async {
-    final db = await databaseService.initTest();
     final data = await UserData.selectUserData('sharePreference');
     final expected = UserData(
       domain: 'sharePreference',
@@ -56,12 +54,10 @@ void main() {
       field2: '0',
     );
     expect(data, equals(expected));
-    await db.close();
   });
 
   // UserData.updateUserData()
   test('Test updating user data', () async {
-    final db = await databaseService.initTest();
     final newData = UserData(
       domain: 'sharePreference',
       field1: '1',
@@ -70,6 +66,5 @@ void main() {
     await UserData.updateUserData(newData);
     final data = await UserData.selectUserData('sharePreference');
     expect(data, equals(newData));
-    await db.close();
   });
 }
