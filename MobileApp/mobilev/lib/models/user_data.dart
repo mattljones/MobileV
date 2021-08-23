@@ -9,6 +9,17 @@ class UserData {
 
   UserData({required this.domain, this.field1, this.field2});
 
+  @override
+  bool operator ==(other) {
+    return (other is UserData) &&
+        other.domain == domain &&
+        other.field1 == field1 &&
+        other.field2 == field2;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+
   // Helper functions ----------------------------------------------------------
 
   Map<String, dynamic> toMap() {

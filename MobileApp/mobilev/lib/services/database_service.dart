@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 // Package imports
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
@@ -45,8 +46,23 @@ class DatabaseService {
     );
   }
 
+  // Seeded database initialisation (for testing purposes)
+  Future<Database> initTest() async {
+    sqfliteFfiInit();
+    db = await databaseFactoryFfi
+        .openDatabase(join(Directory.current.path, 'test', 'database.db'));
+    await createTables(db!);
+    for (var insert in sqlSeeds) {
+      await db!.execute(insert);
+    }
+    return db!;
+  }
+
   // Creates empty tables with correct constraints
   Future<void> createTables(Database db) async {
+    await db.rawQuery("DROP TABLE IF EXISTS Recording;");
+    await db.rawQuery("DROP TABLE IF EXISTS Score;");
+    await db.rawQuery("DROP TABLE IF EXISTS UserData;");
     await db.execute(sqlCreateScore);
     await db.execute(sqlCreateUserData);
     await db.execute(sqlCreateRecording);

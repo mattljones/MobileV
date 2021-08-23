@@ -29,6 +29,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  sqflite_common_ffi: ^2.0.0+1
   flutter_app_name: ^0.1.0
 
 flutter:
