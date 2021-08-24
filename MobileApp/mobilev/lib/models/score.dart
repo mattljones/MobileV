@@ -23,11 +23,12 @@ class Score {
     };
   }
 
-  // Useful for development and debugging
+  // coverage:ignore-start
   @override
   String toString() {
     return 'Score{scoreID: $scoreID, scoreName: $scoreName, isCurrent: $isCurrent}';
   }
+  // coverage:ignore-end
 
   // Queries -------------------------------------------------------------------
 

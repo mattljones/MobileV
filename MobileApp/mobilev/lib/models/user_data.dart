@@ -17,8 +17,10 @@ class UserData {
         other.field2 == field2;
   }
 
+  // coverage:ignore-start
   @override
   int get hashCode => super.hashCode;
+  // coverage:ignore-end
 
   // Helper functions ----------------------------------------------------------
 
@@ -52,11 +54,12 @@ class UserData {
     }
   }
 
-  // Useful for development and debugging
+  // coverage:ignore-start
   @override
   String toString() {
     return 'UserData{domain: $domain, field1: $field1, field2: $field2}';
   }
+  // coverage:ignore-end
 
   // Queries -------------------------------------------------------------------
 

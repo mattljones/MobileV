@@ -60,7 +60,7 @@ class Recording {
     };
   }
 
-  // Useful for development and debugging
+  // coverage:ignore-start
   @override
   String toString() {
     return '''
@@ -82,6 +82,7 @@ class Recording {
         wordCloudFilePath: $wordCloudFilePath
       )''';
   }
+  // coverage:ignore-end
 
   // Returns a string rounded as appropriate (max 1dp.)
   static String roundMinutes(int seconds) {
