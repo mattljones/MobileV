@@ -70,7 +70,7 @@ class Admin(db.Model, UserMixin):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     adminID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
 
     def get_id(self):
@@ -95,8 +95,8 @@ class SRO(db.Model, UserMixin):
                       'mysql_auto_increment': '4'}
 
     sroID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
-    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), unique=True, nullable=False)
+    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     firstName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
     lastName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
@@ -136,8 +136,8 @@ class AppUser(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
-    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), nullable=False)
+    username = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), unique=True, nullable=False)
+    email = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=254), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     firstName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
     lastName = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=100), nullable=False)
@@ -180,8 +180,8 @@ class IBMCred(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     credID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    apiKey = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), nullable=False)
-    serviceURL = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), nullable=False)
+    apiKey = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), unique=True, nullable=False)
+    serviceURL = db.Column(StringEncryptedType(db.String, key, AesEngine, 'pkcs5', length=200), unique=True, nullable=False)
 
 
 class Share(db.Model):
