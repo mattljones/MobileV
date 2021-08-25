@@ -45,7 +45,7 @@ class RecordingCard extends StatefulWidget {
 }
 
 class _RecordingCardState extends State<RecordingCard> {
-  static String expansionTitle = 'View scores';
+  static String expansionTitle = 'Scores';
 
   // Constructs scores in the correct format for the card
   List<Widget> constructScores() {
@@ -237,16 +237,9 @@ class _RecordingCardState extends State<RecordingCard> {
               ExpansionTile(
                 textColor: Colors.black,
                 iconColor: Colors.black,
-                tilePadding: EdgeInsets.fromLTRB(10.0, 0.0, 160.0, 0.0),
+                tilePadding: EdgeInsets.fromLTRB(10.0, 0.0, 200.0, 0.0),
                 childrenPadding: EdgeInsets.only(left: 20.0),
                 title: Text(expansionTitle),
-                onExpansionChanged: (isExpanded) {
-                  setState(() {
-                    isExpanded
-                        ? expansionTitle = 'Hide scores'
-                        : expansionTitle = 'View scores';
-                  });
-                },
                 children: constructScores(),
               ),
           ],
