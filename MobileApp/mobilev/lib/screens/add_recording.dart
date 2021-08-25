@@ -38,9 +38,9 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
     with TickerProviderStateMixin {
   final formKey = GlobalKey<FormState>();
   int tabIndex = 0;
-  List<String> types = ['Numeric', 'Text'];
+  List<String> types = ['Text', 'Numeric'];
   List<bool> typeIsSelected = [true, false];
-  String typeSet = 'Numeric';
+  String typeSet = 'Text';
   List<int> durations = [30, 60, 90, 120];
   List<bool> durationIsSelected = [true, false, false, false];
   int durationSet = 30;
