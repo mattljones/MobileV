@@ -302,6 +302,8 @@ class SRODashboardPage:
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located(SRODashboardPage.SCORE1_INPUT))
 
     def open_shares_modal(self):
+        self.browser.set_window_size(1024, 600)  # Ensure button interactable
+        self.browser.maximize_window()
         shares_button = self.browser.find_element(*SRODashboardPage.VIEW_SHARES_BTN)
         shares_button.click()
 

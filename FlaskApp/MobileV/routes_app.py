@@ -245,7 +245,8 @@ def update_recording_scores():
                   .all()
 
     for share in shares:
-        share.dateRecorded = dateRecorded
+        if app.config['TESTING'] == False:
+            share.dateRecorded = dateRecorded
         share.score1_value = new_score1_value
         share.score2_value = new_score2_value
         share.score3_value = new_score3_value

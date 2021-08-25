@@ -221,14 +221,14 @@ def test_update_app_account(client):
     response = client.post('/update-app-account/1', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
-        'email': 'email',
+        'email': 'email2',
         'sroID': 4
     })
     assert response.status_code == 200
     user = AppUser.query.get(1)
     assert user.firstName == 'firstName'
     assert user.lastName == 'lastName'
-    assert user.email == 'email'
+    assert user.email == 'email2'
     assert user.sroID == 4
 
     logout_portal(client)
@@ -245,15 +245,15 @@ def test_update_SRO_account(client):
     response = client.post('/update-SRO-account/5', json={
         'firstName': 'firstName',
         'lastName': 'lastName',
-        'email': 'email',
-        'username': 'username'
+        'email': 'email2',
+        'username': 'username2'
     })
     assert response.status_code == 200
     sro = SRO.query.get(5)
     assert sro.firstName == 'firstName'
     assert sro.lastName == 'lastName'
-    assert sro.email == 'email'
-    assert sro.username == 'username'
+    assert sro.email == 'email2'
+    assert sro.username == 'username2'
 
     logout_portal(client)
 

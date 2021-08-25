@@ -31,7 +31,8 @@ def test_transcribe_analyse(client):
         'score3_name': 'Score3',
         'score3_value': '3',
         'shareType': 'both',
-        'audioFile': base64_string 
+        'audioFile': base64_string,
+        'refNumber': ''
     })
 
     assert b'successful' in response.data
