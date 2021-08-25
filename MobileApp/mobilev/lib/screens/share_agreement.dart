@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobilev/config/constants.dart';
 import 'package:mobilev/models/user_data.dart';
 import 'package:mobilev/widgets/form_button.dart';
+import 'package:mobilev/widgets/form_input_number.dart';
 
 class ShareAgreementScreen extends StatefulWidget {
   final bool firstLogin;
@@ -33,6 +34,8 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
   UserData sharePreference;
   bool shareRecording;
   bool shareWordCloud;
+  String? initialValue;
+  TextEditingController? refNoController;
 
   _ShareAgreementScreenState(
     this.firstLogin,
@@ -40,6 +43,21 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
     this.shareRecording,
     this.shareWordCloud,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    getReferenceNumber();
+  }
+
+  void getReferenceNumber() async {
+    await UserData.selectUserData('referenceNumber').then((data) {
+      setState(() {
+        initialValue = data.field1;
+        refNoController = TextEditingController(text: initialValue);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +110,21 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                   ),
                 ),
                 SizedBox(height: 30.0),
+                Text(
+                  'If you have been asked to share your data by a particular organisation, and they have given you a reference number, please enter it below:',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 17.0,
+                    height: 1.4,
+                    fontFamily: 'Roboto',
+                    color: kSecondaryTextColour,
+                  ),
+                ),
+                SizedBox(height: 30.0),
+                FormInputNumber(
+                    controller: refNoController!,
+                    label: 'Reference number (optional)'),
+                SizedBox(height: 45.0),
                 Text(
                   'I agree to:',
                   style: TextStyle(
@@ -167,6 +200,9 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                         textColour: Colors.white,
                         onPressed: () async {
                           await UserData.updateUserData(sharePreference);
+                          await UserData.updateUserData(UserData(
+                              domain: 'referenceNumber',
+                              field1: refNoController!.text));
                           if (firstLogin) {
                             Navigator.pushReplacementNamed(context, '/my-home');
                           } else {

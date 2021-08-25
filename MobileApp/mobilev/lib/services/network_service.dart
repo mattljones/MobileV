@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Module imports
 import 'package:mobilev/config/constants.dart';
+import 'package:mobilev/models/user_data.dart';
 
 class NetworkService {
   static const baseURL = 'http://139.162.211.13';
@@ -165,6 +166,8 @@ class NetworkService {
       Map<String, dynamic> recordingData, String audioPath, String shareType,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
+    String? refNumber =
+        (await UserData.selectUserData('referenceNumber')).field1;
     try {
       List<int> rawBytes = File(audioPath).readAsBytesSync();
       String base64Audio = base64.encode(rawBytes);
@@ -186,6 +189,7 @@ class NetworkService {
           'score3_value': recordingData['score3_value'].toString(),
           'shareType': shareType,
           'audioFile': base64Audio,
+          'refNumber': refNumber!
         }),
       );
       if (response.statusCode == 401 && !refreshedToken) {

@@ -171,7 +171,8 @@ def get_app_user_shares(userID):
                                    Share.score2_value,
                                    Share.score3_name,
                                    Share.score3_value,
-                                   Share.fileType)\
+                                   Share.fileType,
+                                   Share.refNumber)\
                     .order_by(Share.dateRecorded.desc())\
                     .all()
 

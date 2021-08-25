@@ -62,6 +62,7 @@ def handover(env, userID, recording_data):
     score3_value = recording_data['score3_value'] if recording_data['score3_value'] != '' else None
     shareType = recording_data['shareType']
     base64audio = recording_data['audioFile']
+    refNumber = recording_data['refNumber'] if recording_data['refNumber'] != '' else None
 
     # Generate unique & valid filename for storing audio/wordclouds
     if env != 'test':
@@ -135,6 +136,7 @@ def handover(env, userID, recording_data):
                 score3_value=score3_value,
                 fileType='Word Cloud',
                 filePath=wordCloudPath,
+                refNumber=refNumber,
                 userID=userID
             )
             db.session.add(wordCloudShare)
@@ -154,6 +156,7 @@ def handover(env, userID, recording_data):
                 score3_value=score3_value,
                 fileType='Audio',
                 filePath=audioPath,
+                refNumber=refNumber,
                 userID=userID
             )
             db.session.add(audioShare)

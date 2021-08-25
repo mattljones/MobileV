@@ -201,6 +201,7 @@ class Share(db.Model):
     score3_value = db.Column(db.SmallInteger, nullable=True)
     fileType = db.Column(db.String(20), nullable=False)
     filePath = db.Column(db.String(50), nullable=False)
+    refNumber = db.Column(db.BigInteger, nullable=True)
     userID = db.Column(db.Integer, db.ForeignKey("AppUser.userID", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
 
 

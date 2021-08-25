@@ -72,6 +72,7 @@ class DatabaseService {
     await db.execute(sqlInsertUsername);
     await db.execute(sqlInsertSharePreference);
     await db.execute(sqlInsertRemindersPreference);
+    await db.execute(sqlInsertReferenceNumber);
   }
 
   // Copies example assets to documents directory
@@ -147,6 +148,11 @@ INSERT INTO UserData (domain, field1, field2)
 VALUES ('remindersPreference', null, null); 
 ''';
 
+String sqlInsertReferenceNumber = '''
+INSERT INTO UserData (domain, field1, field2)
+VALUES ('referenceNumber', '', null); 
+''';
+
 /*
  * DUMMY DATA-------------------------------------------------------------------
  */
@@ -155,6 +161,7 @@ List<String> sqlSeeds = [
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('username', 'MobileVUser1', null);''',
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('sharePreference', '0', '0');''',
   '''INSERT INTO UserData (domain, field1, field2) VALUES ('remindersPreference', null, null);''',
+  '''INSERT INTO UserData (domain, field1, field2) VALUES ('referenceNumber', '', null);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (1, 'Wellbeing', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (2, 'GAD7', 1);''',
   '''INSERT INTO Score (scoreID, scoreName, isCurrent) VALUES (3, 'Steps', 1);''',

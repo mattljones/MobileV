@@ -46,12 +46,18 @@ function createSROSharesDataTable(userID) {
         };
       };
 
+      var refNumber = share.refNumber;
+      if (refNumber == null) {
+        refNumber = '-';
+      }
+
       rows.push([dateRecorded,
                  '<b>' + share.fileType + ': ' + '</b>' + share.type + ' (' + share.duration + 's)', 
                  '<b>' + share.WPM + '</b>', 
                  handleNulls(share.score1_name, 'name') + handleNulls(share.score1_value, 'value'),
                  handleNulls(share.score2_name, 'name') + handleNulls(share.score2_value, 'value'),
                  handleNulls(share.score3_name, 'name') + handleNulls(share.score3_value, 'value'),
+                 refNumber,
                  buttons]);
 
     };
@@ -66,6 +72,7 @@ function createSROSharesDataTable(userID) {
         {title: "Score 1"},
         {title: "Score 2"},
         {title: "Score 3"},
+        {title: "Ref."},
         {title: "Actions"}
       ],
       columnDefs: [{ 'targets': 0, type: 'date-eu' }],
