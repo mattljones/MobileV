@@ -93,8 +93,10 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
     super.initState();
     // Only instantiate the text controllers that are needed (expensive)
     for (var i = 0; i < scores.keys.length; i++) {
-      scoreControllers.add(
-          TextEditingController(text: scores.values.toList()[i][1].toString()));
+      var initialValue = scores.values.toList()[i][1].toString() != 'null'
+          ? scores.values.toList()[i][1].toString()
+          : '';
+      scoreControllers.add(TextEditingController(text: initialValue));
     }
   }
 
@@ -118,8 +120,10 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
     newFileName += wpm != null ? '_WPM_$wpm' : '';
 
     for (var i = 0; i < scores.keys.length; i++) {
-      newFileName +=
-          '_${scores.values.toList()[i][0]}_' + scoreControllers[i].text;
+      if (scoreControllers[i].text != '') {
+        newFileName +=
+            '_${scores.values.toList()[i][0]}_' + scoreControllers[i].text;
+      }
     }
 
     // Add appropriate file extension
@@ -132,7 +136,9 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
   Future<bool> updateRecording() async {
     Map<String, dynamic> newFields = {};
     for (var i = 0; i < scores.keys.length; i++) {
-      int current = int.parse(scoreControllers[i].text);
+      var current = scoreControllers[i].text != ''
+          ? int.parse(scoreControllers[i].text)
+          : null;
       if (current != scores.values.toList()[i][1]) {
         newFields['score${i + 1}Value'] = current;
       }
@@ -174,21 +180,24 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
       'duration': duration,
       'score1_name':
           scores.values.length > 0 ? scores.values.toList()[0][0] : '',
-      'score1_value':
-          scores.values.length > 0 ? int.parse(scoreControllers[0].text) : '',
+      'score1_value': scores.values.length > 0 && scoreControllers[0].text != ''
+          ? int.parse(scoreControllers[0].text)
+          : '',
       'score2_name':
           scores.values.length > 1 ? scores.values.toList()[1][0] : '',
-      'score2_value':
-          scores.values.length > 1 ? int.parse(scoreControllers[1].text) : '',
+      'score2_value': scores.values.length > 1 && scoreControllers[1].text != ''
+          ? int.parse(scoreControllers[1].text)
+          : '',
       'score3_name':
           scores.values.length > 2 ? scores.values.toList()[2][0] : '',
-      'score3_value':
-          scores.values.length > 2 ? int.parse(scoreControllers[2].text) : '',
+      'score3_value': scores.values.length > 2 && scoreControllers[2].text != ''
+          ? int.parse(scoreControllers[2].text)
+          : '',
     };
 
     // Construct absolute file path
     String directoryPath = (await getApplicationDocumentsDirectory()).path;
-    String absPath = path.join(directoryPath, audioPath);
+    String absPath = path.join(directoryPath, constructFileName('Audio'));
 
     // Translate sharePreference object to string
     String? shareType;
@@ -208,12 +217,18 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
 
   // Helper function to update scores on the server
   Future<bool> shareUpdatedScores() async {
-    String newScore1Value =
-        scores.values.length > 0 ? scoreControllers[0].text : '';
-    String newScore2Value =
-        scores.values.length > 1 ? scoreControllers[1].text : '';
-    String newScore3Value =
-        scores.values.length > 2 ? scoreControllers[2].text : '';
+    var newScore1Value =
+        scores.values.length > 0 && scoreControllers[0].text != ''
+            ? int.parse(scoreControllers[0].text)
+            : '';
+    var newScore2Value =
+        scores.values.length > 1 && scoreControllers[1].text != ''
+            ? int.parse(scoreControllers[1].text)
+            : '';
+    var newScore3Value =
+        scores.values.length > 2 && scoreControllers[2].text != ''
+            ? int.parse(scoreControllers[2].text)
+            : '';
 
     final result = await NetworkService.updateScores(
         context, dateRecorded, newScore1Value, newScore2Value, newScore3Value);
@@ -262,12 +277,6 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                   child: FormInputNumber(
                     controller: scoreControllers[i],
                     label: scores.values.toList()[i][0],
-                    validator: (value) {
-                      if (value!.length == 0) {
-                        return 'Please provide this score';
-                      }
-                      return null;
-                    },
                   ),
                 ),
               // Only show save/update buttons if there is at least one score field
@@ -282,10 +291,8 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                         textColour: Colors.white,
                         onPressed: () {
                           // Check all fields complete
-                          if (formKey.currentState!.validate()) {
-                            updateRecording();
-                            Navigator.pop(context, 1);
-                          }
+                          updateRecording();
+                          Navigator.pop(context, 1);
                         },
                       ),
                     ),
@@ -303,62 +310,82 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                               )
                             : null,
                         onPressed: () async {
-                          // Check all fields complete
-                          if (formKey.currentState!.validate()) {
-                            // Check if user has accepted the sharing agreement
-                            UserData sharePreference =
-                                await UserData.selectUserData(
-                                    'sharePreference');
-                            // If they haven't, make them accept it first
-                            if (sharePreference.field1 == '0' &&
-                                (sharePreference.field2 == '0' ||
-                                    type == 'Numeric')) {
-                              FocusScope.of(context).unfocus();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return ShareAgreementScreen(
-                                      firstLogin: false,
-                                      sharePreference: sharePreference,
-                                      shareRecording:
-                                          sharePreference.field1 == '1',
-                                      shareWordCloud:
-                                          sharePreference.field2 == '1',
-                                    );
-                                  },
-                                ),
-                              ).then((value) {
-                                // Notify user if they accepted the agreement
-                                if (value != null && value == true) {
-                                  final snackBar = SnackBar(
-                                    backgroundColor: kSecondaryTextColour,
-                                    content: Text('Share agreement accepted'),
+                          // Check if user has accepted the sharing agreement
+                          UserData sharePreference =
+                              await UserData.selectUserData('sharePreference');
+                          // If they haven't, make them accept it first
+                          if (sharePreference.field1 == '0' &&
+                              (sharePreference.field2 == '0' ||
+                                  type == 'Numeric')) {
+                            FocusScope.of(context).unfocus();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ShareAgreementScreen(
+                                    firstLogin: false,
+                                    sharePreference: sharePreference,
+                                    shareRecording:
+                                        sharePreference.field1 == '1',
+                                    shareWordCloud:
+                                        sharePreference.field2 == '1',
                                   );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                }
+                                },
+                              ),
+                            ).then((value) {
+                              // Notify user if they accepted the agreement
+                              if (value != null && value == true) {
+                                final snackBar = SnackBar(
+                                  backgroundColor: kSecondaryTextColour,
+                                  content: Text('Share agreement accepted'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            });
+                          }
+                          // Otherwise, update recording then try to share update
+                          else {
+                            bool changesMade = await updateRecording();
+                            // If not yet shared, attempt to share
+                            if (!isShared) {
+                              setState(() {
+                                isUploading = true;
                               });
+                              final successfulShare =
+                                  await shareRecording(sharePreference);
+                              if (successfulShare) {
+                                // Update recording to show that it's been shared
+                                Recording.updateRecording(
+                                  dateRecorded: dateRecorded,
+                                  newFields: {
+                                    'isShared': 1,
+                                    'analysisStatus': 'pending',
+                                  },
+                                );
+                                setState(() {
+                                  isUploading = false;
+                                });
+                                Navigator.pop(this.context, 2);
+                              } else {
+                                setState(() {
+                                  isUploading = false;
+                                });
+                                // Show error message
+                                Navigator.pop(this.context, 3);
+                              }
                             }
-                            // Otherwise, update recording then try to share update
+                            // Otherwise, consider different possibilities
                             else {
-                              bool changesMade = await updateRecording();
-                              // If not yet shared, attempt to share
-                              if (!isShared) {
+                              // Update scores on the server
+                              if (changesMade &&
+                                  analysisStatus == AnalysisStatus.received) {
                                 setState(() {
                                   isUploading = true;
                                 });
-                                final successfulShare =
-                                    await shareRecording(sharePreference);
-                                if (successfulShare) {
-                                  // Update recording to show that it's been shared
-                                  Recording.updateRecording(
-                                    dateRecorded: dateRecorded,
-                                    newFields: {
-                                      'isShared': 1,
-                                      'analysisStatus': 'pending',
-                                    },
-                                  );
+                                final successfulUpdate =
+                                    await shareUpdatedScores();
+                                if (successfulUpdate) {
                                   setState(() {
                                     isUploading = false;
                                   });
@@ -371,39 +398,15 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                                   Navigator.pop(this.context, 3);
                                 }
                               }
-                              // Otherwise, consider different possibilities
+                              // Prevent sharing the update
+                              else if (analysisStatus ==
+                                  AnalysisStatus.pending) {
+                                // Ask user to wait to receive analysis first before updating
+                                Navigator.pop(this.context, 4);
+                              }
+                              // Finally, if none of the above, pop to main page
                               else {
-                                // Update scores on the server
-                                if (changesMade &&
-                                    analysisStatus == AnalysisStatus.received) {
-                                  setState(() {
-                                    isUploading = true;
-                                  });
-                                  final successfulUpdate =
-                                      await shareUpdatedScores();
-                                  if (successfulUpdate) {
-                                    setState(() {
-                                      isUploading = false;
-                                    });
-                                    Navigator.pop(this.context, 2);
-                                  } else {
-                                    setState(() {
-                                      isUploading = false;
-                                    });
-                                    // Show error message
-                                    Navigator.pop(this.context, 3);
-                                  }
-                                }
-                                // Prevent sharing the update
-                                else if (analysisStatus ==
-                                    AnalysisStatus.pending) {
-                                  // Ask user to wait to receive analysis first before updating
-                                  Navigator.pop(this.context, 4);
-                                }
-                                // Finally, if none of the above, pop to main page
-                                else {
-                                  Navigator.pop(context);
-                                }
+                                Navigator.pop(context);
                               }
                             }
                           }
@@ -569,7 +572,19 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                         style: TextStyle(color: Colors.red),
                       ),
                       onPressed: () async {
+                        // Delete from database
                         await Recording.deleteRecording(dateRecorded);
+                        // Delete files (audio, word cloud if exists)
+                        var directoryPath =
+                            (await getApplicationDocumentsDirectory()).path;
+                        String fullAudioPath =
+                            path.join(directoryPath, audioPath);
+                        File(fullAudioPath).delete();
+                        if (wordCloudPath != null) {
+                          String fullCloudPath =
+                              path.join(directoryPath, wordCloudPath);
+                          File(fullCloudPath).delete();
+                        }
                         Navigator.pop(context);
                         Navigator.pop(context, 5);
                       },

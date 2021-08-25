@@ -114,8 +114,10 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
         '_${durationSet}s';
 
     for (var i = 0; i < latestScores!.keys.length; i++) {
-      newFileName +=
-          '_${latestScores!.values.toList()[i]}_' + scoreControllers[i].text;
+      if (scoreControllers[i].text != '') {
+        newFileName +=
+            '_${latestScores!.values.toList()[i]}_' + scoreControllers[i].text;
+      }
     }
 
     newFileName += '.m4a';
@@ -141,21 +143,24 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       score1ID: latestScores!.keys.length > 0
           ? int.parse(latestScores!.keys.toList()[0])
           : null,
-      score1Value: latestScores!.keys.length > 0
-          ? int.parse(scoreControllers[0].text)
-          : null,
+      score1Value:
+          latestScores!.keys.length > 0 && scoreControllers[0].text != ''
+              ? int.parse(scoreControllers[0].text)
+              : null,
       score2ID: latestScores!.keys.length > 1
           ? int.parse(latestScores!.keys.toList()[1])
           : null,
-      score2Value: latestScores!.keys.length > 1
-          ? int.parse(scoreControllers[1].text)
-          : null,
+      score2Value:
+          latestScores!.keys.length > 1 && scoreControllers[1].text != ''
+              ? int.parse(scoreControllers[1].text)
+              : null,
       score3ID: latestScores!.keys.length > 2
           ? int.parse(latestScores!.keys.toList()[2])
           : null,
-      score3Value: latestScores!.keys.length > 2
-          ? int.parse(scoreControllers[2].text)
-          : null,
+      score3Value:
+          latestScores!.keys.length > 2 && scoreControllers[2].text != ''
+              ? int.parse(scoreControllers[2].text)
+              : null,
       isShared: 0,
       analysisStatus: 'unavailable',
     );
@@ -174,21 +179,24 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
       'score1_name': latestScores!.values.length > 0
           ? latestScores!.values.toList()[0]
           : '',
-      'score1_value': latestScores!.values.length > 0
-          ? int.parse(scoreControllers[0].text)
-          : '',
+      'score1_value':
+          latestScores!.values.length > 0 && scoreControllers[0].text != ''
+              ? int.parse(scoreControllers[0].text)
+              : '',
       'score2_name': latestScores!.values.length > 1
           ? latestScores!.values.toList()[1]
           : '',
-      'score2_value': latestScores!.values.length > 1
-          ? int.parse(scoreControllers[1].text)
-          : '',
+      'score2_value':
+          latestScores!.values.length > 1 && scoreControllers[1].text != ''
+              ? int.parse(scoreControllers[1].text)
+              : '',
       'score3_name': latestScores!.values.length > 2
           ? latestScores!.values.toList()[2]
           : '',
-      'score3_value': latestScores!.values.length > 2
-          ? int.parse(scoreControllers[2].text)
-          : '',
+      'score3_value':
+          latestScores!.values.length > 2 && scoreControllers[2].text != ''
+              ? int.parse(scoreControllers[2].text)
+              : '',
     };
 
     // Construct absolute file path
@@ -336,12 +344,6 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                       FormInputNumber(
                         controller: scoreControllers[i],
                         label: latestScores!.values.toList()[i],
-                        validator: (value) {
-                          if (value!.length == 0) {
-                            return 'Please provide this score';
-                          }
-                          return null;
-                        },
                       ),
                       SizedBox(height: 30.0),
                     ],
@@ -351,11 +353,8 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                 buttonColour: kSecondaryTextColour,
                 textColour: Colors.white,
                 onPressed: () {
-                  // Check all fields complete
-                  if (formKey.currentState!.validate()) {
-                    saveRecording();
-                    Navigator.pop(this.context, 0);
-                  }
+                  saveRecording();
+                  Navigator.pop(this.context, 0);
                 },
               ),
               SizedBox(height: 15.0),
@@ -370,67 +369,63 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                       )
                     : null,
                 onPressed: () async {
-                  // Check all fields complete
-                  if (formKey.currentState!.validate()) {
-                    // Check if user has accepted the sharing agreement
-                    UserData sharePreference =
-                        await UserData.selectUserData('sharePreference');
-                    // If they haven't, push the share agreement screen
-                    if (sharePreference.field1 == '0' &&
-                        (sharePreference.field2 == '0' ||
-                            typeSet == 'Numeric')) {
-                      FocusScope.of(context).unfocus();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ShareAgreementScreen(
-                              firstLogin: false,
-                              sharePreference: sharePreference,
-                              shareRecording: sharePreference.field1 == '1',
-                              shareWordCloud: sharePreference.field2 == '1',
-                            );
-                          },
-                        ),
-                      ).then((value) {
-                        // Notify user if they accepted the agreement
-                        if (value != null && value == true) {
-                          final snackBar = SnackBar(
-                            backgroundColor: kSecondaryTextColour,
-                            content: Text('Share agreement accepted'),
+                  // Check if user has accepted the sharing agreement
+                  UserData sharePreference =
+                      await UserData.selectUserData('sharePreference');
+                  // If they haven't, push the share agreement screen
+                  if (sharePreference.field1 == '0' &&
+                      (sharePreference.field2 == '0' || typeSet == 'Numeric')) {
+                    FocusScope.of(context).unfocus();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ShareAgreementScreen(
+                            firstLogin: false,
+                            sharePreference: sharePreference,
+                            shareRecording: sharePreference.field1 == '1',
+                            shareWordCloud: sharePreference.field2 == '1',
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
-                      });
-                    }
-                    // Otherwise, save and then try to share
-                    else {
-                      var recordingData = await saveRecording();
-                      setState(() {
-                        isUploading = true;
-                      });
-                      final isShared = await shareRecording(
-                          recordingData[0], recordingData[1], sharePreference);
-                      if (isShared) {
-                        // Update saved recording to show that it's been shared
-                        Recording.updateRecording(
-                          dateRecorded: recordingData[0],
-                          newFields: {
-                            'isShared': 1,
-                            'analysisStatus': 'pending',
-                          },
+                        },
+                      ),
+                    ).then((value) {
+                      // Notify user if they accepted the agreement
+                      if (value != null && value == true) {
+                        final snackBar = SnackBar(
+                          backgroundColor: kSecondaryTextColour,
+                          content: Text('Share agreement accepted'),
                         );
-                        setState(() {
-                          isUploading = false;
-                        });
-                        Navigator.pop(this.context, 1);
-                      } else {
-                        setState(() {
-                          isUploading = false;
-                        });
-                        // Explain in snack bar that an error occurred when sharing
-                        Navigator.pop(this.context, 2);
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
+                    });
+                  }
+                  // Otherwise, save and then try to share
+                  else {
+                    var recordingData = await saveRecording();
+                    setState(() {
+                      isUploading = true;
+                    });
+                    final isShared = await shareRecording(
+                        recordingData[0], recordingData[1], sharePreference);
+                    if (isShared) {
+                      // Update saved recording to show that it's been shared
+                      Recording.updateRecording(
+                        dateRecorded: recordingData[0],
+                        newFields: {
+                          'isShared': 1,
+                          'analysisStatus': 'pending',
+                        },
+                      );
+                      setState(() {
+                        isUploading = false;
+                      });
+                      Navigator.pop(this.context, 1);
+                    } else {
+                      setState(() {
+                        isUploading = false;
+                      });
+                      // Explain in snack bar that an error occurred when sharing
+                      Navigator.pop(this.context, 2);
                     }
                   }
                 },

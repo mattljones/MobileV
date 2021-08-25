@@ -59,12 +59,14 @@ class _RecordingCardState extends State<RecordingCard> {
       );
     }
     widget.scores.forEach((key, value) {
-      list.add(
-        RecordingCardScore(scoreName: value[0], scoreValue: value[1]),
-      );
-      list.add(
-        SizedBox(height: 10.0),
-      );
+      if (value[1] != null) {
+        list.add(
+          RecordingCardScore(scoreName: value[0], scoreValue: value[1]),
+        );
+        list.add(
+          SizedBox(height: 10.0),
+        );
+      }
     });
     return list;
   }

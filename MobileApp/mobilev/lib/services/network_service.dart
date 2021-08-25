@@ -236,7 +236,7 @@ class NetworkService {
 
   // Update scores
   static Future<dynamic> updateScores(BuildContext context, String dateRecorded,
-      String newScore1Value, String newScore2Value, String newScore3Value,
+      var newScore1Value, var newScore2Value, var newScore3Value,
       {bool refreshedToken = false}) async {
     String token = await NetworkService.getAccessToken();
     try {
@@ -246,7 +246,7 @@ class NetworkService {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{
+        body: jsonEncode(<String, dynamic>{
           'dateRecorded': dateRecorded,
           'new_score1_value': newScore1Value,
           'new_score2_value': newScore2Value,

@@ -208,15 +208,17 @@ def download_app_user_share(shareID):
                                                 share.duration,
                                                 share.WPM)
         
-        def conv_none(_input):
-            return '' if _input is None else '_' + str(_input)
+        def conv_none(name, value):
+            if name is None:
+                return ''
+            elif value is None:
+                return '_' + name + '_NA'
+            else:
+                return '_' + name + '_' + str(value)
         
-        name_pt2 = "{}{}{}{}{}{}".format(conv_none(share.score1_name),
-                                         conv_none(share.score1_value),
-                                         conv_none(share.score2_name),
-                                         conv_none(share.score2_value),
-                                         conv_none(share.score3_name),
-                                         conv_none(share.score3_value))
+        name_pt2 = "{}{}{}".format(conv_none(share.score1_name, share.score1_value),
+                                   conv_none(share.score2_name, share.score2_value),
+                                   conv_none(share.score3_name, share.score3_value))
         
         extension = share.filePath[-4:]
         name = name_pt1 + name_pt2 + extension
