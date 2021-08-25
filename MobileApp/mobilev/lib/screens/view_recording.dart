@@ -275,7 +275,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                 Row(
                   children: [
                     Flexible(
-                      flex: 2,
+                      flex: 1,
                       child: FormButton(
                         text: 'Save',
                         buttonColour: kSecondaryTextColour,
@@ -291,7 +291,7 @@ class _ViewRecordingScreenState extends State<ViewRecordingScreen> {
                     ),
                     SizedBox(width: 10.0),
                     Flexible(
-                      flex: 3,
+                      flex: 2,
                       child: FormButton(
                         text: isUploading ? '' : 'Save & Share',
                         buttonColour: kPrimaryColour,
