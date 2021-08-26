@@ -198,7 +198,8 @@ class _ProfileBodyState extends State<ProfileBody> {
                         text: 'Sign out',
                         buttonColour: kAccentColour,
                         textColour: Colors.black,
-                        onPressed: () {
+                        onPressed: () async {
+                          await NetworkService.deleteTokens();
                           Navigator.pushReplacementNamed(context, '/login');
                         },
                       ),

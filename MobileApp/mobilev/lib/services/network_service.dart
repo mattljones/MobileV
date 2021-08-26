@@ -37,6 +37,17 @@ class NetworkService {
     return refreshToken!;
   }
 
+  // Checks if the user was logged in when last closed the app
+  static Future<bool> checkHasToken() async {
+    String? accessToken = await storage.read(key: 'accessToken');
+    return accessToken != null ? true : false;
+  }
+
+  // Delete access and refresh tokens
+  static Future<void> deleteTokens() async {
+    await storage.deleteAll();
+  }
+
   // GET requests --------------------------------------------------------------
 
   // My profile body names

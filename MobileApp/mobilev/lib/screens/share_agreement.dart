@@ -121,9 +121,12 @@ class _ShareAgreementScreenState extends State<ShareAgreementScreen> {
                   ),
                 ),
                 SizedBox(height: 30.0),
-                FormInputNumber(
-                    controller: refNoController!,
-                    label: 'Reference number (optional)'),
+                if (refNoController == null)
+                  Text('')
+                else
+                  FormInputNumber(
+                      controller: refNoController!,
+                      label: 'Reference number (optional)'),
                 SizedBox(height: 45.0),
                 Text(
                   'I agree to:',
