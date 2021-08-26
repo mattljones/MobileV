@@ -47,7 +47,8 @@ class ScoreChart extends StatelessWidget {
   List<charts.Series<DailyRecording, int>> generateSeriesList() {
     final data = [
       for (var day in chartData)
-        DailyRecording(day['day'], day['score'], day['type'])
+        if (day['score'] != null)
+          DailyRecording(day['day'], day['score'], day['type'])
     ];
 
     return [

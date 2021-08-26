@@ -9,7 +9,7 @@ import 'package:mobilev/config/routes.dart';
 import 'package:mobilev/config/theme.dart';
 
 // Set to 'true' to seed phone's database with dummy data on installation
-bool seedDatabase = false;
+bool seedDatabase = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

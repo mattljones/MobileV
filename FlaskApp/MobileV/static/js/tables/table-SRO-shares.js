@@ -48,7 +48,7 @@ function createSROSharesDataTable(userID) {
 
       var refNumber = share.refNumber;
       if (refNumber == null) {
-        refNumber = '-';
+        refNumber = '--';
       }
 
       rows.push([dateRecorded,
