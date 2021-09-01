@@ -349,7 +349,7 @@ class _RecordingsBodyState extends State<RecordingsBody>
                         children: [
                           TextSpan(text: 'Press the '),
                           TextSpan(
-                              text: 'button',
+                              text: "'+' button",
                               style: TextStyle(color: kDarkAccentColour)),
                           TextSpan(text: ' to make a recording'),
                         ],
