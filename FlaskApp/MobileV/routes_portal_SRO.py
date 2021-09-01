@@ -178,6 +178,10 @@ def get_app_user_shares(userID):
 
     data = [dict(row) for row in shares]
 
+    for row in data:
+        if row['refNumber'] is not None:
+            row['refNumber'] = str(row['refNumber'])
+
     return jsonify(data), 200
 
 
