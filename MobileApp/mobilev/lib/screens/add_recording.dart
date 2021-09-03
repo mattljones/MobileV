@@ -662,6 +662,15 @@ class _AudioRecorderState extends State<AudioRecorder> {
               fontSize: 30.0,
             ),
           ),
+          SizedBox(height: 20.0),
+          Text(
+            'Please hold the phone close to your mouth when recording.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: kSecondaryTextColour,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
           SizedBox(height: 30.0),
           if (isRecording)
             GestureDetector(
