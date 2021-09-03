@@ -224,9 +224,11 @@ def download_app_user_share(shareID):
         name_pt2 = "{}{}{}".format(conv_none(share.score1_name, share.score1_value),
                                    conv_none(share.score2_name, share.score2_value),
                                    conv_none(share.score3_name, share.score3_value))
+
+        name_pt3 = "" if share.refNumber is None else "_Ref_{}".format(share.refNumber)
         
         extension = share.filePath[-4:]
-        name = name_pt1 + name_pt2 + extension
+        name = name_pt1 + name_pt2 + name_pt3 + extension
 
         return send_file(file_bytes, as_attachment=True, download_name=name)
 
