@@ -195,7 +195,6 @@ void recordingUnitTests() async {
   test('Test selecting data for analysis "usage" chart', () async {
     final data = await Recording.selectUsage();
     final expected = [
-      {'month': 'May', 'noRecordings': 3, 'noMinutes': 180},
       {'month': 'Jun', 'noRecordings': 5, 'noMinutes': 330},
       {'month': 'Jul', 'noRecordings': 7, 'noMinutes': 480},
       {'month': 'Aug', 'noRecordings': 2, 'noMinutes': 180}
