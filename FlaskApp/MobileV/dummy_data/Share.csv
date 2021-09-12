@@ -1,4 +1,1 @@
 shareID,dateRecorded,type,duration,WPM,score1_name,score1_value,score2_name,score2_value,score3_name,score3_value,fileType,filePath,userID
-1,2021-08-12 12:00:00,Text,120,102,Wellbeing,8,GAD7,19,Steps,10000,Audio,MobileV/shares/dummy_data/test.mp3,1
-2,2021-08-12 12:00:00,Text,120,102,Wellbeing,8,GAD7,19,Steps,10000,WordCloud,MobileV/shares/dummy_data/test.png,1
-3,2021-08-10 12:00:00,Numeric,30,114,Wellbeing,7,GAD7,17,Steps,9000,Audio,MobileV/shares/dummy_data/test2.mp3,1
