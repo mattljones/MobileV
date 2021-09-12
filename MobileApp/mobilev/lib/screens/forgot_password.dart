@@ -77,7 +77,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   buttonColour: kPrimaryColour,
                   textColour: Colors.white,
                   icon: isLoading
-                      ? SpinKitPouringHourglass(
+                      ? SpinKitPouringHourGlass(
                           color: Colors.white,
                           size: 40.0,
                         )

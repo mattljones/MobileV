@@ -73,7 +73,7 @@ class _ProfileBodyState extends State<ProfileBody> {
       child:
           // Show hourglass whilst asynchronous data is loading
           (namesLoading || sharePreferenceLoading || remindersPreferenceLoading)
-              ? SpinKitPouringHourglass(
+              ? SpinKitPouringHourGlass(
                   color: kSecondaryTextColour,
                 )
               // Show content once all asynchronous data loaded

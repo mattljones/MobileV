@@ -363,7 +363,7 @@ class _AddRecordingScreenState extends State<AddRecordingScreen>
                 buttonColour: kPrimaryColour,
                 textColour: Colors.white,
                 icon: isUploading
-                    ? SpinKitPouringHourglass(
+                    ? SpinKitPouringHourGlass(
                         color: Colors.white,
                         size: 40.0,
                       )
