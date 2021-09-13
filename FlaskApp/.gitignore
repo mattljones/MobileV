@@ -13,6 +13,14 @@ __pycache__/
 # C extensions
 *.so
 
+# SQLite
+*.db
+*.sqlite3
+migrations/
+db.sqlite3
+/db/*.sqlite3
+
+
 # Distribution / packaging
 .Python
 build/
