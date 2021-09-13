@@ -19,7 +19,7 @@ The exact settings for each configuration can be found in ```FlaskApp/config.py`
 - ```python wsgi.py dev```
 - ```python wsgi.py test```
 
-Note that this repository does not contain the following two files/folders required to run the app, since they contain sensitive information:
+Note that this repository does not contain the following two files/folders required to run the app, *including for testing*, since they contain sensitive information:
 
 - ```.env```
 - ```FlaskApp/MobileV/dummy_data```
