@@ -19,7 +19,12 @@ The exact settings for each configuration can be found in ```FlaskApp/config.py`
 - ```python wsgi.py dev```
 - ```python wsgi.py test```
 
-Note that this repository does not contain the ```.env``` file, which contains sensitive information (e.g. encryption keys), required to run the app. This will be provided as and when appropriate. 
+Note that this repository does not contain the following two files/folders required to run the app, since they contain sensitive information:
+
+- ```.env```
+- ```FlaskApp/MobileV/dummy_data```
+
+These will be provided as and when appropriate. 
 
 ## Flutter app binary creation
 Assuming Flutter and Android Studio or Xcode is installed, an .apk or .ipa file can be created by running, in the ```MobileApp/mobilev``` directory:
